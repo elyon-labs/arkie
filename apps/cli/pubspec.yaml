@@ -1,0 +1,22 @@
+name: cs2_rcon_cli
+description: A command-line interface allowing interaction with cs2_rcon_client.
+version: 0.0.1
+repository: https://github.com/elyon-labs/arkie
+publish_to: none
+
+environment:
+    sdk: '>=3.8.1 <4.0.0'
+
+dependencies:
+  args: ^2.5.0
+  cs2_rcon_client:
+    path: ../../packages/client
+  mason_logger: ^0.2.16
+  oxidized: ^6.2.0
+
+dev_dependencies:
+  lints: ^3.0.0
+  test: ^1.24.0
+
+executables:
+  rcon: cli

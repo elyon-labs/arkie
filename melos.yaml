@@ -1,0 +1,43 @@
+name: cs2_rcon
+
+packages:
+  - apps/**
+  - packages/**
+
+scripts:
+  format:flutter:
+    name: Format Flutter
+    description: Formats flutter projects
+    run: melos exec --flutter -- "dart format ."
+  format:flutter:ci:
+    name: Format Flutter on CI
+    description: Formats flutter projects
+    run: melos exec --flutter -- "dart format --set-exit-if-changed ."
+  format:dart:
+    name: Format Dart
+    description: Formats dart projects
+    run: melos exec --no-flutter -- "dart format ."
+  format:dart:ci:
+    name: Format Dart on CI
+    description: Formats flutter projects
+    run: melos exec --no-flutter -- "dart format --set-exit-if-changed ."
+  analyze:flutter:ci:
+    name: Analyze Flutter on CI
+    description: Formats flutter projects
+    run: melos exec --flutter -- "flutter analyze --fatal-infos"
+  analyze:dart:ci:
+    name: Analyze Flutter on CI
+    description: Formats flutter projects
+    run: melos exec --no-flutter -- "dart analyze --fatal-infos"
+  test:flutter:ci:
+    name: Test Flutter on CI
+    description: Formats flutter projects
+    run: melos exec --flutter --dir-exists="test" -- "flutter test --test-randomize-ordering-seed random --reporter github"
+  test:dart:ci:
+    name: Format Dart on CI
+    description: Formats flutter projects
+    run: melos exec --no-flutter --dir-exists="test" -- "dart test --test-randomize-ordering-seed random --reporter github"
+  codegen:
+    name: Run codegen
+    description: Run codegen for all projects
+    run: melos exec --depends-on="build_runner" -- "dart run build_runner build --delete-conflicting-outputs -v"

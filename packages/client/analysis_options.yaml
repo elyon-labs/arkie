@@ -1,0 +1,6 @@
+include: ../../analysis_options.yaml
+
+# Enable public_member_api_docs lint rule for this package
+linter:
+  rules:
+    public_member_api_docs: true

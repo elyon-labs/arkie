@@ -1,0 +1,20 @@
+.dart_tool/
+
+# Mise
+mise.local.toml
+
+# OS, editor, and IDE state
+.DS_Store
+**/.DS_Store
+.idea/
+**/.idea/
+*.iml
+
+# Generated outputs and local artifacts
+/build/
+**/build/
+**/coverage/
+**/*.log
+**/Flutter/ephemeral/
+**/FlutterInputs.xcfilelist
+**/FlutterOutputs.xcfilelist
