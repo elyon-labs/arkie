@@ -52,6 +52,7 @@ const _validMapsResponse = '''
 	de_anubis_vanity
 	de_dust2
 	de_dust2_vanity
+  de_cache
 	de_golden
 	de_inferno
 	de_inferno_vanity

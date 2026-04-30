@@ -23,6 +23,7 @@ class KnownMap extends CS2Map {
   const KnownMap({required super.name, required super.assetName});
 
   static List<CS2Map> get directory {
+    // Assets are sourced from https://steamcommunity.com/sharedfiles/filedetails/?id=2894805422
     return const [
       KnownMap(name: 'ar_baggage', assetName: 'ar_baggage'),
       KnownMap(name: 'ar_pool_day', assetName: 'ar_pool_day'),
@@ -33,6 +34,7 @@ class KnownMap extends CS2Map {
       KnownMap(name: 'de_ancient', assetName: 'de_ancient'),
       KnownMap(name: 'de_ancient_night', assetName: 'de_ancient_night'),
       KnownMap(name: 'de_anubis', assetName: 'de_anubis'),
+      KnownMap(name: 'de_cache', assetName: 'de_cache'),
       KnownMap(name: 'de_dust2', assetName: 'de_dust2'),
       KnownMap(name: 'de_golden', assetName: 'de_golden'),
       KnownMap(name: 'de_inferno', assetName: 'de_inferno'),
