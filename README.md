@@ -1,5 +1,7 @@
 # CS2 RCON
 
+![Arkie desktop app screenshot](apps/front_end/images/arkie.png)
+
 CS2 RCON is a Melos-managed Dart/Flutter monorepo for experimenting with Counter-Strike 2 (CS2) Remote Console workflows. It contains a pure Dart client for the Source RCON protocol, a terminal experience built on top of that client, and a Flutter desktop UI that wraps the same building blocks.
 
 ## Repository layout
