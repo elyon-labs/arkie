@@ -1,7 +1,11 @@
 import 'package:cs2_rcon_front_end/features/servers/data/models/server.dart';
+import 'package:dart_mappable/dart_mappable.dart';
 import 'package:uuid/uuid.dart';
 
-class ServersState {
+part 'servers_state.mapper.dart';
+
+@MappableClass()
+class ServersState with ServersStateMappable {
   ServersState({required this.servers, required this.openTabs, required this.selectedTabId});
 
   factory ServersState.initial() {
@@ -34,21 +38,10 @@ class ServersState {
 
     return null;
   }
-
-  ServersState copyWith({
-    List<Server>? servers,
-    List<OpenServerTab>? openTabs,
-    Object? selectedTabId = _none,
-  }) {
-    return ServersState(
-      servers: servers ?? this.servers,
-      openTabs: openTabs ?? this.openTabs,
-      selectedTabId: selectedTabId == _none ? this.selectedTabId : selectedTabId as String?,
-    );
-  }
 }
 
-class OpenServerTab {
+@MappableClass()
+class OpenServerTab with OpenServerTabMappable {
   const OpenServerTab({required this.id, required this.serverId});
 
   factory OpenServerTab.empty() {
@@ -63,10 +56,4 @@ class OpenServerTab {
   final String? serverId;
 
   bool get isEmpty => serverId == null;
-
-  OpenServerTab copyWith({Object? serverId = _none}) {
-    return OpenServerTab(id: id, serverId: serverId == _none ? this.serverId : serverId as String?);
-  }
 }
-
-const _none = Object();
