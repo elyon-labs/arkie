@@ -44,12 +44,6 @@ class ServersStateMapper extends ClassMapperBase<ServersState> {
     _$selectedTab,
     mode: FieldMode.member,
   );
-  static Server? _$selectedServer(ServersState v) => v.selectedServer;
-  static const Field<ServersState, Server> _f$selectedServer = Field(
-    'selectedServer',
-    _$selectedServer,
-    mode: FieldMode.member,
-  );
 
   @override
   final MappableFields<ServersState> fields = const {
@@ -57,7 +51,6 @@ class ServersStateMapper extends ClassMapperBase<ServersState> {
     #openTabs: _f$openTabs,
     #selectedTabId: _f$selectedTabId,
     #selectedTab: _f$selectedTab,
-    #selectedServer: _f$selectedServer,
   };
 
   static ServersState _instantiate(DecodingData data) {
@@ -203,6 +196,8 @@ class OpenServerTabMapper extends ClassMapperBase<OpenServerTab> {
   static OpenServerTabMapper ensureInitialized() {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = OpenServerTabMapper._());
+      EmptyServerTabMapper.ensureInitialized();
+      NonEmptyServerTabMapper.ensureInitialized();
     }
     return _instance!;
   }
@@ -212,27 +207,16 @@ class OpenServerTabMapper extends ClassMapperBase<OpenServerTab> {
 
   static String _$id(OpenServerTab v) => v.id;
   static const Field<OpenServerTab, String> _f$id = Field('id', _$id);
-  static String? _$serverId(OpenServerTab v) => v.serverId;
-  static const Field<OpenServerTab, String> _f$serverId = Field(
-    'serverId',
-    _$serverId,
-  );
-  static bool _$isEmpty(OpenServerTab v) => v.isEmpty;
-  static const Field<OpenServerTab, bool> _f$isEmpty = Field(
-    'isEmpty',
-    _$isEmpty,
-    mode: FieldMode.member,
-  );
 
   @override
-  final MappableFields<OpenServerTab> fields = const {
-    #id: _f$id,
-    #serverId: _f$serverId,
-    #isEmpty: _f$isEmpty,
-  };
+  final MappableFields<OpenServerTab> fields = const {#id: _f$id};
 
   static OpenServerTab _instantiate(DecodingData data) {
-    return OpenServerTab(id: data.dec(_f$id), serverId: data.dec(_f$serverId));
+    throw MapperException.missingSubclass(
+      'OpenServerTab',
+      'type',
+      '${data.value['type']}',
+    );
   }
 
   @override
@@ -248,83 +232,286 @@ class OpenServerTabMapper extends ClassMapperBase<OpenServerTab> {
 }
 
 mixin OpenServerTabMappable {
+  String toJson();
+  Map<String, dynamic> toMap();
+  OpenServerTabCopyWith<OpenServerTab, OpenServerTab, OpenServerTab>
+  get copyWith;
+}
+
+abstract class OpenServerTabCopyWith<$R, $In extends OpenServerTab, $Out>
+    implements ClassCopyWith<$R, $In, $Out> {
+  $R call({String? id});
+  OpenServerTabCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
+}
+
+class EmptyServerTabMapper extends SubClassMapperBase<EmptyServerTab> {
+  EmptyServerTabMapper._();
+
+  static EmptyServerTabMapper? _instance;
+  static EmptyServerTabMapper ensureInitialized() {
+    if (_instance == null) {
+      MapperContainer.globals.use(_instance = EmptyServerTabMapper._());
+      OpenServerTabMapper.ensureInitialized().addSubMapper(_instance!);
+    }
+    return _instance!;
+  }
+
+  @override
+  final String id = 'EmptyServerTab';
+
+  static String _$id(EmptyServerTab v) => v.id;
+  static const Field<EmptyServerTab, String> _f$id = Field('id', _$id);
+
+  @override
+  final MappableFields<EmptyServerTab> fields = const {#id: _f$id};
+
+  @override
+  final String discriminatorKey = 'type';
+  @override
+  final dynamic discriminatorValue = 'EmptyServerTab';
+  @override
+  late final ClassMapperBase superMapper =
+      OpenServerTabMapper.ensureInitialized();
+
+  static EmptyServerTab _instantiate(DecodingData data) {
+    return EmptyServerTab(id: data.dec(_f$id));
+  }
+
+  @override
+  final Function instantiate = _instantiate;
+
+  static EmptyServerTab fromMap(Map<String, dynamic> map) {
+    return ensureInitialized().decodeMap<EmptyServerTab>(map);
+  }
+
+  static EmptyServerTab fromJson(String json) {
+    return ensureInitialized().decodeJson<EmptyServerTab>(json);
+  }
+}
+
+mixin EmptyServerTabMappable {
   String toJson() {
-    return OpenServerTabMapper.ensureInitialized().encodeJson<OpenServerTab>(
-      this as OpenServerTab,
+    return EmptyServerTabMapper.ensureInitialized().encodeJson<EmptyServerTab>(
+      this as EmptyServerTab,
     );
   }
 
   Map<String, dynamic> toMap() {
-    return OpenServerTabMapper.ensureInitialized().encodeMap<OpenServerTab>(
-      this as OpenServerTab,
+    return EmptyServerTabMapper.ensureInitialized().encodeMap<EmptyServerTab>(
+      this as EmptyServerTab,
     );
   }
 
-  OpenServerTabCopyWith<OpenServerTab, OpenServerTab, OpenServerTab>
-  get copyWith => _OpenServerTabCopyWithImpl<OpenServerTab, OpenServerTab>(
-    this as OpenServerTab,
+  EmptyServerTabCopyWith<EmptyServerTab, EmptyServerTab, EmptyServerTab>
+  get copyWith => _EmptyServerTabCopyWithImpl<EmptyServerTab, EmptyServerTab>(
+    this as EmptyServerTab,
     $identity,
     $identity,
   );
   @override
   String toString() {
-    return OpenServerTabMapper.ensureInitialized().stringifyValue(
-      this as OpenServerTab,
+    return EmptyServerTabMapper.ensureInitialized().stringifyValue(
+      this as EmptyServerTab,
     );
   }
 
   @override
   bool operator ==(Object other) {
-    return OpenServerTabMapper.ensureInitialized().equalsValue(
-      this as OpenServerTab,
+    return EmptyServerTabMapper.ensureInitialized().equalsValue(
+      this as EmptyServerTab,
       other,
     );
   }
 
   @override
   int get hashCode {
-    return OpenServerTabMapper.ensureInitialized().hashValue(
-      this as OpenServerTab,
+    return EmptyServerTabMapper.ensureInitialized().hashValue(
+      this as EmptyServerTab,
     );
   }
 }
 
-extension OpenServerTabValueCopy<$R, $Out>
-    on ObjectCopyWith<$R, OpenServerTab, $Out> {
-  OpenServerTabCopyWith<$R, OpenServerTab, $Out> get $asOpenServerTab =>
-      $base.as((v, t, t2) => _OpenServerTabCopyWithImpl<$R, $Out>(v, t, t2));
+extension EmptyServerTabValueCopy<$R, $Out>
+    on ObjectCopyWith<$R, EmptyServerTab, $Out> {
+  EmptyServerTabCopyWith<$R, EmptyServerTab, $Out> get $asEmptyServerTab =>
+      $base.as((v, t, t2) => _EmptyServerTabCopyWithImpl<$R, $Out>(v, t, t2));
 }
 
-abstract class OpenServerTabCopyWith<$R, $In extends OpenServerTab, $Out>
-    implements ClassCopyWith<$R, $In, $Out> {
-  $R call({String? id, String? serverId});
-  OpenServerTabCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
+abstract class EmptyServerTabCopyWith<$R, $In extends EmptyServerTab, $Out>
+    implements OpenServerTabCopyWith<$R, $In, $Out> {
+  @override
+  $R call({String? id});
+  EmptyServerTabCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
+    Then<$Out2, $R2> t,
+  );
 }
 
-class _OpenServerTabCopyWithImpl<$R, $Out>
-    extends ClassCopyWithBase<$R, OpenServerTab, $Out>
-    implements OpenServerTabCopyWith<$R, OpenServerTab, $Out> {
-  _OpenServerTabCopyWithImpl(super.value, super.then, super.then2);
+class _EmptyServerTabCopyWithImpl<$R, $Out>
+    extends ClassCopyWithBase<$R, EmptyServerTab, $Out>
+    implements EmptyServerTabCopyWith<$R, EmptyServerTab, $Out> {
+  _EmptyServerTabCopyWithImpl(super.value, super.then, super.then2);
 
   @override
-  late final ClassMapperBase<OpenServerTab> $mapper =
+  late final ClassMapperBase<EmptyServerTab> $mapper =
+      EmptyServerTabMapper.ensureInitialized();
+  @override
+  $R call({String? id}) => $apply(FieldCopyWithData({if (id != null) #id: id}));
+  @override
+  EmptyServerTab $make(CopyWithData data) =>
+      EmptyServerTab(id: data.get(#id, or: $value.id));
+
+  @override
+  EmptyServerTabCopyWith<$R2, EmptyServerTab, $Out2> $chain<$R2, $Out2>(
+    Then<$Out2, $R2> t,
+  ) => _EmptyServerTabCopyWithImpl<$R2, $Out2>($value, $cast, t);
+}
+
+class NonEmptyServerTabMapper extends SubClassMapperBase<NonEmptyServerTab> {
+  NonEmptyServerTabMapper._();
+
+  static NonEmptyServerTabMapper? _instance;
+  static NonEmptyServerTabMapper ensureInitialized() {
+    if (_instance == null) {
+      MapperContainer.globals.use(_instance = NonEmptyServerTabMapper._());
+      OpenServerTabMapper.ensureInitialized().addSubMapper(_instance!);
+    }
+    return _instance!;
+  }
+
+  @override
+  final String id = 'NonEmptyServerTab';
+
+  static String _$id(NonEmptyServerTab v) => v.id;
+  static const Field<NonEmptyServerTab, String> _f$id = Field('id', _$id);
+  static String _$serverId(NonEmptyServerTab v) => v.serverId;
+  static const Field<NonEmptyServerTab, String> _f$serverId = Field(
+    'serverId',
+    _$serverId,
+  );
+
+  @override
+  final MappableFields<NonEmptyServerTab> fields = const {
+    #id: _f$id,
+    #serverId: _f$serverId,
+  };
+
+  @override
+  final String discriminatorKey = 'type';
+  @override
+  final dynamic discriminatorValue = 'NonEmptyServerTab';
+  @override
+  late final ClassMapperBase superMapper =
       OpenServerTabMapper.ensureInitialized();
+
+  static NonEmptyServerTab _instantiate(DecodingData data) {
+    return NonEmptyServerTab(
+      id: data.dec(_f$id),
+      serverId: data.dec(_f$serverId),
+    );
+  }
+
   @override
-  $R call({String? id, Object? serverId = $none}) => $apply(
+  final Function instantiate = _instantiate;
+
+  static NonEmptyServerTab fromMap(Map<String, dynamic> map) {
+    return ensureInitialized().decodeMap<NonEmptyServerTab>(map);
+  }
+
+  static NonEmptyServerTab fromJson(String json) {
+    return ensureInitialized().decodeJson<NonEmptyServerTab>(json);
+  }
+}
+
+mixin NonEmptyServerTabMappable {
+  String toJson() {
+    return NonEmptyServerTabMapper.ensureInitialized()
+        .encodeJson<NonEmptyServerTab>(this as NonEmptyServerTab);
+  }
+
+  Map<String, dynamic> toMap() {
+    return NonEmptyServerTabMapper.ensureInitialized()
+        .encodeMap<NonEmptyServerTab>(this as NonEmptyServerTab);
+  }
+
+  NonEmptyServerTabCopyWith<
+    NonEmptyServerTab,
+    NonEmptyServerTab,
+    NonEmptyServerTab
+  >
+  get copyWith =>
+      _NonEmptyServerTabCopyWithImpl<NonEmptyServerTab, NonEmptyServerTab>(
+        this as NonEmptyServerTab,
+        $identity,
+        $identity,
+      );
+  @override
+  String toString() {
+    return NonEmptyServerTabMapper.ensureInitialized().stringifyValue(
+      this as NonEmptyServerTab,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return NonEmptyServerTabMapper.ensureInitialized().equalsValue(
+      this as NonEmptyServerTab,
+      other,
+    );
+  }
+
+  @override
+  int get hashCode {
+    return NonEmptyServerTabMapper.ensureInitialized().hashValue(
+      this as NonEmptyServerTab,
+    );
+  }
+}
+
+extension NonEmptyServerTabValueCopy<$R, $Out>
+    on ObjectCopyWith<$R, NonEmptyServerTab, $Out> {
+  NonEmptyServerTabCopyWith<$R, NonEmptyServerTab, $Out>
+  get $asNonEmptyServerTab => $base.as(
+    (v, t, t2) => _NonEmptyServerTabCopyWithImpl<$R, $Out>(v, t, t2),
+  );
+}
+
+abstract class NonEmptyServerTabCopyWith<
+  $R,
+  $In extends NonEmptyServerTab,
+  $Out
+>
+    implements OpenServerTabCopyWith<$R, $In, $Out> {
+  @override
+  $R call({String? id, String? serverId});
+  NonEmptyServerTabCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
+    Then<$Out2, $R2> t,
+  );
+}
+
+class _NonEmptyServerTabCopyWithImpl<$R, $Out>
+    extends ClassCopyWithBase<$R, NonEmptyServerTab, $Out>
+    implements NonEmptyServerTabCopyWith<$R, NonEmptyServerTab, $Out> {
+  _NonEmptyServerTabCopyWithImpl(super.value, super.then, super.then2);
+
+  @override
+  late final ClassMapperBase<NonEmptyServerTab> $mapper =
+      NonEmptyServerTabMapper.ensureInitialized();
+  @override
+  $R call({String? id, String? serverId}) => $apply(
     FieldCopyWithData({
       if (id != null) #id: id,
-      if (serverId != $none) #serverId: serverId,
+      if (serverId != null) #serverId: serverId,
     }),
   );
   @override
-  OpenServerTab $make(CopyWithData data) => OpenServerTab(
+  NonEmptyServerTab $make(CopyWithData data) => NonEmptyServerTab(
     id: data.get(#id, or: $value.id),
     serverId: data.get(#serverId, or: $value.serverId),
   );
 
   @override
-  OpenServerTabCopyWith<$R2, OpenServerTab, $Out2> $chain<$R2, $Out2>(
+  NonEmptyServerTabCopyWith<$R2, NonEmptyServerTab, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
-  ) => _OpenServerTabCopyWithImpl<$R2, $Out2>($value, $cast, t);
+  ) => _NonEmptyServerTabCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
 

@@ -7,6 +7,7 @@ import 'package:cs2_rcon_front_end/features/servers/presentation/servers/widgets
 import 'package:cs2_rcon_front_end/features/servers/presentation/servers/widgets/server_tab.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/servers/widgets/settings_fab.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/servers_cubit.dart';
+import 'package:cs2_rcon_front_end/features/servers/presentation/servers_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -27,9 +28,9 @@ class _Body extends StatelessWidget {
   Widget build(BuildContext context) {
     final cubit = context.read<ServersCubit>();
     final state = context.select((ServersCubit cubit) => cubit.state);
-    final selectedServer = state.selectedServer;
     final selectedTab = state.selectedTab;
     final servers = state.servers;
+    final selectedTabServer = selectedTab == null ? null : _serverForTab(selectedTab, servers);
 
     return Column(
       children: [
@@ -39,18 +40,18 @@ class _Body extends StatelessWidget {
             ...state.openTabs.map(
               (tab) => ServerTab(
                 tab: tab,
-                server: _serverForTab(tab.serverId, servers),
+                server: _serverForTab(tab, servers),
                 isSelected: tab.id == selectedTab?.id,
                 allowClose:
                     state.openTabs.isNotEmpty &&
-                    (state.openTabs.length != 1 || state.openTabs.single.serverId != null),
+                    (state.openTabs.length != 1 || state.openTabs.single is NonEmptyServerTab),
               ),
             ),
             const Spacer(),
             const SettingsFab(),
           ],
         ),
-        if (selectedServer != null && selectedTab != null) ...[
+        if (selectedTabServer != null && selectedTab != null) ...[
           Expanded(
             child: Padding(
               padding: EdgeInsets.only(
@@ -58,7 +59,7 @@ class _Body extends StatelessWidget {
                 right: context.sizes.edgeSpacing,
                 bottom: context.sizes.edgeSpacing,
               ),
-              child: RCON(server: selectedServer, key: ValueKey(selectedServer)),
+              child: RCON(server: selectedTabServer, key: ValueKey(selectedTabServer)),
             ),
           ),
         ] else if (selectedTab != null) ...[
@@ -75,10 +76,11 @@ class _Body extends StatelessWidget {
   }
 }
 
-Server? _serverForTab(String? serverId, List<Server> servers) {
-  if (serverId == null) return null;
-
-  return servers.firstWhereOrNull((s) => s.id == serverId);
+Server? _serverForTab(OpenServerTab tab, List<Server> servers) {
+  return switch (tab) {
+    EmptyServerTab() => null,
+    NonEmptyServerTab(:final serverId) => servers.firstWhereOrNull((s) => s.id == serverId),
+  };
 }
 
 class _OpenTabEmptyState extends HookWidget {

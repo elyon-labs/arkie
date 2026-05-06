@@ -27,33 +27,31 @@ class ServersState with ServersStateMappable {
 
     return null;
   }
-
-  Server? get selectedServer {
-    final serverId = selectedTab?.serverId;
-    if (serverId == null) return null;
-
-    for (final server in servers) {
-      if (server.id == serverId) return server;
-    }
-
-    return null;
-  }
 }
 
-@MappableClass()
-class OpenServerTab with OpenServerTabMappable {
-  const OpenServerTab({required this.id, required this.serverId});
+@MappableClass(discriminatorKey: 'type')
+sealed class OpenServerTab with OpenServerTabMappable {
+  const OpenServerTab({required this.id});
 
   factory OpenServerTab.empty() {
-    return OpenServerTab(id: const Uuid().v4(), serverId: null);
+    return EmptyServerTab(id: const Uuid().v4());
   }
 
   factory OpenServerTab.forServer(Server server) {
-    return OpenServerTab(id: const Uuid().v4(), serverId: server.id);
+    return NonEmptyServerTab(id: const Uuid().v4(), serverId: server.id);
   }
 
   final String id;
-  final String? serverId;
+}
 
-  bool get isEmpty => serverId == null;
+@MappableClass()
+class EmptyServerTab extends OpenServerTab with EmptyServerTabMappable {
+  const EmptyServerTab({required super.id});
+}
+
+@MappableClass()
+class NonEmptyServerTab extends OpenServerTab with NonEmptyServerTabMappable {
+  const NonEmptyServerTab({required super.id, required this.serverId});
+
+  final String serverId;
 }

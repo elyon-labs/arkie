@@ -57,7 +57,10 @@ class ServersCubit extends Cubit<ServersState> {
       state.copyWith(
         openTabs: [
           for (final tab in state.openTabs)
-            if (tab.id == selectedTab.id) tab.copyWith(serverId: server.id) else tab,
+            if (tab.id == selectedTab.id)
+              NonEmptyServerTab(id: tab.id, serverId: server.id)
+            else
+              tab,
         ],
       ),
     );
@@ -95,7 +98,12 @@ class ServersCubit extends Cubit<ServersState> {
 
   List<OpenServerTab> _removeTabsForDeletedServers(List<OpenServerTab> tabs, List<Server> servers) {
     final serverIds = servers.map((server) => server.id).toSet();
-    return tabs.where((tab) => tab.serverId == null || serverIds.contains(tab.serverId)).toList();
+    return tabs.where((tab) {
+      return switch (tab) {
+        EmptyServerTab() => true,
+        NonEmptyServerTab(:final serverId) => serverIds.contains(serverId),
+      };
+    }).toList();
   }
 
   String? _selectedTabIdAfterServersChanged(List<Server> servers) {

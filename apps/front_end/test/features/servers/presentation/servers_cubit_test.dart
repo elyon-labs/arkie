@@ -4,6 +4,7 @@ import 'package:cs2_rcon_front_end/features/servers/data/models/server.dart';
 import 'package:cs2_rcon_front_end/features/servers/data/repository/servers_repository.dart';
 import 'package:cs2_rcon_front_end/features/servers/domain/watch_servers.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/servers_cubit.dart';
+import 'package:cs2_rcon_front_end/features/servers/presentation/servers_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../fakes/fake_servers_api.dart';
@@ -31,6 +32,17 @@ void main() {
       return cubit;
     }
 
+    Server? serverForSelectedTab(ServersCubit cubit) {
+      final selectedTab = cubit.state.selectedTab;
+      if (selectedTab is! NonEmptyServerTab) return null;
+
+      for (final server in cubit.state.servers) {
+        if (server.id == selectedTab.serverId) return server;
+      }
+
+      return null;
+    }
+
     group('openTab', () {
       test('starts with an empty selected tab without selecting a saved server', () async {
         final server = buildServer();
@@ -38,7 +50,7 @@ void main() {
 
         expect(cubit.state.openTabs, hasLength(1));
         expect(cubit.state.selectedTab, cubit.state.openTabs.single);
-        expect(cubit.state.selectedServer, isNull);
+        expect(serverForSelectedTab(cubit), isNull);
         await cubit.close();
       });
 
@@ -51,7 +63,7 @@ void main() {
         expect(cubit.state.openTabs, hasLength(2));
         expect(cubit.state.selectedTabId, isNot(firstTabId));
         expect(cubit.state.selectedTab, cubit.state.openTabs.last);
-        expect(cubit.state.selectedServer, isNull);
+        expect(serverForSelectedTab(cubit), isNull);
         await cubit.close();
       });
     });
@@ -63,8 +75,11 @@ void main() {
 
         cubit.selectServerForSelectedTab(server);
 
-        expect(cubit.state.openTabs.single.serverId, server.id);
-        expect(cubit.state.selectedServer, server);
+        expect(
+          cubit.state.openTabs.single,
+          isA<NonEmptyServerTab>().having((tab) => tab.serverId, 'serverId', server.id),
+        );
+        expect(serverForSelectedTab(cubit), server);
         await cubit.close();
       });
 
@@ -76,8 +91,11 @@ void main() {
         cubit.selectServerForSelectedTab(server);
 
         expect(cubit.state.openTabs, hasLength(1));
-        expect(cubit.state.openTabs.single.serverId, server.id);
-        expect(cubit.state.selectedServer, server);
+        expect(
+          cubit.state.openTabs.single,
+          isA<NonEmptyServerTab>().having((tab) => tab.serverId, 'serverId', server.id),
+        );
+        expect(serverForSelectedTab(cubit), server);
         await cubit.close();
       });
     });
@@ -99,7 +117,7 @@ void main() {
 
         expect(cubit.state.openTabs.map((tab) => tab.id), [secondTabId]);
         expect(cubit.state.selectedTabId, secondTabId);
-        expect(cubit.state.selectedServer, serverB);
+        expect(serverForSelectedTab(cubit), serverB);
         await cubit.close();
       });
 
@@ -118,7 +136,7 @@ void main() {
 
         expect(cubit.state.openTabs.map((tab) => tab.id), [secondTabId]);
         expect(cubit.state.selectedTabId, secondTabId);
-        expect(cubit.state.selectedServer, serverB);
+        expect(serverForSelectedTab(cubit), serverB);
         await cubit.close();
       });
     });
@@ -142,7 +160,7 @@ void main() {
         cubit.selectNextServer();
 
         expect(cubit.state.selectedTabId, secondTabId);
-        expect(cubit.state.selectedServer, serverB);
+        expect(serverForSelectedTab(cubit), serverB);
         await cubit.close();
       });
 
@@ -159,7 +177,7 @@ void main() {
         cubit.selectNextServer();
 
         expect(cubit.state.selectedTabId, firstTabId);
-        expect(cubit.state.selectedServer, serverA);
+        expect(serverForSelectedTab(cubit), serverA);
         await cubit.close();
       });
 
@@ -170,7 +188,7 @@ void main() {
         cubit.selectNextServer();
 
         expect(cubit.state.selectedTabId, tabId);
-        expect(cubit.state.selectedServer, isNull);
+        expect(serverForSelectedTab(cubit), isNull);
         await cubit.close();
       });
     });
@@ -192,7 +210,7 @@ void main() {
         cubit.selectPreviousServer();
 
         expect(cubit.state.selectedTabId, secondTabId);
-        expect(cubit.state.selectedServer, serverB);
+        expect(serverForSelectedTab(cubit), serverB);
         await cubit.close();
       });
 
@@ -210,7 +228,7 @@ void main() {
         cubit.selectPreviousServer();
 
         expect(cubit.state.selectedTabId, secondTabId);
-        expect(cubit.state.selectedServer, serverB);
+        expect(serverForSelectedTab(cubit), serverB);
         await cubit.close();
       });
     });
