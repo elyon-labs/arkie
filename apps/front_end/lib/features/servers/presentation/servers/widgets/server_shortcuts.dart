@@ -19,6 +19,12 @@ class ServerShortcuts extends StatelessWidget {
             return null;
           },
         ),
+        _CloseTabIntent: CallbackAction<_CloseTabIntent>(
+          onInvoke: (_) {
+            context.read<ServersCubit>().closeSelectedTab();
+            return null;
+          },
+        ),
         _SelectPreviousTabIntent: CallbackAction<_SelectPreviousTabIntent>(
           onInvoke: (_) {
             context.read<ServersCubit>().selectPreviousServer();
@@ -37,6 +43,7 @@ class ServerShortcuts extends StatelessWidget {
           ...WidgetsApp.defaultShortcuts,
           const SingleActivator(LogicalKeyboardKey.keyT, meta: true): const _OpenTabIntent(),
           const SingleActivator(LogicalKeyboardKey.keyT, control: true): const _OpenTabIntent(),
+          const SingleActivator(LogicalKeyboardKey.keyW, meta: true): const _CloseTabIntent(),
           const SingleActivator(LogicalKeyboardKey.bracketLeft, meta: true, shift: true):
               const _SelectPreviousTabIntent(),
           const SingleActivator(LogicalKeyboardKey.braceLeft, meta: true, shift: true):
@@ -66,4 +73,8 @@ class _SelectPreviousTabIntent extends Intent {
 
 class _SelectNextTabIntent extends Intent {
   const _SelectNextTabIntent();
+}
+
+class _CloseTabIntent extends Intent {
+  const _CloseTabIntent();
 }

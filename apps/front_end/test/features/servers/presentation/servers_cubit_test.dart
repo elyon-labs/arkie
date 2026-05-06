@@ -141,6 +141,45 @@ void main() {
       });
     });
 
+    group('closeSelectedTab', () {
+      test('removes the selected tab', () async {
+        final serverA = buildServer(name: 'A');
+        final serverB = buildServer(name: 'B');
+        final cubit = await buildSubject(servers: [serverA, serverB]);
+
+        cubit.selectServerForSelectedTab(serverA);
+        final firstTabId = cubit.state.selectedTabId!;
+        cubit.openTab();
+        cubit.selectServerForSelectedTab(serverB);
+        final secondTabId = cubit.state.selectedTabId!;
+        cubit.selectTab(firstTabId);
+
+        cubit.closeSelectedTab();
+
+        expect(cubit.state.openTabs.map((tab) => tab.id), [secondTabId]);
+        expect(cubit.state.selectedTabId, secondTabId);
+        expect(serverForSelectedTab(cubit), serverB);
+        await cubit.close();
+      });
+
+      test('opens a new empty tab when closing the only tab', () async {
+        final server = buildServer();
+        final cubit = await buildSubject(servers: [server]);
+
+        cubit.selectServerForSelectedTab(server);
+        final closedTabId = cubit.state.selectedTabId!;
+
+        cubit.closeSelectedTab();
+
+        expect(cubit.state.openTabs, hasLength(1));
+        expect(cubit.state.openTabs.single, isA<EmptyServerTab>());
+        expect(cubit.state.openTabs.single.id, isNot(closedTabId));
+        expect(cubit.state.selectedTab, cubit.state.openTabs.single);
+        expect(serverForSelectedTab(cubit), isNull);
+        await cubit.close();
+      });
+    });
+
     group('selectNextServer', () {
       test('selects the next open tab', () async {
         final serverA = buildServer(name: 'A');

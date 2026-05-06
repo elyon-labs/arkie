@@ -66,6 +66,12 @@ class ServersCubit extends Cubit<ServersState> {
     );
   }
 
+  void closeSelectedTab() {
+    final selectedTabId = state.selectedTabId;
+    if (selectedTabId == null) return;
+    closeTab(selectedTabId);
+  }
+
   void closeTab(String tabId) {
     final tabIndex = state.openTabs.indexWhere((tab) => tab.id == tabId);
     if (tabIndex == -1) return;
