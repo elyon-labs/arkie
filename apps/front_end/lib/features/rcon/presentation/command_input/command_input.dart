@@ -217,8 +217,14 @@ class _ViewState extends State<_View> {
               return KeyEventResult.handled;
             }
 
-            // TAB → apply completion from your suggestion list, but don't submit
-            if (event.logicalKey == LogicalKeyboardKey.tab) {
+            // TAB -> apply completion from the suggestion list, but leave modified
+            // tab shortcuts available for higher-level navigation.
+            final isPlainTab =
+                event.logicalKey == LogicalKeyboardKey.tab &&
+                !HardwareKeyboard.instance.isControlPressed &&
+                !HardwareKeyboard.instance.isMetaPressed &&
+                !HardwareKeyboard.instance.isAltPressed;
+            if (isPlainTab) {
               final highlightedIndex = _highlightedIndex.value;
               if (highlightedIndex != null &&
                   highlightedIndex >= 0 &&

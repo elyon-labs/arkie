@@ -37,67 +37,65 @@ class DotLeaders extends StatelessWidget {
     final effectiveStyle = style ?? DefaultTextStyle.of(context).style;
     final dir = textDirection ?? Directionality.of(context);
 
-    return Expanded(
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final width = constraints.maxWidth;
-          if (!width.isFinite || width <= 0) return const SizedBox();
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+        if (!width.isFinite || width <= 0) return const SizedBox();
 
-          // Measure a single dot.
-          final painter = TextPainter(
-            text: TextSpan(text: dot, style: effectiveStyle),
+        // Measure a single dot.
+        final painter = TextPainter(
+          text: TextSpan(text: dot, style: effectiveStyle),
+          textDirection: dir,
+          maxLines: 1,
+        )..layout();
+
+        final dotWidth = painter.width;
+        if (dotWidth <= 0) return const SizedBox();
+
+        // Pick a dot count based on an initial "nice" gap,
+        // then compute the exact gap so dots are evenly spaced
+        // and side padding is balanced.
+        final approxCount = math.max(
+          1,
+          ((width + preferredGap) / (dotWidth + preferredGap)).floor(),
+        );
+
+        // We place count dots, with "gap" space between each dot and also at both ends:
+        // total = count*dotWidth + (count+1)*gap
+        // gap = (width - count*dotWidth) / (count+1)
+        var count = approxCount;
+
+        double gapFor(int c) => (width - c * dotWidth) / (c + 1);
+
+        // Adjust count until gap is in [minGap, maxGap] if possible.
+        var gap = gapFor(count);
+        while (count > 1 && gap < minGap) {
+          count -= 1;
+          gap = gapFor(count);
+        }
+        while (true) {
+          final nextGap = gapFor(count + 1);
+          if (nextGap >= minGap && nextGap <= maxGap) {
+            count += 1;
+            gap = nextGap;
+            continue;
+          }
+          break;
+        }
+
+        gap = gap.clamp(minGap, maxGap);
+
+        return CustomPaint(
+          size: Size(width, painter.height),
+          painter: _DotLeadersPainter(
+            dot: dot,
+            style: effectiveStyle,
+            count: count,
+            gap: gap,
             textDirection: dir,
-            maxLines: 1,
-          )..layout();
-
-          final dotWidth = painter.width;
-          if (dotWidth <= 0) return const SizedBox();
-
-          // Pick a dot count based on an initial "nice" gap,
-          // then compute the exact gap so dots are evenly spaced
-          // and side padding is balanced.
-          final approxCount = math.max(
-            1,
-            ((width + preferredGap) / (dotWidth + preferredGap)).floor(),
-          );
-
-          // We place count dots, with "gap" space between each dot and also at both ends:
-          // total = count*dotWidth + (count+1)*gap
-          // gap = (width - count*dotWidth) / (count+1)
-          var count = approxCount;
-
-          double gapFor(int c) => (width - c * dotWidth) / (c + 1);
-
-          // Adjust count until gap is in [minGap, maxGap] if possible.
-          var gap = gapFor(count);
-          while (count > 1 && gap < minGap) {
-            count -= 1;
-            gap = gapFor(count);
-          }
-          while (true) {
-            final nextGap = gapFor(count + 1);
-            if (nextGap >= minGap && nextGap <= maxGap) {
-              count += 1;
-              gap = nextGap;
-              continue;
-            }
-            break;
-          }
-
-          gap = gap.clamp(minGap, maxGap);
-
-          return CustomPaint(
-            size: Size(width, painter.height),
-            painter: _DotLeadersPainter(
-              dot: dot,
-              style: effectiveStyle,
-              count: count,
-              gap: gap,
-              textDirection: dir,
-            ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

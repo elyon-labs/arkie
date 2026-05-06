@@ -1,14 +1,12 @@
+// ignore_for_file: cascade_invocations
+
 import 'package:cs2_rcon_front_end/features/servers/data/models/server.dart';
 import 'package:cs2_rcon_front_end/features/servers/data/repository/servers_repository.dart';
-import 'package:cs2_rcon_front_end/features/servers/domain/select_server.dart';
-import 'package:cs2_rcon_front_end/features/servers/domain/unselect_server.dart';
-import 'package:cs2_rcon_front_end/features/servers/domain/watch_selected_server.dart';
 import 'package:cs2_rcon_front_end/features/servers/domain/watch_servers.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/servers_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../fakes/fake_servers_api.dart';
-import '../../../fakes/fake_settings_repository.dart';
 
 void main() {
   group('ServersCubit', () {
@@ -21,172 +19,198 @@ void main() {
       return Server.create(name: name, password: password, address: address, port: port);
     }
 
-    Future<ServersCubit> buildSubject({
-      List<Server>? servers,
-    }) async {
+    Future<ServersCubit> buildSubject({List<Server>? servers}) async {
       final api = FakeServersApi(initialServers: servers ?? []);
-      final settingsRepository = FakeSettingsRepository();
       final serversRepository = ServersRepository(api: api);
 
       await pumpEventQueue(); // Allow server fetch to complete before subscribing.
 
-      final cubit = ServersCubit(
-        watchServers: WatchServers(repository: serversRepository),
-        selectServer: SelectServer(repository: settingsRepository),
-        watchSelectedServer: WatchSelectedServer(
-          repository: serversRepository,
-          settingsRepository: settingsRepository,
-        ),
-        unselectServer: UnselectServer(repository: settingsRepository),
-      );
+      final cubit = ServersCubit(watchServers: WatchServers(repository: serversRepository));
 
       await pumpEventQueue();
       return cubit;
     }
 
-    group('closeTab', () {
-      test('deselects the server when it is currently selected', () async {
+    group('openTab', () {
+      test('starts with an empty selected tab without selecting a saved server', () async {
         final server = buildServer();
         final cubit = await buildSubject(servers: [server]);
 
-        await cubit.selectServer(server);
-        await pumpEventQueue();
-        expect(cubit.state.selectedServer, server);
-
-        await cubit.closeTab(server);
-        await pumpEventQueue();
-
+        expect(cubit.state.openTabs, hasLength(1));
+        expect(cubit.state.selectedTab, cubit.state.openTabs.single);
         expect(cubit.state.selectedServer, isNull);
         await cubit.close();
       });
 
-      test('does nothing when the closed server is not currently selected', () async {
+      test('opens another empty selected tab', () async {
+        final cubit = await buildSubject();
+        final firstTabId = cubit.state.selectedTabId;
+
+        cubit.openTab();
+
+        expect(cubit.state.openTabs, hasLength(2));
+        expect(cubit.state.selectedTabId, isNot(firstTabId));
+        expect(cubit.state.selectedTab, cubit.state.openTabs.last);
+        expect(cubit.state.selectedServer, isNull);
+        await cubit.close();
+      });
+    });
+
+    group('selectServerForSelectedTab', () {
+      test('assigns a saved server to the selected empty tab', () async {
+        final server = buildServer();
+        final cubit = await buildSubject(servers: [server]);
+
+        cubit.selectServerForSelectedTab(server);
+
+        expect(cubit.state.openTabs.single.serverId, server.id);
+        expect(cubit.state.selectedServer, server);
+        await cubit.close();
+      });
+
+      test('opens a tab when no tab is selected', () async {
+        final server = buildServer();
+        final cubit = await buildSubject(servers: [server]);
+
+        cubit.closeTab(cubit.state.selectedTabId!);
+        cubit.selectServerForSelectedTab(server);
+
+        expect(cubit.state.openTabs, hasLength(1));
+        expect(cubit.state.openTabs.single.serverId, server.id);
+        expect(cubit.state.selectedServer, server);
+        await cubit.close();
+      });
+    });
+
+    group('closeTab', () {
+      test('removes the selected tab and selects the next tab', () async {
         final serverA = buildServer(name: 'A');
         final serverB = buildServer(name: 'B');
         final cubit = await buildSubject(servers: [serverA, serverB]);
 
-        await cubit.selectServer(serverA);
-        await pumpEventQueue();
-        expect(cubit.state.selectedServer, serverA);
+        cubit.selectServerForSelectedTab(serverA);
+        final firstTabId = cubit.state.selectedTabId!;
+        cubit.openTab();
+        cubit.selectServerForSelectedTab(serverB);
+        final secondTabId = cubit.state.selectedTabId!;
 
-        await cubit.closeTab(serverB);
-        await pumpEventQueue();
+        cubit.selectTab(firstTabId);
+        cubit.closeTab(firstTabId);
 
-        expect(cubit.state.selectedServer, serverA);
+        expect(cubit.state.openTabs.map((tab) => tab.id), [secondTabId]);
+        expect(cubit.state.selectedTabId, secondTabId);
+        expect(cubit.state.selectedServer, serverB);
+        await cubit.close();
+      });
+
+      test('keeps the current selection when closing another tab', () async {
+        final serverA = buildServer(name: 'A');
+        final serverB = buildServer(name: 'B');
+        final cubit = await buildSubject(servers: [serverA, serverB]);
+
+        cubit.selectServerForSelectedTab(serverA);
+        final firstTabId = cubit.state.selectedTabId!;
+        cubit.openTab();
+        cubit.selectServerForSelectedTab(serverB);
+        final secondTabId = cubit.state.selectedTabId!;
+
+        cubit.closeTab(firstTabId);
+
+        expect(cubit.state.openTabs.map((tab) => tab.id), [secondTabId]);
+        expect(cubit.state.selectedTabId, secondTabId);
+        expect(cubit.state.selectedServer, serverB);
         await cubit.close();
       });
     });
 
     group('selectNextServer', () {
-      test('selects the next server in the list', () async {
+      test('selects the next open tab', () async {
         final serverA = buildServer(name: 'A');
         final serverB = buildServer(name: 'B');
         final serverC = buildServer(name: 'C');
         final cubit = await buildSubject(servers: [serverA, serverB, serverC]);
 
-        await cubit.selectServer(serverA);
-        await pumpEventQueue();
+        cubit.selectServerForSelectedTab(serverA);
+        final firstTabId = cubit.state.selectedTabId!;
+        cubit.openTab();
+        cubit.selectServerForSelectedTab(serverB);
+        final secondTabId = cubit.state.selectedTabId!;
+        cubit.openTab();
+        cubit.selectServerForSelectedTab(serverC);
 
-        await cubit.selectNextServer();
-        await pumpEventQueue();
+        cubit.selectTab(firstTabId);
+        cubit.selectNextServer();
 
+        expect(cubit.state.selectedTabId, secondTabId);
         expect(cubit.state.selectedServer, serverB);
         await cubit.close();
       });
 
-      test('wraps around to the first server when at the end of the list', () async {
+      test('wraps around to the first open tab', () async {
         final serverA = buildServer(name: 'A');
         final serverB = buildServer(name: 'B');
         final cubit = await buildSubject(servers: [serverA, serverB]);
 
-        await cubit.selectServer(serverB);
-        await pumpEventQueue();
+        cubit.selectServerForSelectedTab(serverA);
+        final firstTabId = cubit.state.selectedTabId!;
+        cubit.openTab();
+        cubit.selectServerForSelectedTab(serverB);
 
-        await cubit.selectNextServer();
-        await pumpEventQueue();
+        cubit.selectNextServer();
 
+        expect(cubit.state.selectedTabId, firstTabId);
         expect(cubit.state.selectedServer, serverA);
         await cubit.close();
       });
 
-      test('selects the first server when no server is currently selected', () async {
-        final serverA = buildServer(name: 'A');
-        final serverB = buildServer(name: 'B');
-        final cubit = await buildSubject(servers: [serverA, serverB]);
-
-        expect(cubit.state.selectedServer, isNull);
-
-        await cubit.selectNextServer();
-        await pumpEventQueue();
-
-        expect(cubit.state.selectedServer, serverA);
-        await cubit.close();
-      });
-
-      test('does nothing when there are no servers', () async {
+      test('keeps the initial empty tab selected when it is the only tab', () async {
         final cubit = await buildSubject();
+        final tabId = cubit.state.selectedTabId;
 
-        await cubit.selectNextServer();
-        await pumpEventQueue();
+        cubit.selectNextServer();
 
+        expect(cubit.state.selectedTabId, tabId);
         expect(cubit.state.selectedServer, isNull);
         await cubit.close();
       });
     });
 
     group('selectPreviousServer', () {
-      test('selects the previous server in the list', () async {
+      test('selects the previous open tab', () async {
         final serverA = buildServer(name: 'A');
         final serverB = buildServer(name: 'B');
         final serverC = buildServer(name: 'C');
         final cubit = await buildSubject(servers: [serverA, serverB, serverC]);
 
-        await cubit.selectServer(serverC);
-        await pumpEventQueue();
+        cubit.selectServerForSelectedTab(serverA);
+        cubit.openTab();
+        cubit.selectServerForSelectedTab(serverB);
+        final secondTabId = cubit.state.selectedTabId!;
+        cubit.openTab();
+        cubit.selectServerForSelectedTab(serverC);
 
-        await cubit.selectPreviousServer();
-        await pumpEventQueue();
+        cubit.selectPreviousServer();
 
+        expect(cubit.state.selectedTabId, secondTabId);
         expect(cubit.state.selectedServer, serverB);
         await cubit.close();
       });
 
-      test('wraps around to the last server when at the start of the list', () async {
+      test('wraps around to the last open tab', () async {
         final serverA = buildServer(name: 'A');
         final serverB = buildServer(name: 'B');
         final cubit = await buildSubject(servers: [serverA, serverB]);
 
-        await cubit.selectServer(serverA);
-        await pumpEventQueue();
+        cubit.selectServerForSelectedTab(serverA);
+        cubit.openTab();
+        cubit.selectServerForSelectedTab(serverB);
+        final secondTabId = cubit.state.selectedTabId!;
+        cubit.selectTab(cubit.state.openTabs.first.id);
 
-        await cubit.selectPreviousServer();
-        await pumpEventQueue();
+        cubit.selectPreviousServer();
 
+        expect(cubit.state.selectedTabId, secondTabId);
         expect(cubit.state.selectedServer, serverB);
-        await cubit.close();
-      });
-
-      test('selects the last server when no server is currently selected', () async {
-        final serverA = buildServer(name: 'A');
-        final serverB = buildServer(name: 'B');
-        final cubit = await buildSubject(servers: [serverA, serverB]);
-
-        expect(cubit.state.selectedServer, isNull);
-
-        await cubit.selectPreviousServer();
-        await pumpEventQueue();
-
-        expect(cubit.state.selectedServer, serverB);
-        await cubit.close();
-      });
-
-      test('does nothing when there are no servers', () async {
-        final cubit = await buildSubject();
-
-        await cubit.selectPreviousServer();
-        await pumpEventQueue();
-
-        expect(cubit.state.selectedServer, isNull);
         await cubit.close();
       });
     });
