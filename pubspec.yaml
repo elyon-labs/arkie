@@ -3,4 +3,4 @@ name: cs2_rcon
 environment:
   sdk: '>=3.8.1 <4.0.0'
 dev_dependencies:
-  melos: ^6.1.0
+  melos: ^7.7.0
