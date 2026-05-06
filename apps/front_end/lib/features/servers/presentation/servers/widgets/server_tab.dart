@@ -15,9 +15,11 @@ class ServerTab extends StatelessWidget {
     return GestureDetector(
       onTap: () => context.read<ServersCubit>().selectServer(server),
       child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: context.sizes.unit * 2,
-          vertical: context.sizes.unit,
+        padding: EdgeInsets.only(
+          left: context.sizes.unit * 2,
+          top: context.sizes.unit,
+          bottom: context.sizes.unit,
+          right: context.sizes.unit / 2,
         ),
         margin: EdgeInsets.all(context.sizes.unit / 2),
         decoration: isSelected
@@ -33,7 +35,24 @@ class ServerTab extends StatelessWidget {
                   side: BorderSide(color: context.colors.selected),
                 ),
               ),
-        child: Text(server.name),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(server.name),
+            SizedBox(width: context.sizes.unit / 2),
+            SizedBox(
+              width: context.sizes.unit * 2,
+              height: context.sizes.unit * 2,
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                iconSize: context.sizes.unit * 1.5,
+                tooltip: 'Close tab',
+                onPressed: () => context.read<ServersCubit>().closeTab(server),
+                icon: Icon(context.icons.close),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
