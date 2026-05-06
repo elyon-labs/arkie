@@ -7,6 +7,8 @@ import 'package:cs2_rcon_front_end/features/rcon/data/connection_cache.dart';
 import 'package:cs2_rcon_front_end/features/servers/data/api/servers_api.dart';
 import 'package:cs2_rcon_front_end/features/servers/data/repository/servers_repository.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/servers/servers.dart';
+import 'package:cs2_rcon_front_end/features/servers/presentation/servers/widgets/server_shortcuts.dart';
+import 'package:cs2_rcon_front_end/features/servers/presentation/servers_cubit.dart';
 import 'package:cs2_rcon_front_end/features/settings/data/repository/settings_repository.dart';
 import 'package:cs2_rcon_front_end/hive/hive_registrar.g.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +43,10 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [BlocProvider(create: (_) => AppCubit.create())],
+      providers: [
+        BlocProvider(create: (_) => AppCubit.create()),
+        BlocProvider(create: (_) => ServersCubit.create()),
+      ],
       child: BlocBuilder<AppCubit, AppState>(
         builder: (context, state) {
           return Builder(
@@ -51,6 +56,8 @@ class MainApp extends StatelessWidget {
                 debugShowCheckedModeBanner: false,
                 theme: buildLightTheme(),
                 darkTheme: buildDarkTheme(),
+                builder: (context, child) =>
+                    ServerShortcuts(child: child ?? const SizedBox.shrink()),
                 home: const Servers(),
               );
             },

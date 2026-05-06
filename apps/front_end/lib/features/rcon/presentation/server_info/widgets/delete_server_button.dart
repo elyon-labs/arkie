@@ -1,5 +1,4 @@
 import 'package:cs2_rcon_front_end/features/rcon/presentation/rcon_cubit.dart';
-import 'package:cs2_rcon_front_end/features/servers/presentation/servers_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -8,13 +7,7 @@ class DeleteServerButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final selectedServerServer = context.select((ServersCubit cubit) => cubit.state.selectedServer);
-
-    if (selectedServerServer == null) {
-      return const SizedBox.shrink();
-    }
-
-    final server = selectedServerServer;
+    final server = context.select((RCONCubit cubit) => cubit.state.server);
     final dialogContext = context;
 
     return ElevatedButton(
