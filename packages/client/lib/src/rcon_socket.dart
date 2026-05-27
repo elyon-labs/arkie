@@ -69,7 +69,7 @@ class RCONSocket {
       // socket as closed so subsequent commands fail fast with a clear error.
       _connectionMonitor = _events.listen(
         null,
-        onError: (_) {},
+        onError: (Object e) => _logger.d('Connection monitor received error: $e'),
         onDone: () => _isClosed = true,
         cancelOnError: false,
       );
@@ -211,10 +211,12 @@ class RCONSocket {
 
   /// Closes the connection to the game server.
   Future<void> _close() async {
+    // Mark closed before awaiting to prevent new operations from starting
+    // during the close sequence.
+    _isClosed = true;
     await _connectionMonitor?.cancel();
     _connectionMonitor = null;
     await _socket.close();
-    _isClosed = true;
   }
 
   /// Enqueues a send action to ensure sequential execution.

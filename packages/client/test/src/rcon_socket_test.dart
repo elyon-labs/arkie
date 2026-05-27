@@ -245,10 +245,9 @@ void main() {
         // Simulate server restart by stopping it ungracefully.
         await server.stop();
 
-        // Allow time for the close to propagate through the stream.
-        await Future<void>.delayed(const Duration(milliseconds: 100));
-
         // The next command should fail with a SocketClosedException, not hang.
+        // `sendCommand` blocks waiting for a response; the close propagates during
+        // that wait, which resolves the pending firstWhere with a SocketClosedException.
         final afterDisconnectResult = await connection.sendCommand('status');
         expect(afterDisconnectResult.isErr(), isTrue);
         expect(afterDisconnectResult.unwrapErr(), isA<SocketClosedException>());
@@ -283,10 +282,8 @@ void main() {
         // Stop the server to simulate a restart.
         await server.stop();
 
-        // Allow time for the close to propagate through the stream.
-        await Future<void>.delayed(const Duration(milliseconds: 100));
-
         // Send multiple commands after disconnect; all should return Err, not hang.
+        // Each `sendCommand` blocks until the stream closes (resolving with SocketClosedException).
         final result1 = await connection.sendCommand('status');
         final result2 = await connection.sendCommand('status');
         final result3 = await connection.sendCommand('status');
