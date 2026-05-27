@@ -210,5 +210,91 @@ void main() {
         expect(sendResult.unwrapErr(), isA<SocketClosedException>());
       });
     });
+
+    group('server disconnection', () {
+      test('sendCommand returns Err when server closes connection unexpectedly', () async {
+        final server = FakeRCONServer(
+          address: InternetAddress.loopbackIPv4.address,
+          port: 27015,
+          password: 'test1234',
+          onClientPacket: (packet) async {
+            if (packet.type == ClientPacketType.SENTINEL) {
+              final commandParts = packet.body.split(' ');
+              return commandParts.lastOrNull ?? '';
+            }
+            return 'ok';
+          },
+        );
+
+        await server.start();
+        addTearDown(() async => server.stop());
+
+        final socket = RCONSocket(
+          hostAddress: InternetAddress.loopbackIPv4,
+          commandTimeout: const Duration(milliseconds: 500),
+          logLevel: LogLevel.none,
+        );
+        final connectResult = await socket.connect(password: 'test1234');
+        expect(connectResult.isOk(), isTrue);
+        final connection = connectResult.unwrap();
+
+        // Verify the connection works before the server stops.
+        final firstResult = await connection.sendCommand('status');
+        expect(firstResult.isOk(), isTrue);
+
+        // Simulate server restart by stopping it ungracefully.
+        await server.stop();
+
+        // Allow time for the close to propagate through the stream.
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+
+        // The next command should fail with a SocketClosedException, not hang.
+        final afterDisconnectResult = await connection.sendCommand('status');
+        expect(afterDisconnectResult.isErr(), isTrue);
+        expect(afterDisconnectResult.unwrapErr(), isA<SocketClosedException>());
+      });
+
+      test('multiple commands after server disconnect all return Err without cascade', () async {
+        final server = FakeRCONServer(
+          address: InternetAddress.loopbackIPv4.address,
+          port: 27015,
+          password: 'test1234',
+          onClientPacket: (packet) async {
+            if (packet.type == ClientPacketType.SENTINEL) {
+              final commandParts = packet.body.split(' ');
+              return commandParts.lastOrNull ?? '';
+            }
+            return 'ok';
+          },
+        );
+
+        await server.start();
+        addTearDown(() async => server.stop());
+
+        final socket = RCONSocket(
+          hostAddress: InternetAddress.loopbackIPv4,
+          commandTimeout: const Duration(milliseconds: 500),
+          logLevel: LogLevel.none,
+        );
+        final connectResult = await socket.connect(password: 'test1234');
+        expect(connectResult.isOk(), isTrue);
+        final connection = connectResult.unwrap();
+
+        // Stop the server to simulate a restart.
+        await server.stop();
+
+        // Allow time for the close to propagate through the stream.
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+
+        // Send multiple commands after disconnect; all should return Err, not hang.
+        final result1 = await connection.sendCommand('status');
+        final result2 = await connection.sendCommand('status');
+        final result3 = await connection.sendCommand('status');
+
+        expect(result1.isErr(), isTrue);
+        expect(result2.isErr(), isTrue);
+        expect(result3.isErr(), isTrue);
+      });
+    });
   });
 }

@@ -63,6 +63,11 @@ class RCONSocket {
       _socket = await Socket.connect(hostAddress, hostPort, timeout: connectTimeout);
       final rawEvents = _socket.asBroadcastStream();
       _events = RCONServerPacketStream(rawEvents).packets;
+
+      // Detect unexpected connection close (e.g. server restart) and mark the
+      // socket as closed so subsequent commands fail fast with a clear error.
+      _events.listen(null, onError: (_) {}, onDone: () => _isClosed = true, cancelOnError: false);
+
       final authRequestPacket = AuthorizationPacket(password);
 
       bool matchAuthResponsePacket(RCONServerPacket p) {
@@ -150,7 +155,7 @@ class RCONSocket {
       }
 
       if (fragments.isEmpty) {
-        throw StateError('Received empty response for command: $command');
+        throw Exception('Received empty response for command: $command');
       }
 
       // Combine all fragments into one logical response.
@@ -172,20 +177,29 @@ class RCONSocket {
     return Result.asyncOf(() async {
       _logger.t('Sending packet: $packet');
 
-      final responseFuture = _events.firstWhere(isMatch);
+      try {
+        final responseFuture = _events.firstWhere(isMatch);
 
-      _socket.add(packet.toBytes());
-      for (final extra in extraPackets) {
-        _socket.add(extra.toBytes());
+        _socket.add(packet.toBytes());
+        for (final extra in extraPackets) {
+          _socket.add(extra.toBytes());
+        }
+
+        return await responseFuture.timeout(
+          timeout ?? commandTimeout,
+          onTimeout: () {
+            _logger.e('Timeout waiting for response to packet: $packet');
+            throw CommandTimeoutException('Timeout waiting for response to packet: $packet');
+          },
+        );
+      } on StateError {
+        // StateError is thrown by Stream.firstWhere when the stream closes without
+        // a matching element, and by IOSink.add when the sink is already closed.
+        // Both indicate the connection was lost. Re-throw as a typed Exception so
+        // Result.asyncOf can capture it correctly.
+        _logger.e('Connection was closed while waiting for response to packet: $packet');
+        throw SocketClosedException('Connection was closed while waiting for server response');
       }
-
-      return await responseFuture.timeout(
-        timeout ?? commandTimeout,
-        onTimeout: () {
-          _logger.e('Timeout waiting for response to packet: $packet');
-          throw CommandTimeoutException('Timeout waiting for response to packet: $packet');
-        },
-      );
     });
   }
 
@@ -205,11 +219,15 @@ class RCONSocket {
     final previous = _sendQueue;
 
     _sendQueue = () async {
-      return Result.asyncOf<void, Exception>(() async {
-        // Await the previous send to ensure sequential execution.
+      // Await the previous send to ensure sequential execution.
+      // Errors are intentionally ignored here: each send manages its own error
+      // reporting via its own completer.
+      try {
         await previous;
+      } catch (_) {}
 
-        // Execute the current send action.
+      // Execute the current send action.
+      return Result.asyncOf<void, Exception>(() async {
         final result = await action();
 
         if (!completer.isCompleted) completer.complete(result);
