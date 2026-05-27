@@ -242,7 +242,7 @@ void main() {
         final firstResult = await connection.sendCommand('status');
         expect(firstResult.isOk(), isTrue);
 
-        // Simulate server restart by stopping it ungracefully.
+        // Simulate server closing the connection (e.g. a restart).
         await server.stop();
 
         // The next command should fail with a SocketClosedException, not hang.
@@ -279,7 +279,7 @@ void main() {
         expect(connectResult.isOk(), isTrue);
         final connection = connectResult.unwrap();
 
-        // Stop the server to simulate a restart.
+        // Stop the server to simulate a connection loss (e.g. server restart).
         await server.stop();
 
         // Send multiple commands after disconnect; all should return Err, not hang.

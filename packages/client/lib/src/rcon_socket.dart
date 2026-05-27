@@ -67,6 +67,9 @@ class RCONSocket {
 
       // Detect unexpected connection close (e.g. server restart) and mark the
       // socket as closed so subsequent commands fail fast with a clear error.
+      // The subscription is stored and cancelled in _close() to avoid a resource
+      // leak. Concurrent modification of _isClosed is safe because both _close()
+      // and this callback only ever set it to true.
       _connectionMonitor = _events.listen(
         null,
         onError: (Object e) => _logger.d('Connection monitor received error: $e'),
@@ -199,10 +202,10 @@ class RCONSocket {
           },
         );
       } on StateError {
-        // StateError is thrown by Stream.firstWhere when the stream closes without
-        // a matching element, and by IOSink.add when the sink is already closed.
-        // Both indicate the connection was lost. Re-throw as a typed Exception so
-        // Result.asyncOf can capture it correctly.
+        // StateError is thrown in two scenarios here, both indicating a lost connection:
+        // - Stream.firstWhere throws when the stream closes before a match is found.
+        // - IOSink.add throws when writing to a closed socket.
+        // Re-throw as a typed Exception so Result.asyncOf can capture it correctly.
         _logger.e('Connection was closed while waiting for response to packet: $packet');
         throw SocketClosedException('Connection was closed while waiting for server response');
       }
