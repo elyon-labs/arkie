@@ -52,6 +52,7 @@ class RCONSocket {
   final Logger _logger;
 
   var _isClosed = false;
+  StreamSubscription<RCONServerPacket>? _connectionMonitor;
 
   /// Queue to ensure sequential sending of packets. Start with an immediately completing
   /// future.
@@ -66,7 +67,12 @@ class RCONSocket {
 
       // Detect unexpected connection close (e.g. server restart) and mark the
       // socket as closed so subsequent commands fail fast with a clear error.
-      _events.listen(null, onError: (_) {}, onDone: () => _isClosed = true, cancelOnError: false);
+      _connectionMonitor = _events.listen(
+        null,
+        onError: (_) {},
+        onDone: () => _isClosed = true,
+        cancelOnError: false,
+      );
 
       final authRequestPacket = AuthorizationPacket(password);
 
@@ -205,6 +211,8 @@ class RCONSocket {
 
   /// Closes the connection to the game server.
   Future<void> _close() async {
+    await _connectionMonitor?.cancel();
+    _connectionMonitor = null;
     await _socket.close();
     _isClosed = true;
   }
@@ -224,7 +232,9 @@ class RCONSocket {
       // reporting via its own completer.
       try {
         await previous;
-      } catch (_) {}
+      } catch (e) {
+        _logger.d('Ignored error from previous queued send: $e');
+      }
 
       // Execute the current send action.
       return Result.asyncOf<void, Exception>(() async {
