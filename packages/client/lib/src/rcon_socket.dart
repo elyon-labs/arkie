@@ -211,6 +211,8 @@ class RCONSocket {
 
   /// Closes the connection to the game server.
   Future<void> _close() async {
+    // Guard against concurrent or repeated calls.
+    if (_isClosed) return;
     // Mark closed before awaiting to prevent new operations from starting
     // during the close sequence.
     _isClosed = true;

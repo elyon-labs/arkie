@@ -283,14 +283,18 @@ void main() {
         await server.stop();
 
         // Send multiple commands after disconnect; all should return Err, not hang.
-        // Each `sendCommand` blocks until the stream closes (resolving with SocketClosedException).
+        // The commandTimeout (500ms) acts as a safety bound if the stream close
+        // propagates slower than expected.
         final result1 = await connection.sendCommand('status');
         final result2 = await connection.sendCommand('status');
         final result3 = await connection.sendCommand('status');
 
         expect(result1.isErr(), isTrue);
+        expect(result1.unwrapErr(), isA<SocketClosedException>());
         expect(result2.isErr(), isTrue);
+        expect(result2.unwrapErr(), isA<SocketClosedException>());
         expect(result3.isErr(), isTrue);
+        expect(result3.unwrapErr(), isA<SocketClosedException>());
       });
     });
   });
