@@ -29,6 +29,8 @@ class FakeRCONServer {
   final String address;
   final int port;
 
+  int get clientCount => _clients.length;
+
   // Callback to handle custom command responses
   HandleClientPacket? onClientPacket;
 

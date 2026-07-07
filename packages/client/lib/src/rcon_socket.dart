@@ -52,6 +52,7 @@ class RCONSocket {
   final Logger _logger;
 
   var _isClosed = false;
+  StreamSubscription<RCONServerPacket>? _connectionMonitor;
 
   /// Queue to ensure sequential sending of packets. Start with an immediately completing
   /// future.
@@ -63,6 +64,19 @@ class RCONSocket {
       _socket = await Socket.connect(hostAddress, hostPort, timeout: connectTimeout);
       final rawEvents = _socket.asBroadcastStream();
       _events = RCONServerPacketStream(rawEvents).packets;
+
+      // Detect unexpected connection close (e.g. server restart) and mark the
+      // socket as closed so subsequent commands fail fast with a clear error.
+      // The subscription is stored and cancelled in _close() to avoid a resource
+      // leak. Concurrent modification of _isClosed is safe because both _close()
+      // and this callback only ever set it to true.
+      _connectionMonitor = _events.listen(
+        null,
+        onError: (Object e) => _logger.d('Connection monitor received error: $e'),
+        onDone: () => _isClosed = true,
+        cancelOnError: false,
+      );
+
       final authRequestPacket = AuthorizationPacket(password);
 
       bool matchAuthResponsePacket(RCONServerPacket p) {
@@ -71,30 +85,35 @@ class RCONSocket {
         return p.id == authRequestPacket.id || p.id == AuthorizationPacket.invalidAuthId;
       }
 
-      final packetResponse = await _sendPacket(
-        authRequestPacket,
-        isMatch: matchAuthResponsePacket,
-        timeout: connectTimeout,
-      );
+      try {
+        final packetResponse = await _sendPacket(
+          authRequestPacket,
+          isMatch: matchAuthResponsePacket,
+          timeout: connectTimeout,
+        );
 
-      _logger.t('Auth response: $packetResponse');
+        _logger.t('Auth response: $packetResponse');
 
-      return switch (packetResponse) {
-        Ok<RCONServerPacket, Exception>(:final value) => () {
-          if (value.id == AuthorizationPacket.invalidAuthId) {
-            throw AuthorizationException('Invalid RCON password provided');
-          } else {
-            _isClosed = false;
-            _logger.i('Successfully authenticated with RCON server at $hostAddress:$hostPort');
-            final connection = RCONConnection(
-              sendCommand: _sendCommandWithSentinel,
-              closeConnection: _close,
-            );
-            return connection;
-          }
-        }(),
-        Err<RCONServerPacket, Exception>(:final error) => throw error,
-      };
+        return switch (packetResponse) {
+          Ok<RCONServerPacket, Exception>(:final value) => () {
+            if (value.id == AuthorizationPacket.invalidAuthId) {
+              throw AuthorizationException('Invalid RCON password provided');
+            } else {
+              _isClosed = false;
+              _logger.i('Successfully authenticated with RCON server at $hostAddress:$hostPort');
+              final connection = RCONConnection(
+                sendCommand: _sendCommandWithSentinel,
+                closeConnection: _close,
+              );
+              return connection;
+            }
+          }(),
+          Err<RCONServerPacket, Exception>(:final error) => throw error,
+        };
+      } catch (_) {
+        await _disposeConnection();
+        rethrow;
+      }
     });
   }
 
@@ -150,7 +169,7 @@ class RCONSocket {
       }
 
       if (fragments.isEmpty) {
-        throw StateError('Received empty response for command: $command');
+        throw Exception('Received empty response for command: $command');
       }
 
       // Combine all fragments into one logical response.
@@ -172,11 +191,19 @@ class RCONSocket {
     return Result.asyncOf(() async {
       _logger.t('Sending packet: $packet');
 
-      final responseFuture = _events.firstWhere(isMatch);
+      final responseFuture = _events.firstWhere(
+        isMatch,
+        orElse: () {
+          // firstWhere's default empty-stream error is a StateError, which
+          // Result.asyncOf<T, Exception> does not catch.
+          _logger.e('Connection was closed while waiting for response to packet: $packet');
+          throw SocketClosedException('Connection was closed while waiting for server response');
+        },
+      );
 
-      _socket.add(packet.toBytes());
+      _addPacket(packet, packet);
       for (final extra in extraPackets) {
-        _socket.add(extra.toBytes());
+        _addPacket(extra, packet);
       }
 
       return await responseFuture.timeout(
@@ -189,10 +216,33 @@ class RCONSocket {
     });
   }
 
+  void _addPacket(RCONPacket packet, RCONClientPacket requestPacket) {
+    try {
+      _socket.add(packet.toBytes());
+    } catch (error) {
+      if (error is StateError) {
+        _logger.e('Connection was closed while sending packet: $requestPacket');
+        throw SocketClosedException('Connection was closed while sending packet');
+      }
+
+      rethrow;
+    }
+  }
+
   /// Closes the connection to the game server.
   Future<void> _close() async {
-    await _socket.close();
+    // Guard against concurrent or repeated calls.
+    if (_isClosed && _connectionMonitor == null) return;
+    await _disposeConnection();
+  }
+
+  Future<void> _disposeConnection() async {
+    // Mark closed before awaiting to prevent new operations from starting
+    // during the close sequence.
     _isClosed = true;
+    await _connectionMonitor?.cancel();
+    _connectionMonitor = null;
+    await _socket.close();
   }
 
   /// Enqueues a send action to ensure sequential execution.
@@ -205,11 +255,17 @@ class RCONSocket {
     final previous = _sendQueue;
 
     _sendQueue = () async {
-      return Result.asyncOf<void, Exception>(() async {
-        // Await the previous send to ensure sequential execution.
+      // Await the previous send to ensure sequential execution.
+      // Errors are intentionally ignored here: each send manages its own error
+      // reporting via its own completer.
+      try {
         await previous;
+      } catch (e) {
+        _logger.d('Ignored error from previous queued send: $e');
+      }
 
-        // Execute the current send action.
+      // Execute the current send action.
+      return Result.asyncOf<void, Exception>(() async {
         final result = await action();
 
         if (!completer.isCompleted) completer.complete(result);
