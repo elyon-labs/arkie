@@ -2,6 +2,9 @@
 
 source "https://rubygems.org"
 
-gem 'cocoapods'
+ruby "3.3.6"
+
+gem "abbrev"
+gem "cocoapods"
 gem "bundler", "~> 2.7.2"
-gem 'fastlane', "~> 2.228.0"
+gem "fastlane", "~> 2.228.0"

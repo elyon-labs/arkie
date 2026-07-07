@@ -5,6 +5,7 @@ GEM
       base64
       nkf
       rexml
+    abbrev (0.1.2)
     activesupport (7.2.2)
       base64
       benchmark (>= 0.3)
@@ -296,9 +297,13 @@ PLATFORMS
   arm64-darwin-25
 
 DEPENDENCIES
+  abbrev
   bundler (~> 2.7.2)
   cocoapods
   fastlane (~> 2.228.0)
+
+RUBY VERSION
+   ruby 3.3.6p108
 
 BUNDLED WITH
    2.7.2
