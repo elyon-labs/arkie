@@ -186,30 +186,42 @@ class RCONSocket {
     return Result.asyncOf(() async {
       _logger.t('Sending packet: $packet');
 
-      try {
-        final responseFuture = _events.firstWhere(isMatch);
+      final responseFuture = _events.firstWhere(
+        isMatch,
+        orElse: () {
+          // firstWhere's default empty-stream error is a StateError, which
+          // Result.asyncOf<T, Exception> does not catch.
+          _logger.e('Connection was closed while waiting for response to packet: $packet');
+          throw SocketClosedException('Connection was closed while waiting for server response');
+        },
+      );
 
-        _socket.add(packet.toBytes());
-        for (final extra in extraPackets) {
-          _socket.add(extra.toBytes());
-        }
-
-        return await responseFuture.timeout(
-          timeout ?? commandTimeout,
-          onTimeout: () {
-            _logger.e('Timeout waiting for response to packet: $packet');
-            throw CommandTimeoutException('Timeout waiting for response to packet: $packet');
-          },
-        );
-      } on StateError {
-        // StateError is thrown in two scenarios here, both indicating a lost connection:
-        // - Stream.firstWhere throws when the stream closes before a match is found.
-        // - IOSink.add throws when writing to a closed socket.
-        // Re-throw as a typed Exception so Result.asyncOf can capture it correctly.
-        _logger.e('Connection was closed while waiting for response to packet: $packet');
-        throw SocketClosedException('Connection was closed while waiting for server response');
+      _addPacket(packet, packet);
+      for (final extra in extraPackets) {
+        _addPacket(extra, packet);
       }
+
+      return await responseFuture.timeout(
+        timeout ?? commandTimeout,
+        onTimeout: () {
+          _logger.e('Timeout waiting for response to packet: $packet');
+          throw CommandTimeoutException('Timeout waiting for response to packet: $packet');
+        },
+      );
     });
+  }
+
+  void _addPacket(RCONPacket packet, RCONClientPacket requestPacket) {
+    try {
+      _socket.add(packet.toBytes());
+    } catch (error) {
+      if (error is StateError) {
+        _logger.e('Connection was closed while sending packet: $requestPacket');
+        throw SocketClosedException('Connection was closed while sending packet');
+      }
+
+      rethrow;
+    }
   }
 
   /// Closes the connection to the game server.
