@@ -55,6 +55,33 @@ void main() {
         expect(result.unwrapErr(), isA<AuthorizationException>());
       });
 
+      test('closes the socket when authentication fails', () async {
+        final server = FakeRCONServer(
+          address: InternetAddress.loopbackIPv4.address,
+          port: 27015,
+          password: 'test1234',
+        );
+
+        await server.start();
+
+        addTearDown(() async {
+          await server.stop();
+        });
+
+        final socket = RCONSocket(
+          hostAddress: InternetAddress.loopbackIPv4,
+          logLevel: LogLevel.none,
+        );
+        final result = await socket.connect(password: 'wrongpassword');
+
+        expect(result.isErr(), isTrue);
+        expect(result.unwrapErr(), isA<AuthorizationException>());
+
+        await pumpEventQueue();
+
+        expect(server.clientCount, 0);
+      });
+
       test('returns Err when connection times out', () async {
         final server = FakeRCONServer(
           address: InternetAddress.loopbackIPv4.address,

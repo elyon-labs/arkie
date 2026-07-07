@@ -85,30 +85,35 @@ class RCONSocket {
         return p.id == authRequestPacket.id || p.id == AuthorizationPacket.invalidAuthId;
       }
 
-      final packetResponse = await _sendPacket(
-        authRequestPacket,
-        isMatch: matchAuthResponsePacket,
-        timeout: connectTimeout,
-      );
+      try {
+        final packetResponse = await _sendPacket(
+          authRequestPacket,
+          isMatch: matchAuthResponsePacket,
+          timeout: connectTimeout,
+        );
 
-      _logger.t('Auth response: $packetResponse');
+        _logger.t('Auth response: $packetResponse');
 
-      return switch (packetResponse) {
-        Ok<RCONServerPacket, Exception>(:final value) => () {
-          if (value.id == AuthorizationPacket.invalidAuthId) {
-            throw AuthorizationException('Invalid RCON password provided');
-          } else {
-            _isClosed = false;
-            _logger.i('Successfully authenticated with RCON server at $hostAddress:$hostPort');
-            final connection = RCONConnection(
-              sendCommand: _sendCommandWithSentinel,
-              closeConnection: _close,
-            );
-            return connection;
-          }
-        }(),
-        Err<RCONServerPacket, Exception>(:final error) => throw error,
-      };
+        return switch (packetResponse) {
+          Ok<RCONServerPacket, Exception>(:final value) => () {
+            if (value.id == AuthorizationPacket.invalidAuthId) {
+              throw AuthorizationException('Invalid RCON password provided');
+            } else {
+              _isClosed = false;
+              _logger.i('Successfully authenticated with RCON server at $hostAddress:$hostPort');
+              final connection = RCONConnection(
+                sendCommand: _sendCommandWithSentinel,
+                closeConnection: _close,
+              );
+              return connection;
+            }
+          }(),
+          Err<RCONServerPacket, Exception>(:final error) => throw error,
+        };
+      } catch (_) {
+        await _disposeConnection();
+        rethrow;
+      }
     });
   }
 
@@ -227,7 +232,11 @@ class RCONSocket {
   /// Closes the connection to the game server.
   Future<void> _close() async {
     // Guard against concurrent or repeated calls.
-    if (_isClosed) return;
+    if (_isClosed && _connectionMonitor == null) return;
+    await _disposeConnection();
+  }
+
+  Future<void> _disposeConnection() async {
     // Mark closed before awaiting to prevent new operations from starting
     // during the close sequence.
     _isClosed = true;
