@@ -12,6 +12,10 @@ class ChangeMap {
   final RCONConnection _connection;
 
   Future<Result<RCONServerPacket, Exception>> call(CS2Map map) {
-    return _connection.sendCommand('map ${map.name}');
+    final command = switch (map) {
+      WorkshopMap(:final workshopId) => 'host_workshop_map $workshopId',
+      KnownMap(:final name) => 'map $name',
+    };
+    return _connection.sendCommand(command);
   }
 }

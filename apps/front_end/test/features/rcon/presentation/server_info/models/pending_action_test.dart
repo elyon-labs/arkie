@@ -58,12 +58,20 @@ void main() {
     });
 
     group('PendingMapChange', () {
-      test('description includes map name', () {
+      test('description includes map display name', () {
         const map = KnownMap(name: 'de_inferno', assetName: 'de_inferno');
 
         const action = PendingMapChange(map);
 
         expect(action.description, 'Changing map to de_inferno');
+      });
+
+      test('description uses workshop map display name', () {
+        final map = WorkshopMap.directory.first;
+
+        final action = PendingMapChange(map);
+
+        expect(action.description, 'Changing map to AWP India');
       });
     });
   });

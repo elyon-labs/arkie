@@ -20,12 +20,30 @@ void main() {
       );
 
       final changeMap = ChangeMap(connection: connection);
-      const map = KnownMap(name: 'de_dust2', assetName: 'de_dust2.png');
+      const map = KnownMap(name: 'de_dust2', assetName: 'de_dust2');
 
       await changeMap(map);
 
       final command = await commandCompleter.future;
       expect(command, 'map de_dust2');
+    });
+
+    test('it invokes `host_workshop_map` with the workshop id for workshop maps', () async {
+      final commandCompleter = Completer<String>();
+      final connection = FakeRCONConnection(
+        onSendCommand: (c) {
+          commandCompleter.complete(c);
+          return Future.value(Ok(RCONServerPacket.responseValue(id: 1, body: 'OK')));
+        },
+      );
+
+      final changeMap = ChangeMap(connection: connection);
+      final map = WorkshopMap.directory.first;
+
+      await changeMap(map);
+
+      final command = await commandCompleter.future;
+      expect(command, 'host_workshop_map ${map.workshopId}');
     });
   });
 }

@@ -17,7 +17,7 @@ class MapItem extends StatelessWidget {
         onTap?.call(map);
       },
       child: Tooltip(
-        message: map.name,
+        message: map.displayName,
         child: Badge(
           padding: EdgeInsets.zero,
           smallSize: context.sizes.unit * 1,
@@ -38,7 +38,7 @@ class MapItem extends StatelessWidget {
                     SizedBox(
                       width: 48,
                       height: 48,
-                      child: Image.asset('assets/maps/${map.assetName}.png', fit: BoxFit.fitHeight),
+                      child: Image.asset(map.assetPath, fit: BoxFit.fitHeight),
                     ),
                     Flexible(
                       child: Row(
@@ -46,7 +46,11 @@ class MapItem extends StatelessWidget {
                         mainAxisSize: MainAxisSize.max,
                         children: [
                           Flexible(
-                            child: Text(map.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+                            child: Text(
+                              map.displayName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                         ],
                       ),
