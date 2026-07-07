@@ -33,5 +33,5 @@ final class PendingMapChange extends PendingAction {
   final CS2Map map;
 
   @override
-  String get description => 'Changing map to ${map.name}';
+  String get description => 'Changing map to ${map.displayName}';
 }

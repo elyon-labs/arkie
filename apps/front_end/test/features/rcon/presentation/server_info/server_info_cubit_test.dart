@@ -72,6 +72,7 @@ void main() {
 
         expect(sentCommands, containsAll(['maps *', 'status', 'status_json']));
         expect(cubit.state.maps, contains(map));
+        expect(cubit.state.workshopMaps, WorkshopMap.directory);
         expect(cubit.state.status, isA<Loaded<ServerStatus>>());
       });
     });

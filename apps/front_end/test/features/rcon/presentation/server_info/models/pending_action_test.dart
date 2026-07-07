@@ -58,12 +58,26 @@ void main() {
     });
 
     group('PendingMapChange', () {
-      test('description includes map name', () {
+      test('description includes map display name', () {
         const map = KnownMap(name: 'de_inferno', assetName: 'de_inferno');
 
         const action = PendingMapChange(map);
 
         expect(action.description, 'Changing map to de_inferno');
+      });
+
+      test('description uses workshop map display name', () {
+        const map = WorkshopMap(
+          name: 'review-map',
+          assetName: 'workshop_review_map',
+          slug: 'review-map',
+          workshopId: '1',
+          displayName: 'Review Map',
+        );
+
+        const action = PendingMapChange(map);
+
+        expect(action.description, 'Changing map to Review Map');
       });
     });
   });
