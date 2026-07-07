@@ -9,13 +9,24 @@ part 'server_info_state.mapper.dart';
 
 @MappableClass()
 class ServerInfoState with ServerInfoStateMappable {
-  ServerInfoState({required this.status, required this.maps, required this.pendingAction});
+  ServerInfoState({
+    required this.status,
+    required this.maps,
+    required this.workshopMaps,
+    required this.pendingAction,
+  });
 
   factory ServerInfoState.initial() {
-    return ServerInfoState(status: const Loading(), maps: [], pendingAction: const None());
+    return ServerInfoState(
+      status: const Loading(),
+      maps: [],
+      workshopMaps: WorkshopMap.directory,
+      pendingAction: const None(),
+    );
   }
 
   final Async<ServerStatus> status;
   final List<CS2Map> maps;
+  final List<WorkshopMap> workshopMaps;
   final Option<PendingAction> pendingAction;
 }

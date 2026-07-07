@@ -67,11 +67,17 @@ void main() {
       });
 
       test('description uses workshop map display name', () {
-        final map = WorkshopMap.directory.first;
+        const map = WorkshopMap(
+          name: 'review-map',
+          assetName: 'workshop_review_map',
+          slug: 'review-map',
+          workshopId: '1',
+          displayName: 'Review Map',
+        );
 
-        final action = PendingMapChange(map);
+        const action = PendingMapChange(map);
 
-        expect(action.description, 'Changing map to AWP India');
+        expect(action.description, 'Changing map to Review Map');
       });
     });
   });

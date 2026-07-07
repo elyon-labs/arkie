@@ -32,6 +32,9 @@ class ServerInfoStateMapper extends ClassMapperBase<ServerInfoState> {
     'maps',
     _$maps,
   );
+  static List<WorkshopMap> _$workshopMaps(ServerInfoState v) => v.workshopMaps;
+  static const Field<ServerInfoState, List<WorkshopMap>> _f$workshopMaps =
+      Field('workshopMaps', _$workshopMaps);
   static Option<PendingAction> _$pendingAction(ServerInfoState v) =>
       v.pendingAction;
   static const Field<ServerInfoState, Option<PendingAction>> _f$pendingAction =
@@ -41,6 +44,7 @@ class ServerInfoStateMapper extends ClassMapperBase<ServerInfoState> {
   final MappableFields<ServerInfoState> fields = const {
     #status: _f$status,
     #maps: _f$maps,
+    #workshopMaps: _f$workshopMaps,
     #pendingAction: _f$pendingAction,
   };
 
@@ -48,6 +52,7 @@ class ServerInfoStateMapper extends ClassMapperBase<ServerInfoState> {
     return ServerInfoState(
       status: data.dec(_f$status),
       maps: data.dec(_f$maps),
+      workshopMaps: data.dec(_f$workshopMaps),
       pendingAction: data.dec(_f$pendingAction),
     );
   }
@@ -115,9 +120,12 @@ extension ServerInfoStateValueCopy<$R, $Out>
 abstract class ServerInfoStateCopyWith<$R, $In extends ServerInfoState, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
   ListCopyWith<$R, CS2Map, ObjectCopyWith<$R, CS2Map, CS2Map>> get maps;
+  ListCopyWith<$R, WorkshopMap, ObjectCopyWith<$R, WorkshopMap, WorkshopMap>>
+  get workshopMaps;
   $R call({
     Async<ServerStatus>? status,
     List<CS2Map>? maps,
+    List<WorkshopMap>? workshopMaps,
     Option<PendingAction>? pendingAction,
   });
   ServerInfoStateCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
@@ -141,14 +149,23 @@ class _ServerInfoStateCopyWithImpl<$R, $Out>
         (v) => call(maps: v),
       );
   @override
+  ListCopyWith<$R, WorkshopMap, ObjectCopyWith<$R, WorkshopMap, WorkshopMap>>
+  get workshopMaps => ListCopyWith(
+    $value.workshopMaps,
+    (v, t) => ObjectCopyWith(v, $identity, t),
+    (v) => call(workshopMaps: v),
+  );
+  @override
   $R call({
     Async<ServerStatus>? status,
     List<CS2Map>? maps,
+    List<WorkshopMap>? workshopMaps,
     Option<PendingAction>? pendingAction,
   }) => $apply(
     FieldCopyWithData({
       if (status != null) #status: status,
       if (maps != null) #maps: maps,
+      if (workshopMaps != null) #workshopMaps: workshopMaps,
       if (pendingAction != null) #pendingAction: pendingAction,
     }),
   );
@@ -156,6 +173,7 @@ class _ServerInfoStateCopyWithImpl<$R, $Out>
   ServerInfoState $make(CopyWithData data) => ServerInfoState(
     status: data.get(#status, or: $value.status),
     maps: data.get(#maps, or: $value.maps),
+    workshopMaps: data.get(#workshopMaps, or: $value.workshopMaps),
     pendingAction: data.get(#pendingAction, or: $value.pendingAction),
   );
 

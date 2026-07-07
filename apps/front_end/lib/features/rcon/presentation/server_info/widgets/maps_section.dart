@@ -15,7 +15,7 @@ class MapsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final maps = context.select((ServerInfoCubit cubit) => cubit.state.maps);
-    final workshopMaps = WorkshopMap.directory;
+    final workshopMaps = context.select((ServerInfoCubit cubit) => cubit.state.workshopMaps);
     final currentMap = context.select(
       (ServerInfoCubit cubit) => switch (cubit.state.status) {
         Loaded(:final value) => value.map,
