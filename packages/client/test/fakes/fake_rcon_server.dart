@@ -119,8 +119,6 @@ class FakeRCONServer {
 
     try {
       client.add(buffer.toBytes());
-    } on StateError {
-      // The test server can race with client shutdown in disconnect tests.
     } on SocketException {
       // The socket may already be closed by the time an async response is sent.
     }
