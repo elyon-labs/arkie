@@ -113,7 +113,17 @@ class FakeRCONServer {
       ..add(bodyBytes)
       ..add([0, 0]); // Two null terminators
 
-    client.add(buffer.toBytes());
+    if (!_clients.contains(client)) {
+      return;
+    }
+
+    try {
+      client.add(buffer.toBytes());
+    } on StateError {
+      // The test server can race with client shutdown in disconnect tests.
+    } on SocketException {
+      // The socket may already be closed by the time an async response is sent.
+    }
   }
 }
 

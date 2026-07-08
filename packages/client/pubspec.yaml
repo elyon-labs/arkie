@@ -4,7 +4,9 @@ version: 0.0.1
 repository: https://github.com/elyon-labs/arkie
 
 environment:
-    sdk: '>=3.8.1 <4.0.0'
+    sdk: '>=3.9.0 <4.0.0'
+
+resolution: workspace
 
 dependencies:
   logger: ^2.6.2

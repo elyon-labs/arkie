@@ -4,7 +4,7 @@ Thanks for helping improve CS2 RCON. This repository is the public source tree, 
 
 ## Local setup
 
-1. Install Flutter 3.35.7 or newer with Dart 3.8.1 or newer.
+1. Install Flutter 3.35.7 or newer with Dart 3.9.0 or newer.
 2. Install Melos:
 
 ```bash

@@ -11,7 +11,7 @@
 
 ## Requirements
 
-- Dart SDK ≥3.8.1 (ships with Flutter 3.24+).
+- Dart SDK >=3.9.0 (ships with Flutter 3.35.7+).
 - Network access to the CS2 server’s RCON port (default `27015`).
 
 ## Running from the repo
