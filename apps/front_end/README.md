@@ -12,7 +12,7 @@
 
 ## Requirements
 
-- Flutter 3.24+ (which includes Dart ≥3.8.1) with your target desktop platform enabled (`flutter config --enable-macos-desktop`, etc.).
+- Flutter 3.35.7+ (which includes Dart >=3.9.0) with your target desktop platform enabled (`flutter config --enable-macos-desktop`, etc.).
 - Access to a CS2 server with RCON enabled and reachable from your machine (default port `27015`).
 - The monorepo bootstrapped with Melos so the local path dependency on `../packages/client` can be resolved.
 

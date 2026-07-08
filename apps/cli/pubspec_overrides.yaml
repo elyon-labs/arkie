@@ -1,4 +1,0 @@
-# melos_managed_dependency_overrides: cs2_rcon_client
-dependency_overrides:
-  cs2_rcon_client:
-    path: ../../packages/client

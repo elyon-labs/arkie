@@ -38,7 +38,7 @@ CS2 RCON is a Melos-managed Dart/Flutter monorepo for experimenting with Counter
 
 ## Getting started
 
-1. Install Flutter 3.24+ (which ships with Dart ≥3.8.1). Desktop targets must be enabled for the platforms you want to run (`flutter config --enable-<platform>-desktop`).
+1. Install Flutter 3.35.7+ (which ships with Dart >=3.9.0). Desktop targets must be enabled for the platforms you want to run (`flutter config --enable-<platform>-desktop`).
 2. Install Melos once: `dart pub global activate melos`.
 3. Bootstrap the workspace from the repo root:
 
@@ -50,7 +50,7 @@ This runs `flutter pub get`/`dart pub get` for every package and wires up path d
 
 ### Common Melos scripts
 
-All scripts are defined in [`melos.yaml`](melos.yaml):
+All scripts are defined in the `melos` section of [`pubspec.yaml`](pubspec.yaml):
 
 | Command                                                      | Purpose                                                                                 |
 | ------------------------------------------------------------ | --------------------------------------------------------------------------------------- |

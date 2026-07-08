@@ -1,4 +1,5 @@
 .dart_tool/
+pubspec_overrides.yaml
 
 # Mise
 mise.local.toml

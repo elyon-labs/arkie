@@ -7,7 +7,6 @@ on:
       - "**/*.dart"
       - "**/pubspec.yaml"
       - "**/pubspec.lock"
-      - "melos.yaml"
       - ".github/workflows/pull_request_checks.yml"
 
 permissions:
