@@ -1,5 +1,6 @@
 import 'package:cs2_rcon_front_end/di/graph.dart';
 import 'package:cs2_rcon_front_end/features/servers/data/models/server.dart';
+import 'package:cs2_rcon_front_end/features/servers/data/models/server_management_config.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:oxidized/oxidized.dart';
 
@@ -17,9 +18,10 @@ class ServersApi {
     required String address,
     required int port,
     required String password,
+    ServerManagementConfig? managementConfig,
   }) async {
     return Result.asyncOf(() async {
-      final server = Server.create(name: name, address: address, port: port, password: password);
+      final server = Server.create(name: name, address: address, port: port, password: password, managementConfig: managementConfig);
       await _box.put(server.id, server);
       return server;
     });

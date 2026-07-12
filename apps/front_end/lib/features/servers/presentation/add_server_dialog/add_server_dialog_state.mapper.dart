@@ -45,6 +45,19 @@ class AddServerDialogStateMapper extends ClassMapperBase<AddServerDialogState> {
     _$password,
   );
 
+  static bool _$enableManagement(AddServerDialogState v) => v.enableManagement;
+  static const Field<AddServerDialogState, bool> _f$enableManagement = Field('enableManagement', _$enableManagement, opt: true, def: false);
+  static String _$sshHost(AddServerDialogState v) => v.sshHost;
+  static const Field<AddServerDialogState, String> _f$sshHost = Field('sshHost', _$sshHost, opt: true, def: '');
+  static int _$sshPort(AddServerDialogState v) => v.sshPort;
+  static const Field<AddServerDialogState, int> _f$sshPort = Field('sshPort', _$sshPort, opt: true, def: 22);
+  static String _$sshUser(AddServerDialogState v) => v.sshUser;
+  static const Field<AddServerDialogState, String> _f$sshUser = Field('sshUser', _$sshUser, opt: true, def: 'arkie-cs2');
+  static String _$privateKeyPath(AddServerDialogState v) => v.privateKeyPath;
+  static const Field<AddServerDialogState, String> _f$privateKeyPath = Field('privateKeyPath', _$privateKeyPath, opt: true, def: '');
+  static String _$hostKeyFingerprint(AddServerDialogState v) => v.hostKeyFingerprint;
+  static const Field<AddServerDialogState, String> _f$hostKeyFingerprint = Field('hostKeyFingerprint', _$hostKeyFingerprint, opt: true, def: '');
+
   @override
   final MappableFields<AddServerDialogState> fields = const {
     #addServerResult: _f$addServerResult,
@@ -52,6 +65,12 @@ class AddServerDialogStateMapper extends ClassMapperBase<AddServerDialogState> {
     #address: _f$address,
     #port: _f$port,
     #password: _f$password,
+    #enableManagement: _f$enableManagement,
+    #sshHost: _f$sshHost,
+    #sshPort: _f$sshPort,
+    #sshUser: _f$sshUser,
+    #privateKeyPath: _f$privateKeyPath,
+    #hostKeyFingerprint: _f$hostKeyFingerprint,
   };
 
   static AddServerDialogState _instantiate(DecodingData data) {
@@ -61,6 +80,12 @@ class AddServerDialogStateMapper extends ClassMapperBase<AddServerDialogState> {
       address: data.dec(_f$address),
       port: data.dec(_f$port),
       password: data.dec(_f$password),
+      enableManagement: data.dec(_f$enableManagement),
+      sshHost: data.dec(_f$sshHost),
+      sshPort: data.dec(_f$sshPort),
+      sshUser: data.dec(_f$sshUser),
+      privateKeyPath: data.dec(_f$privateKeyPath),
+      hostKeyFingerprint: data.dec(_f$hostKeyFingerprint),
     );
   }
 
@@ -140,6 +165,12 @@ abstract class AddServerDialogStateCopyWith<
     String? address,
     int? port,
     String? password,
+    bool? enableManagement,
+    String? sshHost,
+    int? sshPort,
+    String? sshUser,
+    String? privateKeyPath,
+    String? hostKeyFingerprint,
   });
   AddServerDialogStateCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
@@ -161,6 +192,12 @@ class _AddServerDialogStateCopyWithImpl<$R, $Out>
     String? address,
     int? port,
     String? password,
+    bool? enableManagement,
+    String? sshHost,
+    int? sshPort,
+    String? sshUser,
+    String? privateKeyPath,
+    String? hostKeyFingerprint,
   }) => $apply(
     FieldCopyWithData({
       if (addServerResult != null) #addServerResult: addServerResult,
@@ -168,6 +205,12 @@ class _AddServerDialogStateCopyWithImpl<$R, $Out>
       if (address != null) #address: address,
       if (port != null) #port: port,
       if (password != null) #password: password,
+      if (enableManagement != null) #enableManagement: enableManagement,
+      if (sshHost != null) #sshHost: sshHost,
+      if (sshPort != null) #sshPort: sshPort,
+      if (sshUser != null) #sshUser: sshUser,
+      if (privateKeyPath != null) #privateKeyPath: privateKeyPath,
+      if (hostKeyFingerprint != null) #hostKeyFingerprint: hostKeyFingerprint,
     }),
   );
   @override
@@ -177,6 +220,12 @@ class _AddServerDialogStateCopyWithImpl<$R, $Out>
     address: data.get(#address, or: $value.address),
     port: data.get(#port, or: $value.port),
     password: data.get(#password, or: $value.password),
+    enableManagement: data.get(#enableManagement, or: $value.enableManagement),
+    sshHost: data.get(#sshHost, or: $value.sshHost),
+    sshPort: data.get(#sshPort, or: $value.sshPort),
+    sshUser: data.get(#sshUser, or: $value.sshUser),
+    privateKeyPath: data.get(#privateKeyPath, or: $value.privateKeyPath),
+    hostKeyFingerprint: data.get(#hostKeyFingerprint, or: $value.hostKeyFingerprint),
   );
 
   @override

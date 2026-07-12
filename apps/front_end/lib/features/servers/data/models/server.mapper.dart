@@ -14,6 +14,7 @@ class ServerMapper extends ClassMapperBase<Server> {
   static ServerMapper ensureInitialized() {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = ServerMapper._());
+      ServerManagementConfigMapper.ensureInitialized();
     }
     return _instance!;
   }
@@ -34,6 +35,8 @@ class ServerMapper extends ClassMapperBase<Server> {
   static const Field<Server, String> _f$address = Field('address', _$address);
   static int _$port(Server v) => v.port;
   static const Field<Server, int> _f$port = Field('port', _$port);
+  static ServerManagementConfig? _$managementConfig(Server v) => v.managementConfig;
+  static const Field<Server, ServerManagementConfig?> _f$managementConfig = Field('managementConfig', _$managementConfig, opt: true);
 
   @override
   final MappableFields<Server> fields = const {
@@ -42,6 +45,7 @@ class ServerMapper extends ClassMapperBase<Server> {
     #password: _f$password,
     #address: _f$address,
     #port: _f$port,
+    #managementConfig: _f$managementConfig,
   };
 
   static Server _instantiate(DecodingData data) {
@@ -51,6 +55,7 @@ class ServerMapper extends ClassMapperBase<Server> {
       password: data.dec(_f$password),
       address: data.dec(_f$address),
       port: data.dec(_f$port),
+      managementConfig: data.dec(_f$managementConfig),
     );
   }
 
@@ -106,6 +111,7 @@ abstract class ServerCopyWith<$R, $In extends Server, $Out>
     String? password,
     String? address,
     int? port,
+    ServerManagementConfig? managementConfig,
   });
   ServerCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
@@ -123,6 +129,7 @@ class _ServerCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Server, $Out>
     String? password,
     String? address,
     int? port,
+    ServerManagementConfig? managementConfig,
   }) => $apply(
     FieldCopyWithData({
       if (id != null) #id: id,
@@ -130,6 +137,7 @@ class _ServerCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Server, $Out>
       if (password != null) #password: password,
       if (address != null) #address: address,
       if (port != null) #port: port,
+      if (managementConfig != null) #managementConfig: managementConfig,
     }),
   );
   @override
@@ -139,6 +147,7 @@ class _ServerCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Server, $Out>
     password: data.get(#password, or: $value.password),
     address: data.get(#address, or: $value.address),
     port: data.get(#port, or: $value.port),
+    managementConfig: data.get(#managementConfig, or: $value.managementConfig),
   );
 
   @override
