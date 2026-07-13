@@ -96,7 +96,9 @@ class AddServerDialogCubit extends Cubit<AddServerDialogState> {
         safeEmit(state.copyWith(addServerResult: const Error('Private key path cannot be empty')));
         return;
       } else if (state.hostKeyFingerprint.isEmpty) {
-        safeEmit(state.copyWith(addServerResult: const Error('Host key fingerprint cannot be empty')));
+        safeEmit(
+          state.copyWith(addServerResult: const Error('Host key fingerprint cannot be empty')),
+        );
         return;
       }
       managementConfig = ServerManagementConfig(
@@ -137,7 +139,6 @@ class AddServerDialogCubit extends Cubit<AddServerDialogState> {
   }
 }
 
-
 bool _isValidHost(String host) {
   if (host.isEmpty) {
     return false;
@@ -145,6 +146,8 @@ bool _isValidHost(String host) {
   if (InternetAddress.tryParse(host) != null) {
     return true;
   }
-  final hostname = RegExp(r'^(?=.{1,253}$)([a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$');
+  final hostname = RegExp(
+    r'^(?=.{1,253}$)([a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$',
+  );
   return hostname.hasMatch(host);
 }

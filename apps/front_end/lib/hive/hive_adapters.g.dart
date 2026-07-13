@@ -50,9 +50,7 @@ class ServerAdapter extends TypeAdapter<Server> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ServerAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+      other is ServerAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
 }
 
 class MessageAdapter extends TypeAdapter<Message> {
@@ -96,9 +94,7 @@ class MessageAdapter extends TypeAdapter<Message> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is MessageAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+      other is MessageAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
 }
 
 class SenderAdapter extends TypeAdapter<Sender> {
@@ -133,9 +129,7 @@ class SenderAdapter extends TypeAdapter<Sender> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SenderAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+      other is SenderAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
 }
 
 class SavedMessageAdapter extends TypeAdapter<SavedMessage> {
@@ -176,13 +170,10 @@ class SavedMessageAdapter extends TypeAdapter<SavedMessage> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SavedMessageAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+      other is SavedMessageAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
 }
 
-class ServerManagementConfigAdapter
-    extends TypeAdapter<ServerManagementConfig> {
+class ServerManagementConfigAdapter extends TypeAdapter<ServerManagementConfig> {
   @override
   final typeId = 4;
 
@@ -231,8 +222,7 @@ class ServerManagementConfigAdapter
           typeId == other.typeId;
 }
 
-class ServerManagementBackendAdapter
-    extends TypeAdapter<ServerManagementBackend> {
+class ServerManagementBackendAdapter extends TypeAdapter<ServerManagementBackend> {
   @override
   final typeId = 5;
 

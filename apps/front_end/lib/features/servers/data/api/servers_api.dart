@@ -21,7 +21,13 @@ class ServersApi {
     ServerManagementConfig? managementConfig,
   }) async {
     return Result.asyncOf(() async {
-      final server = Server.create(name: name, address: address, port: port, password: password, managementConfig: managementConfig);
+      final server = Server.create(
+        name: name,
+        address: address,
+        port: port,
+        password: password,
+        managementConfig: managementConfig,
+      );
       await _box.put(server.id, server);
       return server;
     });

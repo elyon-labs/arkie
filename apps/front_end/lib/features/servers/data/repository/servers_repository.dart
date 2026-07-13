@@ -45,7 +45,13 @@ class ServersRepository {
     ServerManagementConfig? managementConfig,
   }) {
     return _mutate(
-      () => _api.addServer(name: name, address: address, port: port, password: password, managementConfig: managementConfig),
+      () => _api.addServer(
+        name: name,
+        address: address,
+        port: port,
+        password: password,
+        managementConfig: managementConfig,
+      ),
     );
   }
 

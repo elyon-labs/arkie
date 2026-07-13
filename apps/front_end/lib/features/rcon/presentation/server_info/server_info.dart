@@ -28,7 +28,10 @@ class ServerInfo extends StatelessWidget {
     final rconState = context.select((RCONCubit cubit) => cubit.state);
 
     return switch (rconState.connection) {
-      Loaded<RCONConnection>(:final value) => _LoadedView(connection: value, server: rconState.server),
+      Loaded<RCONConnection>(:final value) => _LoadedView(
+        connection: value,
+        server: rconState.server,
+      ),
       Error<RCONConnection>(:final error) => _ErrorView(error: error),
       _ => const SizedBox.shrink(),
     };

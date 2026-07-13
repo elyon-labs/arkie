@@ -115,7 +115,6 @@ class _AddServerFormBody extends StatelessWidget {
   }
 }
 
-
 class _ServerManagementFields extends StatelessWidget {
   const _ServerManagementFields();
 
