@@ -3,6 +3,10 @@ import 'package:cs2_rcon_front_end/features/servers/data/models/server_managemen
 import 'package:oxidized/oxidized.dart';
 
 class FakeServerManagementApi implements ServerManagementApi {
+  FakeServerManagementApi({this.streamLogsResult});
+
+  final Stream<Result<String, Exception>>? streamLogsResult;
+
   ServerManagementConfig? runConfig;
   ServerManagementAction? runAction;
   ServerManagementConfig? streamLogsConfig;
@@ -20,6 +24,6 @@ class FakeServerManagementApi implements ServerManagementApi {
   @override
   Stream<Result<String, Exception>> streamLogs(ServerManagementConfig config) {
     streamLogsConfig = config;
-    return Stream.value(const Result.ok('log'));
+    return streamLogsResult ?? Stream.value(const Result.ok('log'));
   }
 }

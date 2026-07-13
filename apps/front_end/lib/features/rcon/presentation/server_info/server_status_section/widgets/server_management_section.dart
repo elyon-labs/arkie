@@ -11,9 +11,10 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:oxidized/oxidized.dart';
 
 class ServerManagementSection extends HookWidget {
-  const ServerManagementSection({super.key, required this.server});
+  const ServerManagementSection({super.key, required this.server, this.watchServerLogs});
 
   final Server server;
+  final WatchServerLogs? watchServerLogs;
 
   @override
   Widget build(BuildContext context) {
@@ -21,17 +22,22 @@ class ServerManagementSection extends HookWidget {
     final status = useState<String?>(null);
     final logs = useState<List<String>>([]);
     final logSubscription = useRef<StreamSubscription<Result<String, Exception>>?>(null);
+    final logStreamGeneration = useRef(0);
+    final isStreamingLogs = useState(false);
     final isBusy = useState(false);
     final startServer = useMemoized(StartServer.create);
     final stopServer = useMemoized(StopServer.create);
     final restartServer = useMemoized(RestartServer.create);
-    final watchServerLogs = useMemoized(WatchServerLogs.create);
+    final watchServerLogs = useMemoized(() => this.watchServerLogs ?? WatchServerLogs.create(), [
+      this.watchServerLogs,
+    ]);
 
-    useEffect(
-      () =>
-          () => logSubscription.value?.cancel(),
-      const [],
-    );
+    useEffect(() {
+      return () {
+        logStreamGeneration.value++;
+        unawaited(logSubscription.value?.cancel());
+      };
+    }, const []);
 
     if (config == null) {
       return Padding(
@@ -57,20 +63,39 @@ class ServerManagementSection extends HookWidget {
     }
 
     Future<void> toggleLogs() async {
-      if (logSubscription.value != null) {
-        await logSubscription.value?.cancel();
+      final activeSubscription = logSubscription.value;
+      if (activeSubscription != null) {
+        logStreamGeneration.value++;
         logSubscription.value = null;
-        status.value = 'Log stream stopped';
+        isStreamingLogs.value = false;
+        logs.value = [];
+        status.value = null;
+        await activeSubscription.cancel();
         return;
       }
+
+      final generation = ++logStreamGeneration.value;
       logs.value = [];
+      isStreamingLogs.value = true;
       status.value = 'Streaming logs...';
-      logSubscription.value = watchServerLogs(config).listen((result) {
-        result.when(
-          ok: (line) => logs.value = [...logs.value.take(199), line],
-          err: (error) => status.value = 'Log stream failed: $error',
-        );
-      }, onDone: () => logSubscription.value = null);
+      logSubscription.value = watchServerLogs(config).listen(
+        (result) {
+          if (generation != logStreamGeneration.value) {
+            return;
+          }
+          result.when(
+            ok: (line) => logs.value = [...logs.value.take(199), line],
+            err: (error) => status.value = 'Log stream failed: $error',
+          );
+        },
+        onDone: () {
+          if (generation != logStreamGeneration.value) {
+            return;
+          }
+          logSubscription.value = null;
+          isStreamingLogs.value = false;
+        },
+      );
     }
 
     return Padding(
@@ -80,31 +105,37 @@ class ServerManagementSection extends HookWidget {
         spacing: context.sizes.unit,
         children: [
           Text('Server process', style: Theme.of(context).textTheme.titleMedium),
-          Wrap(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             spacing: context.sizes.unit,
-            runSpacing: context.sizes.unit,
             children: [
-              FilledButton(
-                onPressed: isBusy.value
-                    ? null
-                    : () => runAction(name: 'start', run: () => startServer(config)),
-                child: const Text('Start'),
+              Visibility(
+                visible: false,
+                child: ElevatedButton(
+                  onPressed: isBusy.value
+                      ? null
+                      : () => runAction(name: 'start', run: () => startServer(config)),
+                  child: const Text('Start'),
+                ),
               ),
-              FilledButton(
-                onPressed: isBusy.value
-                    ? null
-                    : () => runAction(name: 'stop', run: () => stopServer(config)),
-                child: const Text('Stop'),
+              Visibility(
+                visible: false,
+                child: ElevatedButton(
+                  onPressed: isBusy.value
+                      ? null
+                      : () => runAction(name: 'stop', run: () => stopServer(config)),
+                  child: const Text('Stop'),
+                ),
               ),
-              FilledButton(
+              ElevatedButton(
                 onPressed: isBusy.value
                     ? null
                     : () => runAction(name: 'restart', run: () => restartServer(config)),
                 child: const Text('Restart'),
               ),
-              OutlinedButton(
+              ElevatedButton(
                 onPressed: toggleLogs,
-                child: Text(logSubscription.value == null ? 'Stream logs' : 'Stop logs'),
+                child: Text(isStreamingLogs.value ? 'Stop logs' : 'Stream logs'),
               ),
             ],
           ),

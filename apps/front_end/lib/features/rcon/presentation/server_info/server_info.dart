@@ -14,7 +14,6 @@ import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/widget
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/widgets/delete_server_button.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/widgets/maps_section.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/widgets/sidebar_wrapper.dart';
-import 'package:cs2_rcon_front_end/features/server_management/presentation/server_management_section.dart';
 import 'package:cs2_rcon_front_end/features/servers/data/models/server.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -92,11 +91,14 @@ class _LoadedView extends HookWidget {
         children: [
           FlipCard(
             controller: flipController.value,
-            front: _Sections(server: server, onServerInfoViewChange: (v) => view.value = v),
+            front: _Sections(onServerInfoViewChange: (v) => view.value = v),
             back: switch (view.value) {
               _ServerInfoView.editSavedMessages => EditSavedMessages(onClose: onCloseSidebar),
               _ServerInfoView.managePlayers => ManagePlayers(onClose: onCloseSidebar),
-              _ServerInfoView.serverStatusDetails => ServerStatusDetails(onClose: onCloseSidebar),
+              _ServerInfoView.serverStatusDetails => ServerStatusDetails(
+                server: server,
+                onClose: onCloseSidebar,
+              ),
               // Show a blank sidebar for the default case
               _ => SidebarWrapper(child: Container()),
             },
@@ -125,9 +127,7 @@ class _LoadedView extends HookWidget {
 }
 
 class _Sections extends StatelessWidget {
-  const _Sections({required this.server, required this.onServerInfoViewChange});
-
-  final Server server;
+  const _Sections({required this.onServerInfoViewChange});
 
   final ValueSetter<_ServerInfoView> onServerInfoViewChange;
 
@@ -154,7 +154,6 @@ class _Sections extends StatelessWidget {
                 onMenuTap: () => onServerInfoViewChange(_ServerInfoView.editSavedMessages),
               ),
               MapsSection(padding: EdgeInsets.symmetric(vertical: context.sizes.unit * 1.5)),
-              ServerManagementSection(server: server),
             ],
           ),
         ),
