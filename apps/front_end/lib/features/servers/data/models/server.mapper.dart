@@ -35,8 +35,10 @@ class ServerMapper extends ClassMapperBase<Server> {
   static const Field<Server, String> _f$address = Field('address', _$address);
   static int _$port(Server v) => v.port;
   static const Field<Server, int> _f$port = Field('port', _$port);
-  static ServerManagementConfig? _$managementConfig(Server v) => v.managementConfig;
-  static const Field<Server, ServerManagementConfig?> _f$managementConfig = Field('managementConfig', _$managementConfig, opt: true);
+  static ServerManagementConfig? _$managementConfig(Server v) =>
+      v.managementConfig;
+  static const Field<Server, ServerManagementConfig> _f$managementConfig =
+      Field('managementConfig', _$managementConfig, opt: true);
 
   @override
   final MappableFields<Server> fields = const {
@@ -105,6 +107,12 @@ extension ServerValueCopy<$R, $Out> on ObjectCopyWith<$R, Server, $Out> {
 
 abstract class ServerCopyWith<$R, $In extends Server, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
+  ServerManagementConfigCopyWith<
+    $R,
+    ServerManagementConfig,
+    ServerManagementConfig
+  >?
+  get managementConfig;
   $R call({
     String? id,
     String? name,
@@ -123,13 +131,22 @@ class _ServerCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Server, $Out>
   @override
   late final ClassMapperBase<Server> $mapper = ServerMapper.ensureInitialized();
   @override
+  ServerManagementConfigCopyWith<
+    $R,
+    ServerManagementConfig,
+    ServerManagementConfig
+  >?
+  get managementConfig => $value.managementConfig?.copyWith.$chain(
+    (v) => call(managementConfig: v),
+  );
+  @override
   $R call({
     String? id,
     String? name,
     String? password,
     String? address,
     int? port,
-    ServerManagementConfig? managementConfig,
+    Object? managementConfig = $none,
   }) => $apply(
     FieldCopyWithData({
       if (id != null) #id: id,
@@ -137,7 +154,7 @@ class _ServerCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Server, $Out>
       if (password != null) #password: password,
       if (address != null) #address: address,
       if (port != null) #port: port,
-      if (managementConfig != null) #managementConfig: managementConfig,
+      if (managementConfig != $none) #managementConfig: managementConfig,
     }),
   );
   @override

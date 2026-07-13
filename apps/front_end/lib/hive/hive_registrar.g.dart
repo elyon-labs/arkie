@@ -11,8 +11,8 @@ extension HiveRegistrar on HiveInterface {
     registerAdapter(SavedMessageAdapter());
     registerAdapter(SenderAdapter());
     registerAdapter(ServerAdapter());
-    registerAdapter(ServerManagementConfigAdapter());
     registerAdapter(ServerManagementBackendAdapter());
+    registerAdapter(ServerManagementConfigAdapter());
   }
 }
 
@@ -22,7 +22,7 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
     registerAdapter(SavedMessageAdapter());
     registerAdapter(SenderAdapter());
     registerAdapter(ServerAdapter());
-    registerAdapter(ServerManagementConfigAdapter());
     registerAdapter(ServerManagementBackendAdapter());
+    registerAdapter(ServerManagementConfigAdapter());
   }
 }

@@ -44,19 +44,45 @@ class AddServerDialogStateMapper extends ClassMapperBase<AddServerDialogState> {
     'password',
     _$password,
   );
-
   static bool _$enableManagement(AddServerDialogState v) => v.enableManagement;
-  static const Field<AddServerDialogState, bool> _f$enableManagement = Field('enableManagement', _$enableManagement, opt: true, def: false);
+  static const Field<AddServerDialogState, bool> _f$enableManagement = Field(
+    'enableManagement',
+    _$enableManagement,
+    opt: true,
+    def: false,
+  );
   static String _$sshHost(AddServerDialogState v) => v.sshHost;
-  static const Field<AddServerDialogState, String> _f$sshHost = Field('sshHost', _$sshHost, opt: true, def: '');
+  static const Field<AddServerDialogState, String> _f$sshHost = Field(
+    'sshHost',
+    _$sshHost,
+    opt: true,
+    def: '',
+  );
   static int _$sshPort(AddServerDialogState v) => v.sshPort;
-  static const Field<AddServerDialogState, int> _f$sshPort = Field('sshPort', _$sshPort, opt: true, def: 22);
+  static const Field<AddServerDialogState, int> _f$sshPort = Field(
+    'sshPort',
+    _$sshPort,
+    opt: true,
+    def: 22,
+  );
   static String _$sshUser(AddServerDialogState v) => v.sshUser;
-  static const Field<AddServerDialogState, String> _f$sshUser = Field('sshUser', _$sshUser, opt: true, def: 'arkie-cs2');
+  static const Field<AddServerDialogState, String> _f$sshUser = Field(
+    'sshUser',
+    _$sshUser,
+    opt: true,
+    def: 'arkie-cs2',
+  );
   static String _$privateKeyPath(AddServerDialogState v) => v.privateKeyPath;
-  static const Field<AddServerDialogState, String> _f$privateKeyPath = Field('privateKeyPath', _$privateKeyPath, opt: true, def: '');
-  static String _$hostKeyFingerprint(AddServerDialogState v) => v.hostKeyFingerprint;
-  static const Field<AddServerDialogState, String> _f$hostKeyFingerprint = Field('hostKeyFingerprint', _$hostKeyFingerprint, opt: true, def: '');
+  static const Field<AddServerDialogState, String> _f$privateKeyPath = Field(
+    'privateKeyPath',
+    _$privateKeyPath,
+    opt: true,
+    def: '',
+  );
+  static String _$hostKeyFingerprint(AddServerDialogState v) =>
+      v.hostKeyFingerprint;
+  static const Field<AddServerDialogState, String> _f$hostKeyFingerprint =
+      Field('hostKeyFingerprint', _$hostKeyFingerprint, opt: true, def: '');
 
   @override
   final MappableFields<AddServerDialogState> fields = const {
@@ -225,7 +251,10 @@ class _AddServerDialogStateCopyWithImpl<$R, $Out>
     sshPort: data.get(#sshPort, or: $value.sshPort),
     sshUser: data.get(#sshUser, or: $value.sshUser),
     privateKeyPath: data.get(#privateKeyPath, or: $value.privateKeyPath),
-    hostKeyFingerprint: data.get(#hostKeyFingerprint, or: $value.hostKeyFingerprint),
+    hostKeyFingerprint: data.get(
+      #hostKeyFingerprint,
+      or: $value.hostKeyFingerprint,
+    ),
   );
 
   @override

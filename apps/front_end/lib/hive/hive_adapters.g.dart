@@ -6,79 +6,6 @@ part of 'hive_adapters.dart';
 // AdaptersGenerator
 // **************************************************************************
 
-
-class ServerManagementConfigAdapter extends TypeAdapter<ServerManagementConfig> {
-  @override
-  final typeId = 4;
-
-  @override
-  ServerManagementConfig read(BinaryReader reader) {
-    final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read()};
-    return ServerManagementConfig(
-      backend: fields[0] as ServerManagementBackend,
-      sshHost: fields[1] as String,
-      sshPort: (fields[2] as num).toInt(),
-      sshUser: fields[3] as String,
-      privateKeyPath: fields[4] as String,
-      hostKeyFingerprint: fields[5] as String,
-    );
-  }
-
-  @override
-  void write(BinaryWriter writer, ServerManagementConfig obj) {
-    writer
-      ..writeByte(6)
-      ..writeByte(0)
-      ..write(obj.backend)
-      ..writeByte(1)
-      ..write(obj.sshHost)
-      ..writeByte(2)
-      ..write(obj.sshPort)
-      ..writeByte(3)
-      ..write(obj.sshUser)
-      ..writeByte(4)
-      ..write(obj.privateKeyPath)
-      ..writeByte(5)
-      ..write(obj.hostKeyFingerprint);
-  }
-
-  @override
-  int get hashCode => typeId.hashCode;
-
-  @override
-  bool operator ==(Object other) => identical(this, other) || other is ServerManagementConfigAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
-}
-
-class ServerManagementBackendAdapter extends TypeAdapter<ServerManagementBackend> {
-  @override
-  final typeId = 5;
-
-  @override
-  ServerManagementBackend read(BinaryReader reader) {
-    switch (reader.readByte()) {
-      case 0:
-        return ServerManagementBackend.systemd;
-      default:
-        return ServerManagementBackend.systemd;
-    }
-  }
-
-  @override
-  void write(BinaryWriter writer, ServerManagementBackend obj) {
-    switch (obj) {
-      case ServerManagementBackend.systemd:
-        writer.writeByte(0);
-    }
-  }
-
-  @override
-  int get hashCode => typeId.hashCode;
-
-  @override
-  bool operator ==(Object other) => identical(this, other) || other is ServerManagementBackendAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
-}
-
 class ServerAdapter extends TypeAdapter<Server> {
   @override
   final typeId = 0;
@@ -123,7 +50,9 @@ class ServerAdapter extends TypeAdapter<Server> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ServerAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+      other is ServerAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }
 
 class MessageAdapter extends TypeAdapter<Message> {
@@ -167,7 +96,9 @@ class MessageAdapter extends TypeAdapter<Message> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is MessageAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+      other is MessageAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }
 
 class SenderAdapter extends TypeAdapter<Sender> {
@@ -202,7 +133,9 @@ class SenderAdapter extends TypeAdapter<Sender> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SenderAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+      other is SenderAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }
 
 class SavedMessageAdapter extends TypeAdapter<SavedMessage> {
@@ -243,5 +176,91 @@ class SavedMessageAdapter extends TypeAdapter<SavedMessage> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SavedMessageAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+      other is SavedMessageAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class ServerManagementConfigAdapter
+    extends TypeAdapter<ServerManagementConfig> {
+  @override
+  final typeId = 4;
+
+  @override
+  ServerManagementConfig read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return ServerManagementConfig(
+      backend: fields[0] as ServerManagementBackend,
+      sshHost: fields[1] as String,
+      sshPort: (fields[2] as num).toInt(),
+      sshUser: fields[3] as String,
+      privateKeyPath: fields[4] as String,
+      hostKeyFingerprint: fields[5] as String,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, ServerManagementConfig obj) {
+    writer
+      ..writeByte(6)
+      ..writeByte(0)
+      ..write(obj.backend)
+      ..writeByte(1)
+      ..write(obj.sshHost)
+      ..writeByte(2)
+      ..write(obj.sshPort)
+      ..writeByte(3)
+      ..write(obj.sshUser)
+      ..writeByte(4)
+      ..write(obj.privateKeyPath)
+      ..writeByte(5)
+      ..write(obj.hostKeyFingerprint);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ServerManagementConfigAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class ServerManagementBackendAdapter
+    extends TypeAdapter<ServerManagementBackend> {
+  @override
+  final typeId = 5;
+
+  @override
+  ServerManagementBackend read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return ServerManagementBackend.systemd;
+      default:
+        return ServerManagementBackend.systemd;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, ServerManagementBackend obj) {
+    switch (obj) {
+      case ServerManagementBackend.systemd:
+        writer.writeByte(0);
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ServerManagementBackendAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }

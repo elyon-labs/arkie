@@ -4,37 +4,55 @@ import 'dart:io';
 
 import 'package:cs2_rcon_front_end/features/servers/data/models/server_management_config.dart';
 import 'package:dartssh2/dartssh2.dart';
+import 'package:oxidized/oxidized.dart';
 
-class ServerManagementService {
-  const ServerManagementService();
+class ServerManagementApi {
+  const ServerManagementApi();
 
-  Future<String> run(ServerManagementConfig config, ServerManagementAction action) async {
-    final client = await _connect(config);
-    try {
-      final result = await client.runWithResult(_dispatcherCommand(action));
-      final output = utf8.decode([...result.stdout, ...result.stderr], allowMalformed: true).trim();
-      if (result.exitCode != 0) {
-        throw ServerManagementException(output.isEmpty ? 'Remote command failed' : output);
+  Future<Result<String, Exception>> run(
+    ServerManagementConfig config,
+    ServerManagementAction action,
+  ) {
+    return Result.asyncOf(() async {
+      final client = await _connect(config);
+      try {
+        final result = await client.runWithResult(_dispatcherCommand(action));
+        final output = utf8.decode([
+          ...result.stdout,
+          ...result.stderr,
+        ], allowMalformed: true).trim();
+        if (result.exitCode != 0) {
+          throw ServerManagementException(output.isEmpty ? 'Remote command failed' : output);
+        }
+        return output;
+      } finally {
+        client.close();
       }
-      return output;
-    } finally {
-      client.close();
-    }
+    });
   }
 
-  Stream<String> streamLogs(ServerManagementConfig config) async* {
-    final client = await _connect(config);
+  Stream<Result<String, Exception>> streamLogs(ServerManagementConfig config) async* {
+    SSHClient? client;
     SSHSession? session;
     try {
+      client = await _connect(config);
       session = await client.execute(_dispatcherCommand(ServerManagementAction.logs));
-      yield* session.stdout.transform(utf8.decoder).transform(const LineSplitter());
+      await for (final line
+          in session.stdout
+              .map<List<int>>((bytes) => bytes)
+              .transform(utf8.decoder)
+              .transform(const LineSplitter())) {
+        yield Result.ok(line);
+      }
       final exitCode = await session.waitForExit();
       if (exitCode != 0 && exitCode != null) {
-        throw ServerManagementException('Remote log stream exited with $exitCode');
+        yield Result.err(ServerManagementException('Remote log stream exited with $exitCode'));
       }
+    } on Exception catch (error) {
+      yield Result.err(error);
     } finally {
       session?.close();
-      client.close();
+      client?.close();
     }
   }
 
