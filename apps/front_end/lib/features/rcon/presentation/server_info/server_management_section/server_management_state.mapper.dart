@@ -2,7 +2,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 // ignore_for_file: type=lint
-// ignore_for_file: invalid_use_of_protected_member
 // ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
 // ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
@@ -43,6 +42,19 @@ class ServerManagementStateMapper
     'logs',
     _$logs,
   );
+  static PrivateKeyHealthStatus _$keyHealthStatus(ServerManagementState v) =>
+      v.keyHealthStatus;
+  static const Field<ServerManagementState, PrivateKeyHealthStatus>
+  _f$keyHealthStatus = Field('keyHealthStatus', _$keyHealthStatus);
+  static PrivateKeyReplacementReason? _$keyReplacementReason(
+    ServerManagementState v,
+  ) => v.keyReplacementReason;
+  static const Field<ServerManagementState, PrivateKeyReplacementReason>
+  _f$keyReplacementReason = Field(
+    'keyReplacementReason',
+    _$keyReplacementReason,
+    opt: true,
+  );
 
   @override
   final MappableFields<ServerManagementState> fields = const {
@@ -50,6 +62,8 @@ class ServerManagementStateMapper
     #isStreamingLogs: _f$isStreamingLogs,
     #status: _f$status,
     #logs: _f$logs,
+    #keyHealthStatus: _f$keyHealthStatus,
+    #keyReplacementReason: _f$keyReplacementReason,
   };
 
   static ServerManagementState _instantiate(DecodingData data) {
@@ -58,6 +72,8 @@ class ServerManagementStateMapper
       isStreamingLogs: data.dec(_f$isStreamingLogs),
       status: data.dec(_f$status),
       logs: data.dec(_f$logs),
+      keyHealthStatus: data.dec(_f$keyHealthStatus),
+      keyReplacementReason: data.dec(_f$keyReplacementReason),
     );
   }
 
@@ -137,6 +153,8 @@ abstract class ServerManagementStateCopyWith<
     bool? isStreamingLogs,
     String? status,
     List<String>? logs,
+    PrivateKeyHealthStatus? keyHealthStatus,
+    PrivateKeyReplacementReason? keyReplacementReason,
   });
   ServerManagementStateCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
@@ -164,12 +182,17 @@ class _ServerManagementStateCopyWithImpl<$R, $Out>
     bool? isStreamingLogs,
     Object? status = $none,
     List<String>? logs,
+    PrivateKeyHealthStatus? keyHealthStatus,
+    Object? keyReplacementReason = $none,
   }) => $apply(
     FieldCopyWithData({
       if (isBusy != null) #isBusy: isBusy,
       if (isStreamingLogs != null) #isStreamingLogs: isStreamingLogs,
       if (status != $none) #status: status,
       if (logs != null) #logs: logs,
+      if (keyHealthStatus != null) #keyHealthStatus: keyHealthStatus,
+      if (keyReplacementReason != $none)
+        #keyReplacementReason: keyReplacementReason,
     }),
   );
   @override
@@ -178,6 +201,11 @@ class _ServerManagementStateCopyWithImpl<$R, $Out>
     isStreamingLogs: data.get(#isStreamingLogs, or: $value.isStreamingLogs),
     status: data.get(#status, or: $value.status),
     logs: data.get(#logs, or: $value.logs),
+    keyHealthStatus: data.get(#keyHealthStatus, or: $value.keyHealthStatus),
+    keyReplacementReason: data.get(
+      #keyReplacementReason,
+      or: $value.keyReplacementReason,
+    ),
   );
 
   @override

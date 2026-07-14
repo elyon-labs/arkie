@@ -56,6 +56,9 @@ This creates:
 - Public key: `~/.ssh/arkie_cs2.pub`
 
 The private key stays on the Arkie computer. Only the public key is copied to the server.
+When you choose the private key in Arkie, the app validates it immediately and, when you save,
+imports a protected copy into Arkie's application-support directory. Arkie does not retain or
+display the source file's path. Moving or deleting the source file later does not affect Arkie.
 
 ### 4. Install the public key on the server
 
@@ -125,7 +128,16 @@ When adding a server, enable **Manage server over SSH** and enter:
 | Private key path | `~/.ssh/arkie_cs2` |
 | Host key fingerprint | The `SHA256:...` fingerprint recorded above |
 
-Arkie verifies the host key fingerprint before authentication and rejects the connection if it differs. Arkie stores the private key path, not the private key material; keep the key in the operating system's protected SSH directory or a similarly secured location.
+Arkie verifies the host key fingerprint before authentication and rejects the connection if it differs.
+Choose the private key with the system file picker; encrypted private keys are not supported yet.
+
+To rotate a key, open the server's **Server process** section, choose **Edit**, and then
+**Replace**. Saving imports the replacement before removing Arkie's previous copy. Turning off
+**Manage server over SSH** removes the management configuration and Arkie's managed key copy.
+
+Configurations created by older Arkie versions stored an external path. For safety, Arkie never
+reads that legacy path automatically. The Server process section will ask you to reselect the key
+once, after which Arkie stores the managed reference instead.
 
 ## Available actions
 

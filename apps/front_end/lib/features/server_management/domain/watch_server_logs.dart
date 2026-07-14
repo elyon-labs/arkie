@@ -6,7 +6,7 @@ class WatchServerLogs {
   const WatchServerLogs({required ServerManagementApi api}) : _api = api;
 
   factory WatchServerLogs.create() {
-    return const WatchServerLogs(api: ServerManagementApi());
+    return WatchServerLogs(api: ServerManagementApi.create());
   }
 
   final ServerManagementApi _api;

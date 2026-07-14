@@ -1,6 +1,9 @@
 import 'dart:async';
 
 import 'package:cs2_rcon_front_end/core/safe_emit.dart';
+import 'package:cs2_rcon_front_end/di/graph.dart';
+import 'package:cs2_rcon_front_end/features/server_management/data/managed_private_key_store.dart';
+import 'package:cs2_rcon_front_end/features/server_management/domain/models/private_key_health.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/server_management_section/server_management_state.dart';
 import 'package:cs2_rcon_front_end/features/server_management/domain/restart_server.dart';
 import 'package:cs2_rcon_front_end/features/server_management/domain/start_server.dart';
@@ -17,12 +20,22 @@ class ServerManagementCubit extends Cubit<ServerManagementState> {
     required StopServer stopServer,
     required RestartServer restartServer,
     required WatchServerLogs watchServerLogs,
+    ManagedPrivateKeyStore? privateKeyStore,
   }) : _config = config,
        _startServer = startServer,
        _stopServer = stopServer,
        _restartServer = restartServer,
        _watchServerLogs = watchServerLogs,
-       super(ServerManagementState.initial());
+       _privateKeyStore = privateKeyStore,
+       super(
+         ServerManagementState.initial().copyWith(
+           keyHealthStatus: privateKeyStore == null
+               ? PrivateKeyHealthStatus.usable
+               : PrivateKeyHealthStatus.checking,
+         ),
+       ) {
+    if (privateKeyStore != null) unawaited(_inspectKey());
+  }
 
   factory ServerManagementCubit.create({required ServerManagementConfig config}) {
     return ServerManagementCubit(
@@ -31,6 +44,7 @@ class ServerManagementCubit extends Cubit<ServerManagementState> {
       stopServer: StopServer.create(),
       restartServer: RestartServer.create(),
       watchServerLogs: WatchServerLogs.create(),
+      privateKeyStore: inject(),
     );
   }
 
@@ -39,9 +53,29 @@ class ServerManagementCubit extends Cubit<ServerManagementState> {
   final StopServer _stopServer;
   final RestartServer _restartServer;
   final WatchServerLogs _watchServerLogs;
+  final ManagedPrivateKeyStore? _privateKeyStore;
 
   StreamSubscription<Result<String, Exception>>? _logSubscription;
   int _logGeneration = 0;
+
+  Future<void> _inspectKey() async {
+    final reference = _config.privateKey;
+    final health = reference == null
+        ? PrivateKeyReplacementRequired(
+            _config.privateKeyPath != null
+                ? PrivateKeyReplacementReason.legacyPath
+                : PrivateKeyReplacementReason.missing,
+          )
+        : await _privateKeyStore!.inspect(reference);
+    safeEmit(
+      state.copyWith(
+        keyHealthStatus: health is PrivateKeyUsable
+            ? PrivateKeyHealthStatus.usable
+            : PrivateKeyHealthStatus.replacementRequired,
+        keyReplacementReason: health is PrivateKeyReplacementRequired ? health.reason : null,
+      ),
+    );
+  }
 
   Future<void> start() {
     return _runAction(name: 'start', run: () => _startServer(_config));
@@ -59,7 +93,7 @@ class ServerManagementCubit extends Cubit<ServerManagementState> {
     required String name,
     required Future<Result<String, Exception>> Function() run,
   }) async {
-    if (state.isBusy) {
+    if (state.isBusy || state.keyHealthStatus != PrivateKeyHealthStatus.usable) {
       return;
     }
 
@@ -73,6 +107,7 @@ class ServerManagementCubit extends Cubit<ServerManagementState> {
   }
 
   Future<void> toggleLogs() async {
+    if (state.keyHealthStatus != PrivateKeyHealthStatus.usable) return;
     final activeSubscription = _logSubscription;
     if (activeSubscription != null) {
       _logGeneration++;

@@ -6,7 +6,7 @@ class RestartServer {
   const RestartServer({required ServerManagementApi api}) : _api = api;
 
   factory RestartServer.create() {
-    return const RestartServer(api: ServerManagementApi());
+    return RestartServer(api: ServerManagementApi.create());
   }
 
   final ServerManagementApi _api;

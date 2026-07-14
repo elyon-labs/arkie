@@ -6,7 +6,7 @@ class StopServer {
   const StopServer({required ServerManagementApi api}) : _api = api;
 
   factory StopServer.create() {
-    return const StopServer(api: ServerManagementApi());
+    return StopServer(api: ServerManagementApi.create());
   }
 
   final ServerManagementApi _api;

@@ -6,7 +6,7 @@ class StartServer {
   const StartServer({required ServerManagementApi api}) : _api = api;
 
   factory StartServer.create() {
-    return const StartServer(api: ServerManagementApi());
+    return StartServer(api: ServerManagementApi.create());
   }
 
   final ServerManagementApi _api;

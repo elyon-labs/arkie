@@ -1,5 +1,7 @@
 import 'package:cs2_rcon_front_end/environment.dart';
 import 'package:cs2_rcon_front_end/features/rcon/data/connection_cache.dart';
+import 'package:cs2_rcon_front_end/features/server_management/data/managed_private_key_store.dart';
+import 'package:cs2_rcon_front_end/features/server_management/data/ssh_private_key_picker.dart';
 import 'package:cs2_rcon_front_end/features/rcon/data/models/message.dart';
 import 'package:cs2_rcon_front_end/features/rcon/data/models/saved_message.dart';
 import 'package:cs2_rcon_front_end/features/servers/data/models/server.dart';
@@ -24,12 +26,16 @@ Future<void> setUpGraph({
   required Future<Box<SavedMessage>> savedMessagesBox,
   required Future<Box<Server>> serversBox,
   required Future<PackageInfo> packageInfo,
+  ManagedPrivateKeyStore? managedPrivateKeyStore,
+  SshPrivateKeyPicker? sshPrivateKeyPicker,
 }) async {
   _graph
     ..registerSingleton(environment)
     ..registerLazySingleton(serversRepository, dispose: (db) => db.dispose())
     ..registerLazySingleton(settingsRepository, dispose: (db) => db.dispose())
     ..registerLazySingleton(connectionCache)
+    ..registerSingleton(managedPrivateKeyStore ?? ManagedPrivateKeyStore())
+    ..registerSingleton(sshPrivateKeyPicker ?? SshPrivateKeyPicker())
     ..registerSingletonAsync(() async => await messagesBox)
     ..registerSingletonAsync(() async => await savedMessagesBox)
     ..registerSingletonAsync(() async => await serversBox)

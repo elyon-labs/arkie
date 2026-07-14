@@ -62,6 +62,7 @@ class ServerManagementConfigMapper
     if (_instance == null) {
       MapperContainer.globals.use(_instance = ServerManagementConfigMapper._());
       ServerManagementBackendMapper.ensureInitialized();
+      ManagedPrivateKeyReferenceMapper.ensureInitialized();
     }
     return _instance!;
   }
@@ -88,15 +89,20 @@ class ServerManagementConfigMapper
     'sshUser',
     _$sshUser,
   );
-  static String _$privateKeyPath(ServerManagementConfig v) => v.privateKeyPath;
-  static const Field<ServerManagementConfig, String> _f$privateKeyPath = Field(
-    'privateKeyPath',
-    _$privateKeyPath,
-  );
   static String _$hostKeyFingerprint(ServerManagementConfig v) =>
       v.hostKeyFingerprint;
   static const Field<ServerManagementConfig, String> _f$hostKeyFingerprint =
       Field('hostKeyFingerprint', _$hostKeyFingerprint);
+  static ManagedPrivateKeyReference? _$privateKey(ServerManagementConfig v) =>
+      v.privateKey;
+  static const Field<ServerManagementConfig, ManagedPrivateKeyReference>
+  _f$privateKey = Field('privateKey', _$privateKey, opt: true);
+  static String? _$privateKeyPath(ServerManagementConfig v) => v.privateKeyPath;
+  static const Field<ServerManagementConfig, String> _f$privateKeyPath = Field(
+    'privateKeyPath',
+    _$privateKeyPath,
+    opt: true,
+  );
 
   @override
   final MappableFields<ServerManagementConfig> fields = const {
@@ -104,8 +110,9 @@ class ServerManagementConfigMapper
     #sshHost: _f$sshHost,
     #sshPort: _f$sshPort,
     #sshUser: _f$sshUser,
-    #privateKeyPath: _f$privateKeyPath,
     #hostKeyFingerprint: _f$hostKeyFingerprint,
+    #privateKey: _f$privateKey,
+    #privateKeyPath: _f$privateKeyPath,
   };
 
   static ServerManagementConfig _instantiate(DecodingData data) {
@@ -114,8 +121,9 @@ class ServerManagementConfigMapper
       sshHost: data.dec(_f$sshHost),
       sshPort: data.dec(_f$sshPort),
       sshUser: data.dec(_f$sshUser),
-      privateKeyPath: data.dec(_f$privateKeyPath),
       hostKeyFingerprint: data.dec(_f$hostKeyFingerprint),
+      privateKey: data.dec(_f$privateKey),
+      privateKeyPath: data.dec(_f$privateKeyPath),
     );
   }
 
@@ -189,13 +197,20 @@ abstract class ServerManagementConfigCopyWith<
   $Out
 >
     implements ClassCopyWith<$R, $In, $Out> {
+  ManagedPrivateKeyReferenceCopyWith<
+    $R,
+    ManagedPrivateKeyReference,
+    ManagedPrivateKeyReference
+  >?
+  get privateKey;
   $R call({
     ServerManagementBackend? backend,
     String? sshHost,
     int? sshPort,
     String? sshUser,
-    String? privateKeyPath,
     String? hostKeyFingerprint,
+    ManagedPrivateKeyReference? privateKey,
+    String? privateKeyPath,
   });
   ServerManagementConfigCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
@@ -212,21 +227,31 @@ class _ServerManagementConfigCopyWithImpl<$R, $Out>
   late final ClassMapperBase<ServerManagementConfig> $mapper =
       ServerManagementConfigMapper.ensureInitialized();
   @override
+  ManagedPrivateKeyReferenceCopyWith<
+    $R,
+    ManagedPrivateKeyReference,
+    ManagedPrivateKeyReference
+  >?
+  get privateKey =>
+      $value.privateKey?.copyWith.$chain((v) => call(privateKey: v));
+  @override
   $R call({
     ServerManagementBackend? backend,
     String? sshHost,
     int? sshPort,
     String? sshUser,
-    String? privateKeyPath,
     String? hostKeyFingerprint,
+    Object? privateKey = $none,
+    Object? privateKeyPath = $none,
   }) => $apply(
     FieldCopyWithData({
       if (backend != null) #backend: backend,
       if (sshHost != null) #sshHost: sshHost,
       if (sshPort != null) #sshPort: sshPort,
       if (sshUser != null) #sshUser: sshUser,
-      if (privateKeyPath != null) #privateKeyPath: privateKeyPath,
       if (hostKeyFingerprint != null) #hostKeyFingerprint: hostKeyFingerprint,
+      if (privateKey != $none) #privateKey: privateKey,
+      if (privateKeyPath != $none) #privateKeyPath: privateKeyPath,
     }),
   );
   @override
@@ -235,11 +260,12 @@ class _ServerManagementConfigCopyWithImpl<$R, $Out>
     sshHost: data.get(#sshHost, or: $value.sshHost),
     sshPort: data.get(#sshPort, or: $value.sshPort),
     sshUser: data.get(#sshUser, or: $value.sshUser),
-    privateKeyPath: data.get(#privateKeyPath, or: $value.privateKeyPath),
     hostKeyFingerprint: data.get(
       #hostKeyFingerprint,
       or: $value.hostKeyFingerprint,
     ),
+    privateKey: data.get(#privateKey, or: $value.privateKey),
+    privateKeyPath: data.get(#privateKeyPath, or: $value.privateKeyPath),
   );
 
   @override

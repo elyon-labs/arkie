@@ -17,7 +17,9 @@ class AddServerDialogState with AddServerDialogStateMappable {
     this.sshHost = '',
     this.sshPort = 22,
     this.sshUser = 'arkie-cs2',
-    this.privateKeyPath = '',
+    this.privateKeyDisplayName,
+    this.privateKeyError,
+    this.isSelectingPrivateKey = false,
     this.hostKeyFingerprint = '',
   });
 
@@ -40,6 +42,8 @@ class AddServerDialogState with AddServerDialogStateMappable {
   final String sshHost;
   final int sshPort;
   final String sshUser;
-  final String privateKeyPath;
+  final String? privateKeyDisplayName;
+  final String? privateKeyError;
+  final bool isSelectingPrivateKey;
   final String hostKeyFingerprint;
 }

@@ -196,6 +196,8 @@ class RCONCubit extends Cubit<RCONState> {
     return _removeServer(server);
   }
 
+  String? get removeServerCleanupWarning => _removeServer.cleanupWarning;
+
   @override
   Future<void> close() async {
     await _subs.dispose();

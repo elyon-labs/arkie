@@ -13,10 +13,12 @@ class FakeServersApi implements ServersApi {
   int addServerCallCount = 0;
   int removeServerCallCount = 0;
   int clearServersCallCount = 0;
+  int updateServerCallCount = 0;
 
   Result<Server, Exception>? addServerResult;
   Result<void, Exception>? removeServerResult;
   Result<void, Exception>? clearServersResult;
+  Result<void, Exception>? updateServerResult;
 
   @override
   Future<List<Server>> fetchServers() async {
@@ -60,8 +62,14 @@ class FakeServersApi implements ServersApi {
   }
 
   @override
-  Future<Result<void, Exception>> updateServer(Server server) {
-    throw UnimplementedError();
+  Future<Result<void, Exception>> updateServer(Server server) async {
+    updateServerCallCount++;
+    final result = updateServerResult;
+    if (result != null) return result;
+    final index = _servers.indexWhere((candidate) => candidate.id == server.id);
+    if (index == -1) return Result.err(Exception('Server not found'));
+    _servers[index] = server;
+    return const Result.ok(null);
   }
 
   @override

@@ -3,6 +3,10 @@ import 'dart:io';
 import 'package:cs2_rcon_front_end/core/async.dart';
 import 'package:cs2_rcon_front_end/core/safe_emit.dart';
 import 'package:cs2_rcon_front_end/features/rcon/domain/connect.dart';
+import 'package:cs2_rcon_front_end/di/graph.dart';
+import 'package:cs2_rcon_front_end/features/server_management/data/ssh_private_key_picker.dart';
+import 'package:cs2_rcon_front_end/features/server_management/domain/models/selected_private_key.dart';
+import 'package:cs2_rcon_front_end/features/server_management/domain/models/server_management_draft.dart';
 import 'package:cs2_rcon_front_end/features/servers/data/models/server_management_config.dart';
 import 'package:cs2_rcon_front_end/features/servers/domain/add_server.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/add_server_dialog/add_server_dialog_state.dart';
@@ -10,17 +14,27 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:oxidized/oxidized.dart';
 
 class AddServerDialogCubit extends Cubit<AddServerDialogState> {
-  AddServerDialogCubit({required AddServer addServer, required Connect connect})
-    : _addServer = addServer,
-      _connect = connect,
-      super(AddServerDialogState.initial());
+  AddServerDialogCubit({
+    required AddServer addServer,
+    required Connect connect,
+    SshPrivateKeyPicker? privateKeyPicker,
+  }) : _addServer = addServer,
+       _connect = connect,
+       _privateKeyPicker = privateKeyPicker ?? SshPrivateKeyPicker(),
+       super(AddServerDialogState.initial());
 
   factory AddServerDialogCubit.create() {
-    return AddServerDialogCubit(addServer: AddServer.create(), connect: Connect.create());
+    return AddServerDialogCubit(
+      addServer: AddServer.create(),
+      connect: Connect.create(),
+      privateKeyPicker: inject(),
+    );
   }
 
   final AddServer _addServer;
   final Connect _connect;
+  final SshPrivateKeyPicker _privateKeyPicker;
+  SelectedPrivateKey? _selectedPrivateKey;
 
   void setName(String name) {
     safeEmit(state.copyWith(name: name));
@@ -54,8 +68,22 @@ class AddServerDialogCubit extends Cubit<AddServerDialogState> {
     safeEmit(state.copyWith(sshUser: sshUser));
   }
 
-  void setPrivateKeyPath(String privateKeyPath) {
-    safeEmit(state.copyWith(privateKeyPath: privateKeyPath));
+  Future<void> choosePrivateKey() async {
+    safeEmit(state.copyWith(isSelectingPrivateKey: true, privateKeyError: null));
+    try {
+      final selected = await _privateKeyPicker.pick();
+      if (selected != null) {
+        _selectedPrivateKey?.clear();
+        _selectedPrivateKey = selected;
+        safeEmit(state.copyWith(privateKeyDisplayName: selected.displayName));
+      }
+    } on PrivateKeySelectionException catch (error) {
+      safeEmit(state.copyWith(privateKeyError: error.message));
+    } on Exception catch (error) {
+      safeEmit(state.copyWith(privateKeyError: error.toString()));
+    } finally {
+      safeEmit(state.copyWith(isSelectingPrivateKey: false));
+    }
   }
 
   void setHostKeyFingerprint(String hostKeyFingerprint) {
@@ -81,7 +109,7 @@ class AddServerDialogCubit extends Cubit<AddServerDialogState> {
       return;
     }
 
-    ServerManagementConfig? managementConfig;
+    ServerManagementDraft? managementDraft;
     if (state.enableManagement) {
       if (state.sshHost.isEmpty) {
         safeEmit(state.copyWith(addServerResult: const Error('SSH host cannot be empty')));
@@ -92,8 +120,8 @@ class AddServerDialogCubit extends Cubit<AddServerDialogState> {
       } else if (state.sshUser.isEmpty) {
         safeEmit(state.copyWith(addServerResult: const Error('SSH user cannot be empty')));
         return;
-      } else if (state.privateKeyPath.isEmpty) {
-        safeEmit(state.copyWith(addServerResult: const Error('Private key path cannot be empty')));
+      } else if (_selectedPrivateKey == null) {
+        safeEmit(state.copyWith(addServerResult: const Error('Choose a private key')));
         return;
       } else if (state.hostKeyFingerprint.isEmpty) {
         safeEmit(
@@ -101,13 +129,13 @@ class AddServerDialogCubit extends Cubit<AddServerDialogState> {
         );
         return;
       }
-      managementConfig = ServerManagementConfig(
+      managementDraft = ServerManagementDraft(
         backend: ServerManagementBackend.systemd,
         sshHost: state.sshHost,
         sshPort: state.sshPort,
         sshUser: state.sshUser,
-        privateKeyPath: state.privateKeyPath,
         hostKeyFingerprint: state.hostKeyFingerprint,
+        selectedPrivateKey: _selectedPrivateKey,
       );
     }
 
@@ -129,13 +157,21 @@ class AddServerDialogCubit extends Cubit<AddServerDialogState> {
       address: state.address,
       port: state.port,
       password: state.password,
-      managementConfig: managementConfig,
+      managementDraft: managementDraft,
     ).then((res) {
-      res.match(
-        (server) => safeEmit(state.copyWith(addServerResult: Loaded(Ok(server)))),
-        (error) => safeEmit(state.copyWith(addServerResult: Error(error.toString()))),
-      );
+      res.match((server) {
+        _selectedPrivateKey?.clear();
+        _selectedPrivateKey = null;
+        safeEmit(state.copyWith(addServerResult: Loaded(Ok(server))));
+      }, (error) => safeEmit(state.copyWith(addServerResult: Error(error.toString()))));
     });
+  }
+
+  @override
+  Future<void> close() {
+    _selectedPrivateKey?.clear();
+    _selectedPrivateKey = null;
+    return super.close();
   }
 }
 

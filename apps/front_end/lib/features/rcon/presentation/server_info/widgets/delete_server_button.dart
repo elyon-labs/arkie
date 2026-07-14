@@ -18,8 +18,13 @@ class DeleteServerButton extends StatelessWidget {
         );
 
         if ((shouldDelete ?? false) && context.mounted) {
-          // Delete the server
-          await dialogContext.read<RCONCubit>().removeServer(server);
+          final messenger = ScaffoldMessenger.of(dialogContext);
+          final cubit = dialogContext.read<RCONCubit>();
+          await cubit.removeServer(server);
+          final warning = cubit.removeServerCleanupWarning;
+          if (warning != null) {
+            messenger.showSnackBar(SnackBar(content: Text(warning)));
+          }
         }
       },
       child: const Text('Delete Server'),

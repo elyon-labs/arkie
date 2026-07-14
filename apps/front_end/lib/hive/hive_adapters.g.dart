@@ -188,15 +188,16 @@ class ServerManagementConfigAdapter extends TypeAdapter<ServerManagementConfig> 
       sshHost: fields[1] as String,
       sshPort: (fields[2] as num).toInt(),
       sshUser: fields[3] as String,
-      privateKeyPath: fields[4] as String,
       hostKeyFingerprint: fields[5] as String,
+      privateKey: fields[6] as ManagedPrivateKeyReference?,
+      privateKeyPath: fields[4] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ServerManagementConfig obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.backend)
       ..writeByte(1)
@@ -208,7 +209,9 @@ class ServerManagementConfigAdapter extends TypeAdapter<ServerManagementConfig> 
       ..writeByte(4)
       ..write(obj.privateKeyPath)
       ..writeByte(5)
-      ..write(obj.hostKeyFingerprint);
+      ..write(obj.hostKeyFingerprint)
+      ..writeByte(6)
+      ..write(obj.privateKey);
   }
 
   @override
@@ -251,6 +254,40 @@ class ServerManagementBackendAdapter extends TypeAdapter<ServerManagementBackend
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is ServerManagementBackendAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class ManagedPrivateKeyReferenceAdapter extends TypeAdapter<ManagedPrivateKeyReference> {
+  @override
+  final typeId = 6;
+
+  @override
+  ManagedPrivateKeyReference read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return ManagedPrivateKeyReference(id: fields[0] as String, displayName: fields[1] as String);
+  }
+
+  @override
+  void write(BinaryWriter writer, ManagedPrivateKeyReference obj) {
+    writer
+      ..writeByte(2)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.displayName);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ManagedPrivateKeyReferenceAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
