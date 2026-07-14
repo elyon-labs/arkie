@@ -3,8 +3,13 @@ import 'package:cs2_rcon_front_end/features/servers/data/models/server_managemen
 import 'package:oxidized/oxidized.dart';
 
 class FakeServerManagementApi implements ServerManagementApi {
-  FakeServerManagementApi({this.streamLogsResult});
+  FakeServerManagementApi({this.onRun, this.streamLogsResult});
 
+  final Future<Result<String, Exception>> Function(
+    ServerManagementConfig config,
+    ServerManagementAction action,
+  )?
+  onRun;
   final Stream<Result<String, Exception>>? streamLogsResult;
 
   ServerManagementConfig? runConfig;
@@ -18,7 +23,7 @@ class FakeServerManagementApi implements ServerManagementApi {
   ) async {
     runConfig = config;
     runAction = action;
-    return Result.ok(action.name);
+    return onRun?.call(config, action) ?? Result.ok(action.name);
   }
 
   @override

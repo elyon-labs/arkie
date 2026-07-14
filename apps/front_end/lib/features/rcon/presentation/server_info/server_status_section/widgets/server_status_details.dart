@@ -4,7 +4,7 @@ import 'package:cs2_rcon_front_end/core_ui/_build_context.dart';
 import 'package:cs2_rcon_front_end/core_ui/label_value.dart';
 import 'package:cs2_rcon_front_end/features/rcon/domain/models/server_status.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/server_info_cubit.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/server_status_section/widgets/server_management_section.dart';
+import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/server_management_section/server_management_section.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/widgets/delete_server_button.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/widgets/sidebar_wrapper.dart';
 import 'package:cs2_rcon_front_end/features/servers/data/models/server.dart';
