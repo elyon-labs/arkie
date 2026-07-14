@@ -2,6 +2,10 @@
 set -euo pipefail
 
 SERVICE_NAME="${1:-cs2-server.service}"
+if ! [[ "${SERVICE_NAME}" =~ ^[A-Za-z0-9@._-]+\.service$ ]]; then
+  echo "Invalid systemd service name: ${SERVICE_NAME}" >&2
+  exit 64
+fi
 ARKIE_USER="${ARKIE_USER:-arkie-cs2}"
 DISPATCHER="${DISPATCHER:-/usr/local/bin/arkie-cs2}"
 SUDOERS_FILE="/etc/sudoers.d/arkie-cs2"
