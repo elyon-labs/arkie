@@ -84,7 +84,12 @@ class ServerManagementSection extends HookWidget {
             return;
           }
           result.when(
-            ok: (line) => logs.value = [...(logs.value.length > 199 ? logs.value.sublist(logs.value.length - 199) : logs.value), line],
+            ok: (line) => logs.value = [
+              ...(logs.value.length > 199
+                  ? logs.value.sublist(logs.value.length - 199)
+                  : logs.value),
+              line,
+            ],
             err: (error) => status.value = 'Log stream failed: $error',
           );
         },
