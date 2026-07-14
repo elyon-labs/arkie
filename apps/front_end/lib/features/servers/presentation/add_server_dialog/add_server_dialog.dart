@@ -89,6 +89,8 @@ class _AddServerFormBody extends StatelessWidget {
               const ServerPortField(),
               SizedBox(height: context.sizes.unit),
               const ServerPasswordField(),
+              SizedBox(height: context.sizes.unit),
+              const _ServerManagementFields(),
               SizedBox(height: context.sizes.unit * 2),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -109,6 +111,59 @@ class _AddServerFormBody extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+}
+
+class _ServerManagementFields extends StatelessWidget {
+  const _ServerManagementFields();
+
+  @override
+  Widget build(BuildContext context) {
+    final state = context.select((AddServerDialogCubit cubit) => cubit.state);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          title: const Text('Manage server over SSH'),
+          subtitle: const Text('Systemd backend via the arkie-cs2 dispatcher'),
+          value: state.enableManagement,
+          onChanged: context.read<AddServerDialogCubit>().setEnableManagement,
+        ),
+        if (state.enableManagement) ...[
+          TextField(
+            onChanged: context.read<AddServerDialogCubit>().setSshHost,
+            keyboardType: TextInputType.url,
+            decoration: const InputDecoration(hintText: 'SSH host'),
+          ),
+          SizedBox(height: context.sizes.unit),
+          TextField(
+            onChanged: (value) => context.read<AddServerDialogCubit>().setSshPort(
+              int.tryParse(value) ?? state.sshPort,
+            ),
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(hintText: 'SSH port (default 22)'),
+          ),
+          SizedBox(height: context.sizes.unit),
+          TextFormField(
+            initialValue: state.sshUser,
+            onChanged: context.read<AddServerDialogCubit>().setSshUser,
+            decoration: const InputDecoration(hintText: 'SSH user (arkie-cs2)'),
+          ),
+          SizedBox(height: context.sizes.unit),
+          TextField(
+            onChanged: context.read<AddServerDialogCubit>().setPrivateKeyPath,
+            decoration: const InputDecoration(hintText: 'Private key path on this computer'),
+          ),
+          SizedBox(height: context.sizes.unit),
+          TextField(
+            onChanged: context.read<AddServerDialogCubit>().setHostKeyFingerprint,
+            decoration: const InputDecoration(hintText: 'Host key fingerprint (SHA256:...)'),
+          ),
+        ],
+      ],
     );
   }
 }

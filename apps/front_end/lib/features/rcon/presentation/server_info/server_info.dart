@@ -14,6 +14,7 @@ import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/widget
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/widgets/delete_server_button.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/widgets/maps_section.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/widgets/sidebar_wrapper.dart';
+import 'package:cs2_rcon_front_end/features/servers/data/models/server.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -23,10 +24,13 @@ class ServerInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final connection = context.select((RCONCubit cubit) => cubit.state.connection);
+    final rconState = context.select((RCONCubit cubit) => cubit.state);
 
-    return switch (connection) {
-      Loaded<RCONConnection>(:final value) => _LoadedView(connection: value),
+    return switch (rconState.connection) {
+      Loaded<RCONConnection>(:final value) => _LoadedView(
+        connection: value,
+        server: rconState.server,
+      ),
       Error<RCONConnection>(:final error) => _ErrorView(error: error),
       _ => const SizedBox.shrink(),
     };
@@ -57,9 +61,10 @@ class _ErrorView extends StatelessWidget {
 }
 
 class _LoadedView extends HookWidget {
-  const _LoadedView({required this.connection});
+  const _LoadedView({required this.connection, required this.server});
 
   final RCONConnection connection;
+  final Server server;
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +95,10 @@ class _LoadedView extends HookWidget {
             back: switch (view.value) {
               _ServerInfoView.editSavedMessages => EditSavedMessages(onClose: onCloseSidebar),
               _ServerInfoView.managePlayers => ManagePlayers(onClose: onCloseSidebar),
-              _ServerInfoView.serverStatusDetails => ServerStatusDetails(onClose: onCloseSidebar),
+              _ServerInfoView.serverStatusDetails => ServerStatusDetails(
+                server: server,
+                onClose: onCloseSidebar,
+              ),
               // Show a blank sidebar for the default case
               _ => SidebarWrapper(child: Container()),
             },

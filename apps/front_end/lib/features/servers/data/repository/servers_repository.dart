@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cs2_rcon_front_end/features/servers/data/api/servers_api.dart';
 import 'package:cs2_rcon_front_end/features/servers/data/models/server.dart';
+import 'package:cs2_rcon_front_end/features/servers/data/models/server_management_config.dart';
 import 'package:oxidized/oxidized.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -41,9 +42,16 @@ class ServersRepository {
     required String address,
     required int port,
     required String password,
+    ServerManagementConfig? managementConfig,
   }) {
     return _mutate(
-      () => _api.addServer(name: name, address: address, port: port, password: password),
+      () => _api.addServer(
+        name: name,
+        address: address,
+        port: port,
+        password: password,
+        managementConfig: managementConfig,
+      ),
     );
   }
 

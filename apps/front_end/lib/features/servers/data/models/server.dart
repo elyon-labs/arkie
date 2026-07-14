@@ -1,3 +1,4 @@
+import 'package:cs2_rcon_front_end/features/servers/data/models/server_management_config.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:uuid/uuid.dart';
 
@@ -11,6 +12,7 @@ class Server with ServerMappable {
     required this.password,
     required this.address,
     required this.port,
+    this.managementConfig,
   });
 
   factory Server.create({
@@ -18,9 +20,17 @@ class Server with ServerMappable {
     required String address,
     required int port,
     required String password,
+    ServerManagementConfig? managementConfig,
   }) {
     final id = const Uuid().v4();
-    return Server(id: id, name: name, address: address, port: port, password: password);
+    return Server(
+      id: id,
+      name: name,
+      address: address,
+      port: port,
+      password: password,
+      managementConfig: managementConfig,
+    );
   }
 
   final String id;
@@ -28,4 +38,5 @@ class Server with ServerMappable {
   final String password;
   final String address;
   final int port;
+  final ServerManagementConfig? managementConfig;
 }

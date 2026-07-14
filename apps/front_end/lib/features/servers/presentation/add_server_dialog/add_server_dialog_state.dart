@@ -13,6 +13,12 @@ class AddServerDialogState with AddServerDialogStateMappable {
     required this.address,
     required this.port,
     required this.password,
+    this.enableManagement = false,
+    this.sshHost = '',
+    this.sshPort = 22,
+    this.sshUser = 'arkie-cs2',
+    this.privateKeyPath = '',
+    this.hostKeyFingerprint = '',
   });
 
   factory AddServerDialogState.initial() {
@@ -30,4 +36,10 @@ class AddServerDialogState with AddServerDialogStateMappable {
   final String address;
   final int port;
   final String password;
+  final bool enableManagement;
+  final String sshHost;
+  final int sshPort;
+  final String sshUser;
+  final String privateKeyPath;
+  final String hostKeyFingerprint;
 }

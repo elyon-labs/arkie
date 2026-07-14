@@ -1,5 +1,6 @@
 import 'package:cs2_rcon_front_end/di/graph.dart';
 import 'package:cs2_rcon_front_end/features/servers/data/models/server.dart';
+import 'package:cs2_rcon_front_end/features/servers/data/models/server_management_config.dart';
 import 'package:cs2_rcon_front_end/features/servers/data/repository/servers_repository.dart';
 import 'package:cs2_rcon_front_end/features/settings/data/repository/settings_repository.dart';
 import 'package:oxidized/oxidized.dart';
@@ -27,6 +28,7 @@ class AddServer {
     required String address,
     required int port,
     required String password,
+    ServerManagementConfig? managementConfig,
   }) async {
     final initialServers = await _serversRepository.getServers();
     final result = await _serversRepository.addServer(
@@ -34,6 +36,7 @@ class AddServer {
       address: address,
       port: port,
       password: password,
+      managementConfig: managementConfig,
     );
 
     if (initialServers.isEmpty && result.isOk()) {
