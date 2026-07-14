@@ -40,4 +40,8 @@ chown "${ARKIE_USER}:${ARKIE_USER}" "/home/${ARKIE_USER}/.ssh/authorized_keys"
 chmod 0600 "/home/${ARKIE_USER}/.ssh/authorized_keys"
 
 echo "Installed ${DISPATCHER} for ${SERVICE_NAME}. Add Arkie's public key to /home/${ARKIE_USER}/.ssh/authorized_keys."
-echo "Host key fingerprint: $(ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub | awk '{print $2}')"
+if [[ -f /etc/ssh/ssh_host_ed25519_key.pub ]]; then
+  echo "Host key fingerprint: $(ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub | awk '{print $2}')"
+else
+  echo "Host key fingerprint: (ed25519 host key not found at /etc/ssh/ssh_host_ed25519_key.pub)" >&2
+fi
