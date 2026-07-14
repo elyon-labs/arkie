@@ -29,10 +29,9 @@ case "\${1:-}" in
 esac
 SCRIPT
 
-cat > "${SUDOERS_FILE}" <<SUDOERS
+install -o root -g root -m 0440 /dev/stdin "${SUDOERS_FILE}" <<SUDOERS
 ${ARKIE_USER} ALL=(root) NOPASSWD: /bin/systemctl start ${SERVICE_NAME}, /bin/systemctl stop ${SERVICE_NAME}, /bin/systemctl restart ${SERVICE_NAME}, /bin/journalctl -u ${SERVICE_NAME} -f -n 200 -o short-iso
 SUDOERS
-chmod 0440 "${SUDOERS_FILE}"
 visudo -cf "${SUDOERS_FILE}"
 
 install -d -o "${ARKIE_USER}" -g "${ARKIE_USER}" -m 0700 "/home/${ARKIE_USER}/.ssh"
