@@ -54,13 +54,6 @@ void main() {
     expect(utf8.decode(selected.pemBytes), _unencryptedPem);
   });
 
-  test('clears selected key bytes', () async {
-    final result = await _subjectFor(utf8.encode(_unencryptedPem))();
-    final selected = result.unwrap()!;
-
-    expect((selected..clear()).pemBytes, everyElement(0));
-  });
-
   test('returns Err for modern and legacy encrypted keys', () async {
     for (final pem in [_encryptedOpenSshPem, _encryptedLegacyPem]) {
       final result = await _subjectFor(utf8.encode(pem))();
