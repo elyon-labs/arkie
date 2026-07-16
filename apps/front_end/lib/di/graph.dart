@@ -2,6 +2,7 @@ import 'package:cs2_rcon_front_end/environment.dart';
 import 'package:cs2_rcon_front_end/features/rcon/data/connection_cache.dart';
 import 'package:cs2_rcon_front_end/features/rcon/data/models/message.dart';
 import 'package:cs2_rcon_front_end/features/rcon/data/models/saved_message.dart';
+import 'package:cs2_rcon_front_end/features/server_management/data/managed_private_key_store.dart';
 import 'package:cs2_rcon_front_end/features/servers/data/models/server.dart';
 import 'package:cs2_rcon_front_end/features/servers/data/repository/servers_repository.dart';
 import 'package:cs2_rcon_front_end/features/settings/data/repository/settings_repository.dart';
@@ -20,6 +21,7 @@ Future<void> setUpGraph({
   required LazyBuilder<ServersRepository> serversRepository,
   required LazyBuilder<SettingsRepository> settingsRepository,
   required LazyBuilder<ConnectionCache> connectionCache,
+  required LazyBuilder<ManagedPrivateKeyStore> managedPrivateKeyStore,
   required Future<Box<Message>> messagesBox,
   required Future<Box<SavedMessage>> savedMessagesBox,
   required Future<Box<Server>> serversBox,
@@ -30,6 +32,7 @@ Future<void> setUpGraph({
     ..registerLazySingleton(serversRepository, dispose: (db) => db.dispose())
     ..registerLazySingleton(settingsRepository, dispose: (db) => db.dispose())
     ..registerLazySingleton(connectionCache)
+    ..registerLazySingleton(managedPrivateKeyStore)
     ..registerSingletonAsync(() async => await messagesBox)
     ..registerSingletonAsync(() async => await savedMessagesBox)
     ..registerSingletonAsync(() async => await serversBox)
