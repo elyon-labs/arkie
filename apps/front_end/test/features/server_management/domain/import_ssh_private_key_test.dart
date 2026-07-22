@@ -1,9 +1,11 @@
 import 'dart:typed_data';
 
+import 'package:cs2_rcon_front_end/features/server_management/data/managed_private_key_store.dart';
 import 'package:cs2_rcon_front_end/features/server_management/domain/import_ssh_private_key.dart';
 import 'package:cs2_rcon_front_end/features/server_management/domain/models/managed_private_key_reference.dart';
 import 'package:cs2_rcon_front_end/features/server_management/domain/models/selected_private_key.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:oxidized/oxidized.dart';
 
 import '../../../fakes/fake_managed_private_key_store.dart';
 
@@ -20,7 +22,7 @@ void main() {
       store: FakeManagedPrivateKeyStore(
         onImportKey: (value) async {
           imported = value;
-          return expected;
+          return const Ok(expected);
         },
       ),
     );
@@ -33,7 +35,9 @@ void main() {
 
   test('returns a storage failure', () async {
     final subject = ImportSshPrivateKey(
-      store: FakeManagedPrivateKeyStore(onImportKey: (_) async => throw Exception('failed')),
+      store: FakeManagedPrivateKeyStore(
+        onImportKey: (_) async => const Err(ManagedPrivateKeyStorageException('failed')),
+      ),
     );
 
     final result = await subject(selected);

@@ -10,12 +10,6 @@ class DeleteManagedPrivateKey {
 
   final ManagedPrivateKeyStore _store;
 
-  Future<Result<void, Exception>> call(ManagedPrivateKeyReference reference) async {
-    try {
-      await _store.deleteKey(reference.id);
-      return const Result.ok(null);
-    } on Exception catch (error) {
-      return Result.err(error);
-    }
-  }
+  Future<Result<void, Exception>> call(ManagedPrivateKeyReference reference) =>
+      _store.deleteKey(reference.id);
 }

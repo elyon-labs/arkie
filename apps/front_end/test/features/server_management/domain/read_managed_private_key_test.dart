@@ -1,8 +1,10 @@
 import 'dart:typed_data';
 
+import 'package:cs2_rcon_front_end/features/server_management/data/managed_private_key_store.dart';
 import 'package:cs2_rcon_front_end/features/server_management/domain/models/managed_private_key_reference.dart';
 import 'package:cs2_rcon_front_end/features/server_management/domain/read_managed_private_key.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:oxidized/oxidized.dart';
 
 import '../../../fakes/fake_managed_private_key_store.dart';
 
@@ -15,7 +17,7 @@ void main() {
       store: FakeManagedPrivateKeyStore(
         onReadKey: (id) async {
           readId = id;
-          return Uint8List.fromList([1, 2, 3]);
+          return Ok(Uint8List.fromList([1, 2, 3]));
         },
       ),
     );
@@ -28,7 +30,9 @@ void main() {
 
   test('returns a storage failure', () async {
     final subject = ReadManagedPrivateKey(
-      store: FakeManagedPrivateKeyStore(onReadKey: (_) async => throw Exception('failed')),
+      store: FakeManagedPrivateKeyStore(
+        onReadKey: (_) async => const Err(ManagedPrivateKeyStorageException('failed')),
+      ),
     );
 
     final result = await subject(reference);

@@ -1,6 +1,8 @@
+import 'package:cs2_rcon_front_end/features/server_management/data/managed_private_key_store.dart';
 import 'package:cs2_rcon_front_end/features/server_management/domain/delete_managed_private_key.dart';
 import 'package:cs2_rcon_front_end/features/server_management/domain/models/managed_private_key_reference.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:oxidized/oxidized.dart';
 
 import '../../../fakes/fake_managed_private_key_store.dart';
 
@@ -10,7 +12,12 @@ void main() {
   test('deletes a key through the managed store', () async {
     String? deletedId;
     final subject = DeleteManagedPrivateKey(
-      store: FakeManagedPrivateKeyStore(onDeleteKey: (id) async => deletedId = id),
+      store: FakeManagedPrivateKeyStore(
+        onDeleteKey: (id) async {
+          deletedId = id;
+          return const Ok(null);
+        },
+      ),
     );
 
     final result = await subject(reference);
@@ -21,7 +28,9 @@ void main() {
 
   test('returns a storage failure', () async {
     final subject = DeleteManagedPrivateKey(
-      store: FakeManagedPrivateKeyStore(onDeleteKey: (_) async => throw Exception('failed')),
+      store: FakeManagedPrivateKeyStore(
+        onDeleteKey: (_) async => const Err(ManagedPrivateKeyStorageException('failed')),
+      ),
     );
 
     final result = await subject(reference);

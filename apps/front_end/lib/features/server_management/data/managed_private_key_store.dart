@@ -3,13 +3,15 @@ import 'dart:typed_data';
 
 import 'package:cs2_rcon_front_end/features/server_management/domain/models/managed_private_key_reference.dart';
 import 'package:cs2_rcon_front_end/features/server_management/domain/models/selected_private_key.dart';
+import 'package:oxidized/oxidized.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 typedef ApplicationSupportDirectoryProvider = Future<Directory> Function();
 typedef ManagedPrivateKeyIdProvider = String Function();
-typedef SetPathPermissions = Future<void> Function(String target, String mode);
+typedef SetPathPermissions =
+    Future<Result<void, ManagedPrivateKeyStorageException>> Function(String target, String mode);
 
 class ManagedPrivateKeyStore {
   ManagedPrivateKeyStore({
@@ -27,82 +29,142 @@ class ManagedPrivateKeyStore {
   final SetPathPermissions _setPathPermissions;
   final bool _isWindows;
 
-  Future<ManagedPrivateKeyReference> importKey(SelectedPrivateKey selected) async {
-    final id = _createId();
-    _validateId(id);
-
+  Future<Result<ManagedPrivateKeyReference, ManagedPrivateKeyStorageException>> importKey(
+    SelectedPrivateKey selected,
+  ) async {
     File? temporary;
     try {
-      final directory = await _keyDirectory();
+      final id = _createId();
+      if (!_isValidId(id)) {
+        return const Err(
+          ManagedPrivateKeyStorageException('Arkie generated an invalid private key identifier.'),
+        );
+      }
+
+      final directoryResult = await _keyDirectory();
+      if (directoryResult.isErr()) {
+        return const Err(
+          ManagedPrivateKeyStorageException('Arkie could not import the selected private key.'),
+        );
+      }
+
+      final directory = directoryResult.unwrap();
       temporary = File(path.join(directory.path, '.$id.tmp'));
       final destination = File(path.join(directory.path, id));
       if (destination.existsSync()) {
-        throw const ManagedPrivateKeyStorageException(
-          'Arkie could not allocate managed private key storage.',
+        return const Err(
+          ManagedPrivateKeyStorageException('Arkie could not import the selected private key.'),
         );
       }
 
       await temporary.writeAsBytes(selected.pemBytes, flush: true);
-      await _secure(temporary.path, '600');
+      final permissionResult = await _secure(temporary.path, '600');
+      if (permissionResult.isErr()) {
+        await _deleteIfPresent(temporary);
+        return const Err(
+          ManagedPrivateKeyStorageException('Arkie could not import the selected private key.'),
+        );
+      }
       await temporary.rename(destination.path);
 
-      return ManagedPrivateKeyReference(id: id, displayName: selected.displayName);
+      return Ok(ManagedPrivateKeyReference(id: id, displayName: selected.displayName));
     } on Exception {
       if (temporary != null) {
         await _deleteIfPresent(temporary);
       }
-      throw const ManagedPrivateKeyStorageException(
-        'Arkie could not import the selected private key.',
+      return const Err(
+        ManagedPrivateKeyStorageException('Arkie could not import the selected private key.'),
       );
     }
   }
 
-  Future<Uint8List> readKey(String id) async {
-    _validateId(id);
+  Future<Result<Uint8List, ManagedPrivateKeyStorageException>> readKey(String id) async {
+    if (!_isValidId(id)) {
+      return const Err(
+        ManagedPrivateKeyStorageException('Invalid managed private key identifier.'),
+      );
+    }
 
     try {
-      final file = File(path.join((await _keyDirectory()).path, id));
-      if (!file.existsSync()) {
-        throw const ManagedPrivateKeyStorageException(
-          'Arkie could not find the managed private key.',
+      final directoryResult = await _keyDirectory();
+      if (directoryResult.isErr()) {
+        return const Err(
+          ManagedPrivateKeyStorageException('Arkie could not read the managed private key.'),
         );
       }
-      return file.readAsBytes();
-    } on ManagedPrivateKeyStorageException {
-      rethrow;
+
+      final file = File(path.join(directoryResult.unwrap().path, id));
+      if (!file.existsSync()) {
+        return const Err(
+          ManagedPrivateKeyStorageException('Arkie could not find the managed private key.'),
+        );
+      }
+      return Ok(await file.readAsBytes());
     } on Exception {
-      throw const ManagedPrivateKeyStorageException(
-        'Arkie could not read the managed private key.',
+      return const Err(
+        ManagedPrivateKeyStorageException('Arkie could not read the managed private key.'),
       );
     }
   }
 
-  Future<void> deleteKey(String id) async {
-    _validateId(id);
+  Future<Result<void, ManagedPrivateKeyStorageException>> deleteKey(String id) async {
+    if (!_isValidId(id)) {
+      return const Err(
+        ManagedPrivateKeyStorageException('Invalid managed private key identifier.'),
+      );
+    }
 
     try {
-      final file = File(path.join((await _keyDirectory()).path, id));
+      final directoryResult = await _keyDirectory();
+      if (directoryResult.isErr()) {
+        return const Err(
+          ManagedPrivateKeyStorageException('Arkie could not delete the managed private key.'),
+        );
+      }
+
+      final file = File(path.join(directoryResult.unwrap().path, id));
       if (file.existsSync()) {
         await file.delete();
       }
+      return const Ok(null);
     } on Exception {
-      throw const ManagedPrivateKeyStorageException(
-        'Arkie could not delete the managed private key.',
+      return const Err(
+        ManagedPrivateKeyStorageException('Arkie could not delete the managed private key.'),
       );
     }
   }
 
-  Future<Directory> _keyDirectory() async {
-    final supportDirectory = await _applicationSupportDirectory();
-    final directory = Directory(path.join(supportDirectory.path, 'ssh_keys'));
-    await directory.create(recursive: true);
-    await _secure(directory.path, '700');
-    return directory;
+  Future<Result<Directory, ManagedPrivateKeyStorageException>> _keyDirectory() async {
+    try {
+      final supportDirectory = await _applicationSupportDirectory();
+      final directory = Directory(path.join(supportDirectory.path, 'ssh_keys'));
+      await directory.create(recursive: true);
+      final permissionResult = await _secure(directory.path, '700');
+      if (permissionResult.isErr()) {
+        return Err(permissionResult.unwrapErr());
+      }
+      return Ok(directory);
+    } on Exception {
+      return const Err(
+        ManagedPrivateKeyStorageException('Arkie could not prepare private key storage.'),
+      );
+    }
   }
 
-  Future<void> _secure(String target, String mode) async {
-    if (!_isWindows) {
-      await _setPathPermissions(target, mode);
+  Future<Result<void, ManagedPrivateKeyStorageException>> _secure(
+    String target,
+    String mode,
+  ) async {
+    if (_isWindows) {
+      return const Ok(null);
+    }
+
+    try {
+      return await _setPathPermissions(target, mode);
+    } on Exception {
+      return const Err(
+        ManagedPrivateKeyStorageException('Arkie could not secure managed private key storage.'),
+      );
     }
   }
 
@@ -116,20 +178,28 @@ class ManagedPrivateKeyStore {
     }
   }
 
-  void _validateId(String id) {
+  bool _isValidId(String id) {
     final uuid = RegExp(
       r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$',
     );
-    if (!uuid.hasMatch(id) || path.basename(id) != id) {
-      throw ArgumentError.value(id, 'id', 'Invalid managed private key identifier');
-    }
+    return uuid.hasMatch(id) && path.basename(id) == id;
   }
 
-  static Future<void> _setUnixPermissions(String target, String mode) async {
-    final result = await Process.run('chmod', [mode, target]);
-    if (result.exitCode != 0) {
-      throw const ManagedPrivateKeyStorageException(
-        'Arkie could not secure managed private key storage.',
+  static Future<Result<void, ManagedPrivateKeyStorageException>> _setUnixPermissions(
+    String target,
+    String mode,
+  ) async {
+    try {
+      final result = await Process.run('chmod', [mode, target]);
+      if (result.exitCode != 0) {
+        return const Err(
+          ManagedPrivateKeyStorageException('Arkie could not secure managed private key storage.'),
+        );
+      }
+      return const Ok(null);
+    } on Exception {
+      return const Err(
+        ManagedPrivateKeyStorageException('Arkie could not secure managed private key storage.'),
       );
     }
   }

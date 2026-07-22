@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:cs2_rcon_front_end/features/server_management/data/managed_private_key_store.dart';
 import 'package:cs2_rcon_front_end/features/server_management/domain/models/selected_private_key.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:oxidized/oxidized.dart';
 import 'package:path/path.dart' as path;
 
 const _id = '123e4567-e89b-42d3-a456-426614174000';
@@ -40,7 +41,7 @@ void main() {
   test('imports key bytes under an opaque identifier and returns metadata', () async {
     final store = buildSubject();
 
-    final reference = await store.importKey(selectedKey());
+    final reference = (await store.importKey(selectedKey())).unwrap();
 
     expect(reference.id, _id);
     expect(reference.displayName, 'id_ed25519');
@@ -58,48 +59,44 @@ void main() {
 
   test('reads an imported key', () async {
     final store = buildSubject();
-    await store.importKey(selectedKey());
+    expect((await store.importKey(selectedKey())).isOk(), isTrue);
 
-    final bytes = await store.readKey(_id);
+    final bytes = (await store.readKey(_id)).unwrap();
 
     expect(bytes, [1, 2, 3, 4]);
   });
 
   test('does not overwrite an existing managed key when an identifier collides', () async {
     final store = buildSubject();
-    await store.importKey(selectedKey());
+    expect((await store.importKey(selectedKey())).isOk(), isTrue);
 
-    await expectLater(
-      store.importKey(
-        SelectedPrivateKey(displayName: 'replacement', pemBytes: Uint8List.fromList([9, 9, 9])),
-      ),
-      throwsA(isA<ManagedPrivateKeyStorageException>()),
+    final collisionResult = await store.importKey(
+      SelectedPrivateKey(displayName: 'replacement', pemBytes: Uint8List.fromList([9, 9, 9])),
     );
 
-    expect(await store.readKey(_id), [1, 2, 3, 4]);
+    expect(collisionResult.unwrapErr(), isA<ManagedPrivateKeyStorageException>());
+    expect((await store.readKey(_id)).unwrap(), [1, 2, 3, 4]);
   });
 
   test('reports a missing key without exposing its storage path', () async {
     final store = buildSubject();
 
-    final read = store.readKey(_id);
+    final read = await store.readKey(_id);
 
-    await expectLater(
-      read,
-      throwsA(
-        isA<ManagedPrivateKeyStorageException>()
-            .having((error) => error.message, 'message', contains('could not find'))
-            .having((error) => error.message, 'message', isNot(contains(supportDirectory.path))),
-      ),
+    expect(
+      read.unwrapErr(),
+      isA<ManagedPrivateKeyStorageException>()
+          .having((error) => error.message, 'message', contains('could not find'))
+          .having((error) => error.message, 'message', isNot(contains(supportDirectory.path))),
     );
   });
 
   test('deletes an imported key and is idempotent when it is already absent', () async {
     final store = buildSubject();
-    await store.importKey(selectedKey());
+    expect((await store.importKey(selectedKey())).isOk(), isTrue);
 
-    await store.deleteKey(_id);
-    await store.deleteKey(_id);
+    expect((await store.deleteKey(_id)).isOk(), isTrue);
+    expect((await store.deleteKey(_id)).isOk(), isTrue);
 
     expect(File(path.join(supportDirectory.path, 'ssh_keys', _id)).existsSync(), isFalse);
   });
@@ -108,10 +105,13 @@ void main() {
     final permissions = <(String, String)>[];
     final store = buildSubject(
       isWindows: false,
-      setPathPermissions: (target, mode) async => permissions.add((target, mode)),
+      setPathPermissions: (target, mode) async {
+        permissions.add((target, mode));
+        return const Ok(null);
+      },
     );
 
-    await store.importKey(selectedKey());
+    expect((await store.importKey(selectedKey())).isOk(), isTrue);
 
     expect(permissions.map((entry) => entry.$2), ['700', '600']);
     expect(permissions.first.$1, path.join(supportDirectory.path, 'ssh_keys'));
@@ -122,7 +122,7 @@ void main() {
     if (Platform.isWindows) return;
     final store = buildSubject(isWindows: false);
 
-    await store.importKey(selectedKey());
+    expect((await store.importKey(selectedKey())).isOk(), isTrue);
 
     final directory = await FileStat.stat(path.join(supportDirectory.path, 'ssh_keys'));
     final key = await FileStat.stat(path.join(supportDirectory.path, 'ssh_keys', _id));
@@ -134,14 +134,18 @@ void main() {
     final store = buildSubject(
       isWindows: false,
       setPathPermissions: (target, mode) async {
-        if (mode == '600') throw const FileSystemException('permission failure');
+        if (mode == '600') {
+          return const Err(
+            ManagedPrivateKeyStorageException('Arkie could not set private key permissions.'),
+          );
+        }
+        return const Ok(null);
       },
     );
 
-    await expectLater(
-      store.importKey(selectedKey()),
-      throwsA(isA<ManagedPrivateKeyStorageException>()),
-    );
+    final result = await store.importKey(selectedKey());
+
+    expect(result.unwrapErr(), isA<ManagedPrivateKeyStorageException>());
 
     expect(
       Directory(path.join(supportDirectory.path, 'ssh_keys')).listSync().whereType<File>(),
@@ -152,15 +156,15 @@ void main() {
   test('rejects malformed identifiers before touching the filesystem', () async {
     final store = buildSubject();
 
-    await expectLater(store.readKey('../id_ed25519'), throwsArgumentError);
-    await expectLater(store.deleteKey('not-a-uuid'), throwsArgumentError);
+    expect((await store.readKey('../id_ed25519')).isErr(), isTrue);
+    expect((await store.deleteKey('not-a-uuid')).isErr(), isTrue);
     expect(Directory(path.join(supportDirectory.path, 'ssh_keys')).existsSync(), isFalse);
   });
 
   test('rejects a malformed generated identifier before touching the filesystem', () async {
     final store = buildSubject(createId: () => '../id_ed25519');
 
-    await expectLater(store.importKey(selectedKey()), throwsArgumentError);
+    expect((await store.importKey(selectedKey())).isErr(), isTrue);
 
     expect(Directory(path.join(supportDirectory.path, 'ssh_keys')).existsSync(), isFalse);
   });

@@ -11,11 +11,6 @@ class ImportSshPrivateKey {
 
   final ManagedPrivateKeyStore _store;
 
-  Future<Result<ManagedPrivateKeyReference, Exception>> call(SelectedPrivateKey selected) async {
-    try {
-      return Result.ok(await _store.importKey(selected));
-    } on Exception catch (error) {
-      return Result.err(error);
-    }
-  }
+  Future<Result<ManagedPrivateKeyReference, Exception>> call(SelectedPrivateKey selected) =>
+      _store.importKey(selected);
 }

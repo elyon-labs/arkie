@@ -12,11 +12,6 @@ class ReadManagedPrivateKey {
 
   final ManagedPrivateKeyStore _store;
 
-  Future<Result<Uint8List, Exception>> call(ManagedPrivateKeyReference reference) async {
-    try {
-      return Result.ok(await _store.readKey(reference.id));
-    } on Exception catch (error) {
-      return Result.err(error);
-    }
-  }
+  Future<Result<Uint8List, Exception>> call(ManagedPrivateKeyReference reference) =>
+      _store.readKey(reference.id);
 }
