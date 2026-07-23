@@ -4,6 +4,7 @@ import 'package:cs2_rcon_front_end/core_ui/app_theme.dart';
 import 'package:cs2_rcon_front_end/di/graph.dart';
 import 'package:cs2_rcon_front_end/environment.dart';
 import 'package:cs2_rcon_front_end/features/rcon/data/connection_cache.dart';
+import 'package:cs2_rcon_front_end/features/server_management/data/managed_private_key_store.dart';
 import 'package:cs2_rcon_front_end/features/servers/data/api/servers_api.dart';
 import 'package:cs2_rcon_front_end/features/servers/data/repository/servers_repository.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/servers/servers.dart';
@@ -28,6 +29,7 @@ void main() async {
     serversRepository: () => ServersRepository(api: ServersApi.create()),
     settingsRepository: () => SettingsRepository(prefs: RxSharedPreferences.getInstance()),
     connectionCache: ConnectionCache.new,
+    managedPrivateKeyStore: ManagedPrivateKeyStore.new,
     messagesBox: Hive.openBox('messages'),
     serversBox: Hive.openBox('servers'),
     savedMessagesBox: Hive.openBox('saved_messages'),
