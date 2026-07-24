@@ -27,17 +27,20 @@ class AddServerDialog extends StatelessWidget {
 }
 
 class AddServerForm extends StatelessWidget {
-  const AddServerForm({super.key, required this.onServerAdded, required this.onCancel});
+  const AddServerForm({super.key, required this.onServerAdded, required this.onCancel, this.cubit});
 
   final ValueChanged<Server> onServerAdded;
   final VoidCallback onCancel;
+  final AddServerDialogCubit? cubit;
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AddServerDialogCubit.create(),
-      child: _AddServerFormBody(onServerAdded: onServerAdded, onCancel: onCancel),
-    );
+    final cubit = this.cubit;
+    final body = _AddServerFormBody(onServerAdded: onServerAdded, onCancel: onCancel);
+    if (cubit != null) {
+      return BlocProvider.value(value: cubit, child: body);
+    }
+    return BlocProvider(create: (context) => AddServerDialogCubit.create(), child: body);
   }
 }
 
@@ -77,28 +80,29 @@ class _AddServerFormBody extends StatelessWidget {
       child: BlocBuilder<AddServerDialogCubit, AddServerDialogState>(
         builder: (context, state) {
           final isSaving = state.addServerResult is Loading<Result<Server, String>>;
+          final isBusy = isSaving || state.isSelectingPrivateKey;
 
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(height: context.sizes.unit),
-              const ServerNameField(),
+              ServerNameField(enabled: !isBusy),
               SizedBox(height: context.sizes.unit),
-              const ServerAddressField(),
+              ServerAddressField(enabled: !isBusy),
               SizedBox(height: context.sizes.unit),
-              const ServerPortField(),
+              ServerPortField(enabled: !isBusy),
               SizedBox(height: context.sizes.unit),
-              const ServerPasswordField(),
+              ServerPasswordField(enabled: !isBusy),
               SizedBox(height: context.sizes.unit),
               const _ServerManagementFields(),
               SizedBox(height: context.sizes.unit * 2),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  TextButton(onPressed: isSaving ? null : onCancel, child: const Text('Cancel')),
+                  TextButton(onPressed: isBusy ? null : onCancel, child: const Text('Cancel')),
                   SizedBox(width: context.sizes.unit),
                   TextButton(
-                    onPressed: isSaving
+                    onPressed: isBusy
                         ? null
                         : () async {
                             await context.read<AddServerDialogCubit>().saveServer();
@@ -121,6 +125,8 @@ class _ServerManagementFields extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.select((AddServerDialogCubit cubit) => cubit.state);
+    final isSaving = state.addServerResult is Loading<Result<Server, String>>;
+    final controlsEnabled = !isSaving && !state.isSelectingPrivateKey;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -130,16 +136,20 @@ class _ServerManagementFields extends StatelessWidget {
           title: const Text('Manage server over SSH'),
           subtitle: const Text('Systemd backend via the arkie-cs2 dispatcher'),
           value: state.enableManagement,
-          onChanged: context.read<AddServerDialogCubit>().setEnableManagement,
+          onChanged: controlsEnabled
+              ? context.read<AddServerDialogCubit>().setEnableManagement
+              : null,
         ),
         if (state.enableManagement) ...[
           TextField(
+            enabled: controlsEnabled,
             onChanged: context.read<AddServerDialogCubit>().setSshHost,
             keyboardType: TextInputType.url,
             decoration: const InputDecoration(hintText: 'SSH host'),
           ),
           SizedBox(height: context.sizes.unit),
           TextField(
+            enabled: controlsEnabled,
             onChanged: (value) => context.read<AddServerDialogCubit>().setSshPort(
               int.tryParse(value) ?? state.sshPort,
             ),
@@ -148,17 +158,48 @@ class _ServerManagementFields extends StatelessWidget {
           ),
           SizedBox(height: context.sizes.unit),
           TextFormField(
+            enabled: controlsEnabled,
             initialValue: state.sshUser,
             onChanged: context.read<AddServerDialogCubit>().setSshUser,
             decoration: const InputDecoration(hintText: 'SSH user (arkie-cs2)'),
           ),
           SizedBox(height: context.sizes.unit),
-          TextField(
-            onChanged: context.read<AddServerDialogCubit>().setPrivateKeyPath,
-            decoration: const InputDecoration(hintText: 'Private key path on this computer'),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  state.privateKeyDisplayName ?? 'No private key selected',
+                  key: const Key('private-key-display-name'),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              SizedBox(width: context.sizes.unit),
+              OutlinedButton(
+                key: const Key('select-private-key-button'),
+                onPressed: controlsEnabled
+                    ? context.read<AddServerDialogCubit>().selectPrivateKey
+                    : null,
+                child: Text(
+                  state.isSelectingPrivateKey
+                      ? 'Selecting...'
+                      : state.privateKeyDisplayName == null
+                      ? 'Select'
+                      : 'Replace',
+                ),
+              ),
+            ],
           ),
+          if (state.privateKeySelectionError case final error?) ...[
+            SizedBox(height: context.sizes.unit / 2),
+            Text(
+              error,
+              key: const Key('private-key-selection-error'),
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+          ],
           SizedBox(height: context.sizes.unit),
           TextField(
+            enabled: controlsEnabled,
             onChanged: context.read<AddServerDialogCubit>().setHostKeyFingerprint,
             decoration: const InputDecoration(hintText: 'Host key fingerprint (SHA256:...)'),
           ),

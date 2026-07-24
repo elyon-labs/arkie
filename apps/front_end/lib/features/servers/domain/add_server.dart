@@ -1,7 +1,11 @@
 import 'package:cs2_rcon_front_end/di/graph.dart';
+import 'package:cs2_rcon_front_end/features/server_management/domain/delete_managed_private_key.dart';
+import 'package:cs2_rcon_front_end/features/server_management/domain/import_ssh_private_key.dart';
+import 'package:cs2_rcon_front_end/features/server_management/domain/models/managed_private_key_reference.dart';
 import 'package:cs2_rcon_front_end/features/servers/data/models/server.dart';
 import 'package:cs2_rcon_front_end/features/servers/data/models/server_management_config.dart';
 import 'package:cs2_rcon_front_end/features/servers/data/repository/servers_repository.dart';
+import 'package:cs2_rcon_front_end/features/servers/domain/models/server_management_draft.dart';
 import 'package:cs2_rcon_front_end/features/settings/data/repository/settings_repository.dart';
 import 'package:oxidized/oxidized.dart';
 
@@ -13,24 +17,54 @@ class AddServer {
   AddServer({
     required ServersRepository serversRepository,
     required SettingsRepository settingsRepository,
+    required ImportSshPrivateKey importSshPrivateKey,
+    required DeleteManagedPrivateKey deleteManagedPrivateKey,
   }) : _settingsRepository = settingsRepository,
-       _serversRepository = serversRepository;
+       _serversRepository = serversRepository,
+       _importSshPrivateKey = importSshPrivateKey,
+       _deleteManagedPrivateKey = deleteManagedPrivateKey;
 
   factory AddServer.create() {
-    return AddServer(serversRepository: inject(), settingsRepository: inject());
+    return AddServer(
+      serversRepository: inject(),
+      settingsRepository: inject(),
+      importSshPrivateKey: ImportSshPrivateKey.create(),
+      deleteManagedPrivateKey: DeleteManagedPrivateKey.create(),
+    );
   }
 
   final ServersRepository _serversRepository;
   final SettingsRepository _settingsRepository;
+  final ImportSshPrivateKey _importSshPrivateKey;
+  final DeleteManagedPrivateKey _deleteManagedPrivateKey;
 
   Future<Result<Server, Exception>> call({
     required String name,
     required String address,
     required int port,
     required String password,
-    ServerManagementConfig? managementConfig,
+    ServerManagementDraft? managementDraft,
   }) async {
     final initialServers = await _serversRepository.getServers();
+    ServerManagementConfig? managementConfig;
+    ManagedPrivateKeyReference? importedPrivateKey;
+    if (managementDraft != null) {
+      final importResult = await _importSshPrivateKey(managementDraft.selectedPrivateKey);
+      if (importResult.isErr()) {
+        return Err(importResult.unwrapErr());
+      }
+      final privateKey = importResult.unwrap();
+      importedPrivateKey = privateKey;
+      managementConfig = ServerManagementConfig(
+        backend: managementDraft.backend,
+        sshHost: managementDraft.sshHost,
+        sshPort: managementDraft.sshPort,
+        sshUser: managementDraft.sshUser,
+        privateKey: privateKey,
+        hostKeyFingerprint: managementDraft.hostKeyFingerprint,
+      );
+    }
+
     final result = await _serversRepository.addServer(
       name: name,
       address: address,
@@ -38,6 +72,11 @@ class AddServer {
       password: password,
       managementConfig: managementConfig,
     );
+
+    if (result.isErr() && importedPrivateKey != null) {
+      await _deleteManagedPrivateKey(importedPrivateKey);
+      return result;
+    }
 
     if (initialServers.isEmpty && result.isOk()) {
       await _settingsRepository.selectServer(result.unwrap().id);

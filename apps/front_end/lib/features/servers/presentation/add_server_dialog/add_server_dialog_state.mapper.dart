@@ -72,13 +72,23 @@ class AddServerDialogStateMapper extends ClassMapperBase<AddServerDialogState> {
     opt: true,
     def: 'arkie-cs2',
   );
-  static String _$privateKeyPath(AddServerDialogState v) => v.privateKeyPath;
-  static const Field<AddServerDialogState, String> _f$privateKeyPath = Field(
-    'privateKeyPath',
-    _$privateKeyPath,
-    opt: true,
-    def: '',
-  );
+  static bool _$isSelectingPrivateKey(AddServerDialogState v) =>
+      v.isSelectingPrivateKey;
+  static const Field<AddServerDialogState, bool> _f$isSelectingPrivateKey =
+      Field(
+        'isSelectingPrivateKey',
+        _$isSelectingPrivateKey,
+        opt: true,
+        def: false,
+      );
+  static String? _$privateKeyDisplayName(AddServerDialogState v) =>
+      v.privateKeyDisplayName;
+  static const Field<AddServerDialogState, String> _f$privateKeyDisplayName =
+      Field('privateKeyDisplayName', _$privateKeyDisplayName, opt: true);
+  static String? _$privateKeySelectionError(AddServerDialogState v) =>
+      v.privateKeySelectionError;
+  static const Field<AddServerDialogState, String> _f$privateKeySelectionError =
+      Field('privateKeySelectionError', _$privateKeySelectionError, opt: true);
   static String _$hostKeyFingerprint(AddServerDialogState v) =>
       v.hostKeyFingerprint;
   static const Field<AddServerDialogState, String> _f$hostKeyFingerprint =
@@ -95,7 +105,9 @@ class AddServerDialogStateMapper extends ClassMapperBase<AddServerDialogState> {
     #sshHost: _f$sshHost,
     #sshPort: _f$sshPort,
     #sshUser: _f$sshUser,
-    #privateKeyPath: _f$privateKeyPath,
+    #isSelectingPrivateKey: _f$isSelectingPrivateKey,
+    #privateKeyDisplayName: _f$privateKeyDisplayName,
+    #privateKeySelectionError: _f$privateKeySelectionError,
     #hostKeyFingerprint: _f$hostKeyFingerprint,
   };
 
@@ -110,7 +122,9 @@ class AddServerDialogStateMapper extends ClassMapperBase<AddServerDialogState> {
       sshHost: data.dec(_f$sshHost),
       sshPort: data.dec(_f$sshPort),
       sshUser: data.dec(_f$sshUser),
-      privateKeyPath: data.dec(_f$privateKeyPath),
+      isSelectingPrivateKey: data.dec(_f$isSelectingPrivateKey),
+      privateKeyDisplayName: data.dec(_f$privateKeyDisplayName),
+      privateKeySelectionError: data.dec(_f$privateKeySelectionError),
       hostKeyFingerprint: data.dec(_f$hostKeyFingerprint),
     );
   }
@@ -195,7 +209,9 @@ abstract class AddServerDialogStateCopyWith<
     String? sshHost,
     int? sshPort,
     String? sshUser,
-    String? privateKeyPath,
+    bool? isSelectingPrivateKey,
+    String? privateKeyDisplayName,
+    String? privateKeySelectionError,
     String? hostKeyFingerprint,
   });
   AddServerDialogStateCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
@@ -222,7 +238,9 @@ class _AddServerDialogStateCopyWithImpl<$R, $Out>
     String? sshHost,
     int? sshPort,
     String? sshUser,
-    String? privateKeyPath,
+    bool? isSelectingPrivateKey,
+    Object? privateKeyDisplayName = $none,
+    Object? privateKeySelectionError = $none,
     String? hostKeyFingerprint,
   }) => $apply(
     FieldCopyWithData({
@@ -235,7 +253,12 @@ class _AddServerDialogStateCopyWithImpl<$R, $Out>
       if (sshHost != null) #sshHost: sshHost,
       if (sshPort != null) #sshPort: sshPort,
       if (sshUser != null) #sshUser: sshUser,
-      if (privateKeyPath != null) #privateKeyPath: privateKeyPath,
+      if (isSelectingPrivateKey != null)
+        #isSelectingPrivateKey: isSelectingPrivateKey,
+      if (privateKeyDisplayName != $none)
+        #privateKeyDisplayName: privateKeyDisplayName,
+      if (privateKeySelectionError != $none)
+        #privateKeySelectionError: privateKeySelectionError,
       if (hostKeyFingerprint != null) #hostKeyFingerprint: hostKeyFingerprint,
     }),
   );
@@ -250,7 +273,18 @@ class _AddServerDialogStateCopyWithImpl<$R, $Out>
     sshHost: data.get(#sshHost, or: $value.sshHost),
     sshPort: data.get(#sshPort, or: $value.sshPort),
     sshUser: data.get(#sshUser, or: $value.sshUser),
-    privateKeyPath: data.get(#privateKeyPath, or: $value.privateKeyPath),
+    isSelectingPrivateKey: data.get(
+      #isSelectingPrivateKey,
+      or: $value.isSelectingPrivateKey,
+    ),
+    privateKeyDisplayName: data.get(
+      #privateKeyDisplayName,
+      or: $value.privateKeyDisplayName,
+    ),
+    privateKeySelectionError: data.get(
+      #privateKeySelectionError,
+      or: $value.privateKeySelectionError,
+    ),
     hostKeyFingerprint: data.get(
       #hostKeyFingerprint,
       or: $value.hostKeyFingerprint,

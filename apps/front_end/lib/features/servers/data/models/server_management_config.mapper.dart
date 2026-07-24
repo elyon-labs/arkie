@@ -62,6 +62,7 @@ class ServerManagementConfigMapper
     if (_instance == null) {
       MapperContainer.globals.use(_instance = ServerManagementConfigMapper._());
       ServerManagementBackendMapper.ensureInitialized();
+      ManagedPrivateKeyReferenceMapper.ensureInitialized();
     }
     return _instance!;
   }
@@ -88,11 +89,10 @@ class ServerManagementConfigMapper
     'sshUser',
     _$sshUser,
   );
-  static String _$privateKeyPath(ServerManagementConfig v) => v.privateKeyPath;
-  static const Field<ServerManagementConfig, String> _f$privateKeyPath = Field(
-    'privateKeyPath',
-    _$privateKeyPath,
-  );
+  static ManagedPrivateKeyReference? _$privateKey(ServerManagementConfig v) =>
+      v.privateKey;
+  static const Field<ServerManagementConfig, ManagedPrivateKeyReference>
+  _f$privateKey = Field('privateKey', _$privateKey);
   static String _$hostKeyFingerprint(ServerManagementConfig v) =>
       v.hostKeyFingerprint;
   static const Field<ServerManagementConfig, String> _f$hostKeyFingerprint =
@@ -104,7 +104,7 @@ class ServerManagementConfigMapper
     #sshHost: _f$sshHost,
     #sshPort: _f$sshPort,
     #sshUser: _f$sshUser,
-    #privateKeyPath: _f$privateKeyPath,
+    #privateKey: _f$privateKey,
     #hostKeyFingerprint: _f$hostKeyFingerprint,
   };
 
@@ -114,7 +114,7 @@ class ServerManagementConfigMapper
       sshHost: data.dec(_f$sshHost),
       sshPort: data.dec(_f$sshPort),
       sshUser: data.dec(_f$sshUser),
-      privateKeyPath: data.dec(_f$privateKeyPath),
+      privateKey: data.dec(_f$privateKey),
       hostKeyFingerprint: data.dec(_f$hostKeyFingerprint),
     );
   }
@@ -189,12 +189,18 @@ abstract class ServerManagementConfigCopyWith<
   $Out
 >
     implements ClassCopyWith<$R, $In, $Out> {
+  ManagedPrivateKeyReferenceCopyWith<
+    $R,
+    ManagedPrivateKeyReference,
+    ManagedPrivateKeyReference
+  >?
+  get privateKey;
   $R call({
     ServerManagementBackend? backend,
     String? sshHost,
     int? sshPort,
     String? sshUser,
-    String? privateKeyPath,
+    ManagedPrivateKeyReference? privateKey,
     String? hostKeyFingerprint,
   });
   ServerManagementConfigCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
@@ -212,12 +218,20 @@ class _ServerManagementConfigCopyWithImpl<$R, $Out>
   late final ClassMapperBase<ServerManagementConfig> $mapper =
       ServerManagementConfigMapper.ensureInitialized();
   @override
+  ManagedPrivateKeyReferenceCopyWith<
+    $R,
+    ManagedPrivateKeyReference,
+    ManagedPrivateKeyReference
+  >?
+  get privateKey =>
+      $value.privateKey?.copyWith.$chain((v) => call(privateKey: v));
+  @override
   $R call({
     ServerManagementBackend? backend,
     String? sshHost,
     int? sshPort,
     String? sshUser,
-    String? privateKeyPath,
+    Object? privateKey = $none,
     String? hostKeyFingerprint,
   }) => $apply(
     FieldCopyWithData({
@@ -225,7 +239,7 @@ class _ServerManagementConfigCopyWithImpl<$R, $Out>
       if (sshHost != null) #sshHost: sshHost,
       if (sshPort != null) #sshPort: sshPort,
       if (sshUser != null) #sshUser: sshUser,
-      if (privateKeyPath != null) #privateKeyPath: privateKeyPath,
+      if (privateKey != $none) #privateKey: privateKey,
       if (hostKeyFingerprint != null) #hostKeyFingerprint: hostKeyFingerprint,
     }),
   );
@@ -235,7 +249,7 @@ class _ServerManagementConfigCopyWithImpl<$R, $Out>
     sshHost: data.get(#sshHost, or: $value.sshHost),
     sshPort: data.get(#sshPort, or: $value.sshPort),
     sshUser: data.get(#sshUser, or: $value.sshUser),
-    privateKeyPath: data.get(#privateKeyPath, or: $value.privateKeyPath),
+    privateKey: data.get(#privateKey, or: $value.privateKey),
     hostKeyFingerprint: data.get(
       #hostKeyFingerprint,
       or: $value.hostKeyFingerprint,

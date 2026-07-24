@@ -7,6 +7,7 @@ import 'package:cs2_rcon_front_end/hive/hive_adapters.dart';
 
 extension HiveRegistrar on HiveInterface {
   void registerAdapters() {
+    registerAdapter(ManagedPrivateKeyReferenceAdapter());
     registerAdapter(MessageAdapter());
     registerAdapter(SavedMessageAdapter());
     registerAdapter(SenderAdapter());
@@ -18,6 +19,7 @@ extension HiveRegistrar on HiveInterface {
 
 extension IsolatedHiveRegistrar on IsolatedHiveInterface {
   void registerAdapters() {
+    registerAdapter(ManagedPrivateKeyReferenceAdapter());
     registerAdapter(MessageAdapter());
     registerAdapter(SavedMessageAdapter());
     registerAdapter(SenderAdapter());
