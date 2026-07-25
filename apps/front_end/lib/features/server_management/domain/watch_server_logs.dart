@@ -27,10 +27,11 @@ class WatchServerLogs {
       return;
     }
     final readResult = await _readManagedPrivateKey(privateKey);
-    if (readResult.isErr()) {
-      yield const Err(ServerManagementCredentialException());
-      return;
-    }
-    yield* _api.streamLogs(config, readResult.unwrap());
+    yield* readResult
+        .mapErr<Exception>((_) => const ServerManagementCredentialException())
+        .match(
+          (bytes) => _api.streamLogs(config, bytes),
+          (error) => Stream<Result<String, Exception>>.value(Err(error)),
+        );
   }
 }

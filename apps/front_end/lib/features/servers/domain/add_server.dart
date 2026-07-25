@@ -1,7 +1,6 @@
 import 'package:cs2_rcon_front_end/di/graph.dart';
 import 'package:cs2_rcon_front_end/features/server_management/domain/delete_managed_private_key.dart';
 import 'package:cs2_rcon_front_end/features/server_management/domain/import_ssh_private_key.dart';
-import 'package:cs2_rcon_front_end/features/server_management/domain/models/managed_private_key_reference.dart';
 import 'package:cs2_rcon_front_end/features/servers/data/models/server.dart';
 import 'package:cs2_rcon_front_end/features/servers/data/models/server_management_config.dart';
 import 'package:cs2_rcon_front_end/features/servers/data/repository/servers_repository.dart';
@@ -46,42 +45,45 @@ class AddServer {
     ServerManagementDraft? managementDraft,
   }) async {
     final initialServers = await _serversRepository.getServers();
-    ServerManagementConfig? managementConfig;
-    ManagedPrivateKeyReference? importedPrivateKey;
-    if (managementDraft != null) {
-      final importResult = await _importSshPrivateKey(managementDraft.selectedPrivateKey);
-      if (importResult.isErr()) {
-        return Err(importResult.unwrapErr());
-      }
-      final privateKey = importResult.unwrap();
-      importedPrivateKey = privateKey;
-      managementConfig = ServerManagementConfig(
-        backend: managementDraft.backend,
-        sshHost: managementDraft.sshHost,
-        sshPort: managementDraft.sshPort,
-        sshUser: managementDraft.sshUser,
-        privateKey: privateKey,
-        hostKeyFingerprint: managementDraft.hostKeyFingerprint,
+    final Result<ServerManagementConfig?, Exception> managementConfigResult;
+    if (managementDraft == null) {
+      managementConfigResult = const Ok(null);
+    } else {
+      managementConfigResult = (await _importSshPrivateKey(managementDraft.selectedPrivateKey))
+          .mapErr<Exception>((error) => error)
+          .map<ServerManagementConfig?>(
+            (privateKey) => ServerManagementConfig(
+              backend: managementDraft.backend,
+              sshHost: managementDraft.sshHost,
+              sshPort: managementDraft.sshPort,
+              sshUser: managementDraft.sshUser,
+              privateKey: privateKey,
+              hostKeyFingerprint: managementDraft.hostKeyFingerprint,
+            ),
+          );
+    }
+
+    return managementConfigResult.andThenAsync((managementConfig) async {
+      final result = await _serversRepository.addServer(
+        name: name,
+        address: address,
+        port: port,
+        password: password,
+        managementConfig: managementConfig,
       );
-    }
-
-    final result = await _serversRepository.addServer(
-      name: name,
-      address: address,
-      port: port,
-      password: password,
-      managementConfig: managementConfig,
-    );
-
-    if (result.isErr() && importedPrivateKey != null) {
-      await _deleteManagedPrivateKey(importedPrivateKey);
-      return result;
-    }
-
-    if (initialServers.isEmpty && result.isOk()) {
-      await _settingsRepository.selectServer(result.unwrap().id);
-    }
-
-    return result;
+      final importedPrivateKey = managementConfig?.privateKey;
+      final cleanedResult = await result.mapErrAsync((error) async {
+        if (importedPrivateKey != null) {
+          await _deleteManagedPrivateKey(importedPrivateKey);
+        }
+        return error;
+      });
+      return cleanedResult.mapAsync((server) async {
+        if (initialServers.isEmpty) {
+          await _settingsRepository.selectServer(server.id);
+        }
+        return server;
+      });
+    });
   }
 }

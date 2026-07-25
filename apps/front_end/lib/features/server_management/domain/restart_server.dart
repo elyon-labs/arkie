@@ -26,9 +26,8 @@ class RestartServer {
       return const Err(ServerManagementCredentialException());
     }
     final readResult = await _readManagedPrivateKey(privateKey);
-    if (readResult.isErr()) {
-      return const Err(ServerManagementCredentialException());
-    }
-    return _api.run(config, ServerManagementAction.restart, readResult.unwrap());
+    return readResult
+        .mapErr<Exception>((_) => const ServerManagementCredentialException())
+        .andThenAsync((bytes) => _api.run(config, ServerManagementAction.restart, bytes));
   }
 }
