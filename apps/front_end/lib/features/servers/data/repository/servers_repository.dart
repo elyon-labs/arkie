@@ -59,6 +59,10 @@ class ServersRepository {
     return _mutate(() => _api.removeServer(server));
   }
 
+  Future<Result<void, Exception>> updateServer(Server server) {
+    return _mutate(() => _api.updateServer(server));
+  }
+
   Future<Result<void, Exception>> clearServers() {
     return _mutate(_api.clearServers);
   }

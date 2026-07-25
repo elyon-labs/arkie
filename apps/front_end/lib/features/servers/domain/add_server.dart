@@ -49,18 +49,23 @@ class AddServer {
     if (managementDraft == null) {
       managementConfigResult = const Ok(null);
     } else {
-      managementConfigResult = (await _importSshPrivateKey(managementDraft.selectedPrivateKey))
-          .mapErr<Exception>((error) => error)
-          .map<ServerManagementConfig?>(
-            (privateKey) => ServerManagementConfig(
-              backend: managementDraft.backend,
-              sshHost: managementDraft.sshHost,
-              sshPort: managementDraft.sshPort,
-              sshUser: managementDraft.sshUser,
-              privateKey: privateKey,
-              hostKeyFingerprint: managementDraft.hostKeyFingerprint,
-            ),
-          );
+      final selectedPrivateKey = managementDraft.selectedPrivateKey;
+      if (selectedPrivateKey == null) {
+        managementConfigResult = Err(Exception('Select an SSH private key.'));
+      } else {
+        managementConfigResult = (await _importSshPrivateKey(selectedPrivateKey))
+            .mapErr<Exception>((error) => error)
+            .map<ServerManagementConfig?>(
+              (privateKey) => ServerManagementConfig(
+                backend: managementDraft.backend,
+                sshHost: managementDraft.sshHost,
+                sshPort: managementDraft.sshPort,
+                sshUser: managementDraft.sshUser,
+                privateKey: privateKey,
+                hostKeyFingerprint: managementDraft.hostKeyFingerprint,
+              ),
+            );
+      }
     }
 
     return managementConfigResult.andThenAsync((managementConfig) async {

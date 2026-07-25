@@ -7,6 +7,7 @@ import 'package:cs2_rcon_front_end/features/servers/presentation/add_server_dial
 import 'package:cs2_rcon_front_end/features/servers/presentation/add_server_dialog/widgets/server_name_field.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/add_server_dialog/widgets/server_password_field.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/add_server_dialog/widgets/server_port_field.dart';
+import 'package:cs2_rcon_front_end/features/servers/presentation/server_management_form/server_management_form.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:oxidized/oxidized.dart';
@@ -138,67 +139,20 @@ class _ServerManagementFields extends StatelessWidget {
               : null,
         ),
         if (state.enableManagement) ...[
-          TextField(
-            enabled: controlsEnabled,
-            onChanged: context.read<AddServerDialogCubit>().setSshHost,
-            keyboardType: TextInputType.url,
-            decoration: const InputDecoration(hintText: 'SSH host'),
-          ),
-          SizedBox(height: context.sizes.unit),
-          TextField(
-            enabled: controlsEnabled,
-            onChanged: (value) => context.read<AddServerDialogCubit>().setSshPort(
-              int.tryParse(value) ?? state.sshPort,
-            ),
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(hintText: 'SSH port (default 22)'),
-          ),
-          SizedBox(height: context.sizes.unit),
-          TextFormField(
-            enabled: controlsEnabled,
-            initialValue: state.sshUser,
-            onChanged: context.read<AddServerDialogCubit>().setSshUser,
-            decoration: const InputDecoration(hintText: 'SSH user (arkie-cs2)'),
-          ),
-          SizedBox(height: context.sizes.unit),
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  state.privateKeyDisplayName ?? 'No private key selected',
-                  key: const Key('private-key-display-name'),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              SizedBox(width: context.sizes.unit),
-              OutlinedButton(
-                key: const Key('select-private-key-button'),
-                onPressed: controlsEnabled
-                    ? context.read<AddServerDialogCubit>().selectPrivateKey
-                    : null,
-                child: Text(
-                  state.isSelectingPrivateKey
-                      ? 'Selecting...'
-                      : state.privateKeyDisplayName == null
-                      ? 'Select'
-                      : 'Replace',
-                ),
-              ),
-            ],
-          ),
-          if (state.privateKeySelectionError case final error?) ...[
-            SizedBox(height: context.sizes.unit / 2),
-            Text(
-              error,
-              key: const Key('private-key-selection-error'),
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
-            ),
-          ],
-          SizedBox(height: context.sizes.unit),
-          TextField(
-            enabled: controlsEnabled,
-            onChanged: context.read<AddServerDialogCubit>().setHostKeyFingerprint,
-            decoration: const InputDecoration(hintText: 'Host key fingerprint (SHA256:...)'),
+          ServerManagementForm(
+            sshHost: state.sshHost,
+            sshPort: state.sshPort,
+            sshUser: state.sshUser,
+            hostKeyFingerprint: state.hostKeyFingerprint,
+            privateKeyDisplayName: state.privateKeyDisplayName,
+            privateKeyError: state.privateKeySelectionError,
+            isBusy: !controlsEnabled,
+            isSelectingPrivateKey: state.isSelectingPrivateKey,
+            onSshHostChanged: context.read<AddServerDialogCubit>().setSshHost,
+            onSshPortChanged: context.read<AddServerDialogCubit>().setSshPort,
+            onSshUserChanged: context.read<AddServerDialogCubit>().setSshUser,
+            onHostKeyFingerprintChanged: context.read<AddServerDialogCubit>().setHostKeyFingerprint,
+            onSelectPrivateKey: context.read<AddServerDialogCubit>().selectPrivateKey,
           ),
         ],
       ],

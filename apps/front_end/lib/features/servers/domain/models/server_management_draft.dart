@@ -19,6 +19,11 @@ class ServerManagementDraft {
   final String sshHost;
   final int sshPort;
   final String sshUser;
-  final SelectedPrivateKey selectedPrivateKey;
+
+  /// A newly selected key to import.
+  ///
+  /// This is required when creating or enabling management, but may be omitted
+  /// while editing to retain an existing managed key.
+  final SelectedPrivateKey? selectedPrivateKey;
   final String hostKeyFingerprint;
 }

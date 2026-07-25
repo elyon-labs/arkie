@@ -158,7 +158,7 @@ class AddServerDialogCubit extends Cubit<AddServerDialogState> {
         sshHost: state.sshHost,
         sshPort: state.sshPort,
         sshUser: state.sshUser,
-        selectedPrivateKey: _selectedPrivateKey!,
+        selectedPrivateKey: _selectedPrivateKey,
         hostKeyFingerprint: state.hostKeyFingerprint,
       );
     }
