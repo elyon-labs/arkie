@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cs2_rcon_front_end/core_ui/app_theme.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/server_management_section/server_management_cubit.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/server_management_section/server_management_section.dart';
+import 'package:cs2_rcon_front_end/features/server_management/domain/models/managed_private_key_reference.dart';
 import 'package:cs2_rcon_front_end/features/server_management/domain/restart_server.dart';
 import 'package:cs2_rcon_front_end/features/server_management/domain/start_server.dart';
 import 'package:cs2_rcon_front_end/features/server_management/domain/stop_server.dart';
@@ -13,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:oxidized/oxidized.dart';
 
+import '../../../../../fakes/fake_read_managed_private_key.dart';
 import '../../../../../fakes/fake_server_management_api.dart';
 
 void main() {
@@ -27,15 +29,18 @@ void main() {
       sshHost: '127.0.0.1',
       sshPort: 22,
       sshUser: 'arkie-cs2',
-      privateKeyPath: '~/.ssh/arkie-cs2',
+      privateKey: ManagedPrivateKeyReference(id: 'key-id', displayName: 'id_ed25519'),
       hostKeyFingerprint: 'fingerprint',
     );
     final cubit = ServerManagementCubit(
       config: config,
-      startServer: StartServer(api: api),
-      stopServer: StopServer(api: api),
-      restartServer: RestartServer(api: api),
-      watchServerLogs: WatchServerLogs(api: api),
+      startServer: StartServer(api: api, readManagedPrivateKey: FakeReadManagedPrivateKey()),
+      stopServer: StopServer(api: api, readManagedPrivateKey: FakeReadManagedPrivateKey()),
+      restartServer: RestartServer(api: api, readManagedPrivateKey: FakeReadManagedPrivateKey()),
+      watchServerLogs: WatchServerLogs(
+        api: api,
+        readManagedPrivateKey: FakeReadManagedPrivateKey(),
+      ),
     );
     addTearDown(() async {
       if (!cancelCompleter.isCompleted) {

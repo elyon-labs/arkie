@@ -4,11 +4,14 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:provider/provider.dart';
 
 class ServerAddressField extends HookWidget {
-  const ServerAddressField({super.key});
+  const ServerAddressField({super.key, this.enabled = true});
+
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
     return TextField(
+      enabled: enabled,
       onChanged: (value) {
         context.read<AddServerDialogCubit>().setAddress(value);
       },

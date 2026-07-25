@@ -5,4 +5,6 @@ class SelectedPrivateKey {
 
   final String displayName;
   final Uint8List pemBytes;
+
+  void clear() => pemBytes.fillRange(0, pemBytes.length, 0);
 }

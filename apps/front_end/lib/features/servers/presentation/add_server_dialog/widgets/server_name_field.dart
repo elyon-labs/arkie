@@ -4,11 +4,14 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:provider/provider.dart';
 
 class ServerNameField extends HookWidget {
-  const ServerNameField({super.key});
+  const ServerNameField({super.key, this.enabled = true});
+
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
     return TextField(
+      enabled: enabled,
       onChanged: (value) {
         context.read<AddServerDialogCubit>().setName(value);
       },

@@ -1,3 +1,4 @@
+import 'package:cs2_rcon_front_end/features/server_management/domain/models/managed_private_key_reference.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 
 part 'server_management_config.mapper.dart';
@@ -12,7 +13,7 @@ class ServerManagementConfig with ServerManagementConfigMappable {
     required this.sshHost,
     required this.sshPort,
     required this.sshUser,
-    required this.privateKeyPath,
+    required this.privateKey,
     required this.hostKeyFingerprint,
   });
 
@@ -20,6 +21,6 @@ class ServerManagementConfig with ServerManagementConfigMappable {
   final String sshHost;
   final int sshPort;
   final String sshUser;
-  final String privateKeyPath;
+  final ManagedPrivateKeyReference? privateKey;
   final String hostKeyFingerprint;
 }

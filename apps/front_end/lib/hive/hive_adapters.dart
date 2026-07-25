@@ -1,5 +1,6 @@
 import 'package:cs2_rcon_front_end/features/rcon/data/models/message.dart';
 import 'package:cs2_rcon_front_end/features/rcon/data/models/saved_message.dart';
+import 'package:cs2_rcon_front_end/features/server_management/domain/models/managed_private_key_reference.dart';
 import 'package:cs2_rcon_front_end/features/servers/data/models/server.dart';
 import 'package:cs2_rcon_front_end/features/servers/data/models/server_management_config.dart';
 import 'package:hive_ce/hive.dart';
@@ -11,5 +12,6 @@ import 'package:hive_ce/hive.dart';
   AdapterSpec<Message>(),
   AdapterSpec<Sender>(),
   AdapterSpec<SavedMessage>(),
+  AdapterSpec<ManagedPrivateKeyReference>(),
 ])
 part 'hive_adapters.g.dart';
