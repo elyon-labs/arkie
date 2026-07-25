@@ -25,7 +25,7 @@ void main() {
 
     final logs = await WatchServerLogs(
       api: api,
-      readManagedPrivateKey: fakeReadManagedPrivateKey(bytes: bytes),
+      readManagedPrivateKey: FakeReadManagedPrivateKey(bytes: bytes),
     )(config).toList();
 
     expect(api.streamLogsConfig, config);
@@ -46,7 +46,7 @@ void main() {
 
     final logs = await WatchServerLogs(
       api: api,
-      readManagedPrivateKey: fakeReadManagedPrivateKey(
+      readManagedPrivateKey: FakeReadManagedPrivateKey(
         error: const ManagedPrivateKeyStorageException(
           'Arkie could not find the managed private key.',
         ),

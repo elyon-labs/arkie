@@ -25,7 +25,7 @@ void main() {
 
     final result = await StopServer(
       api: api,
-      readManagedPrivateKey: fakeReadManagedPrivateKey(bytes: bytes),
+      readManagedPrivateKey: FakeReadManagedPrivateKey(bytes: bytes),
     )(config);
 
     expect(api.runConfig, config);
@@ -47,7 +47,7 @@ void main() {
 
     final result = await StopServer(
       api: api,
-      readManagedPrivateKey: fakeReadManagedPrivateKey(
+      readManagedPrivateKey: FakeReadManagedPrivateKey(
         error: const ManagedPrivateKeyStorageException(
           'Arkie could not find the managed private key.',
         ),

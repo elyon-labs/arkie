@@ -34,12 +34,12 @@ void main() {
     );
     final cubit = ServerManagementCubit(
       config: config,
-      startServer: StartServer(api: api, readManagedPrivateKey: fakeReadManagedPrivateKey()),
-      stopServer: StopServer(api: api, readManagedPrivateKey: fakeReadManagedPrivateKey()),
-      restartServer: RestartServer(api: api, readManagedPrivateKey: fakeReadManagedPrivateKey()),
+      startServer: StartServer(api: api, readManagedPrivateKey: FakeReadManagedPrivateKey()),
+      stopServer: StopServer(api: api, readManagedPrivateKey: FakeReadManagedPrivateKey()),
+      restartServer: RestartServer(api: api, readManagedPrivateKey: FakeReadManagedPrivateKey()),
       watchServerLogs: WatchServerLogs(
         api: api,
-        readManagedPrivateKey: fakeReadManagedPrivateKey(),
+        readManagedPrivateKey: FakeReadManagedPrivateKey(),
       ),
     );
     addTearDown(() async {

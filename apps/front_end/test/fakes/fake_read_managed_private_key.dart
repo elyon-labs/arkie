@@ -6,14 +6,12 @@ import 'package:oxidized/oxidized.dart';
 
 import 'fake_managed_private_key_store.dart';
 
-ReadManagedPrivateKey fakeReadManagedPrivateKey({
-  Uint8List? bytes,
-  ManagedPrivateKeyStorageException? error,
-}) {
-  return ReadManagedPrivateKey(
-    store: FakeManagedPrivateKeyStore(
-      onReadKey: (_) async =>
-          error == null ? Ok(bytes ?? Uint8List.fromList([1, 2, 3])) : Err(error),
-    ),
-  );
+class FakeReadManagedPrivateKey extends ReadManagedPrivateKey {
+  FakeReadManagedPrivateKey({Uint8List? bytes, ManagedPrivateKeyStorageException? error})
+    : super(
+        store: FakeManagedPrivateKeyStore(
+          onReadKey: (_) async =>
+              error == null ? Ok(bytes ?? Uint8List.fromList([1, 2, 3])) : Err(error),
+        ),
+      );
 }

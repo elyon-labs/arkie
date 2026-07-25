@@ -27,20 +27,17 @@ class AddServerDialog extends StatelessWidget {
 }
 
 class AddServerForm extends StatelessWidget {
-  const AddServerForm({super.key, required this.onServerAdded, required this.onCancel, this.cubit});
+  const AddServerForm({super.key, required this.onServerAdded, required this.onCancel});
 
   final ValueChanged<Server> onServerAdded;
   final VoidCallback onCancel;
-  final AddServerDialogCubit? cubit;
 
   @override
   Widget build(BuildContext context) {
-    final cubit = this.cubit;
-    final body = _AddServerFormBody(onServerAdded: onServerAdded, onCancel: onCancel);
-    if (cubit != null) {
-      return BlocProvider.value(value: cubit, child: body);
-    }
-    return BlocProvider(create: (context) => AddServerDialogCubit.create(), child: body);
+    return BlocProvider(
+      create: (context) => AddServerDialogCubit.create(),
+      child: _AddServerFormBody(onServerAdded: onServerAdded, onCancel: onCancel),
+    );
   }
 }
 

@@ -24,7 +24,7 @@ void main() {
 
     final result = await StartServer(
       api: api,
-      readManagedPrivateKey: fakeReadManagedPrivateKey(bytes: bytes),
+      readManagedPrivateKey: FakeReadManagedPrivateKey(bytes: bytes),
     )(config);
 
     expect(api.runConfig, config);
@@ -44,7 +44,7 @@ void main() {
     );
     final api = FakeServerManagementApi();
 
-    final result = await StartServer(api: api, readManagedPrivateKey: fakeReadManagedPrivateKey())(
+    final result = await StartServer(api: api, readManagedPrivateKey: FakeReadManagedPrivateKey())(
       config,
     );
 
