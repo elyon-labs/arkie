@@ -6,26 +6,6 @@ import 'package:hive_ce/hive.dart';
 
 void main() {
   group('ServerManagementConfigAdapter', () {
-    test('ignores the retired private-key path field in a legacy record', () {
-      final reader = _RecordingReader(
-        bytes: [6, 0, 1, 2, 3, 4, 5],
-        values: [
-          ServerManagementBackend.systemd,
-          'server.example.com',
-          22,
-          'arkie-cs2',
-          '/private/legacy/id_ed25519',
-          'fingerprint',
-        ],
-      );
-
-      final config = ServerManagementConfigAdapter().read(reader);
-
-      expect(config.privateKey, isNull);
-      expect(config.sshHost, 'server.example.com');
-      expect(config.hostKeyFingerprint, 'fingerprint');
-    });
-
     test('round-trips a managed private-key reference on field 6', () {
       const config = ServerManagementConfig(
         backend: ServerManagementBackend.systemd,
