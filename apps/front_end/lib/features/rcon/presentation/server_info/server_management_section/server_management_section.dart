@@ -7,10 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ServerManagementSection extends StatelessWidget {
-  const ServerManagementSection({super.key, required this.server, this.cubit});
+  const ServerManagementSection({super.key, required this.server});
 
   final Server server;
-  final ServerManagementCubit? cubit;
 
   @override
   Widget build(BuildContext context) {
@@ -31,13 +30,6 @@ class ServerManagementSection extends StatelessWidget {
       );
     }
 
-    final cubit = this.cubit;
-    if (cubit != null) {
-      return BlocProvider.value(
-        value: cubit,
-        child: _ServerManagementView(server: server),
-      );
-    }
     return BlocProvider(
       create: (_) => ServerManagementCubit.create(config: config),
       child: _ServerManagementView(server: server),
