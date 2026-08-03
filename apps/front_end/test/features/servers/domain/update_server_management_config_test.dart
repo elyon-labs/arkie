@@ -42,7 +42,10 @@ void main() {
     );
     addTearDown(harness.dispose);
 
-    final result = await harness.subject(server: server, enabled: true, draft: _draft());
+    final result = await harness.subject(
+      server: server,
+      update: SaveServerManagementConfig(_draft()),
+    );
 
     expect(result.isOk(), isTrue);
     expect(importCalls, 0);
@@ -62,8 +65,7 @@ void main() {
 
     final result = await harness.subject(
       server: server,
-      enabled: true,
-      draft: _draft(selectedPrivateKey: _selected()),
+      update: SaveServerManagementConfig(_draft(selectedPrivateKey: _selected())),
     );
 
     expect(result.isOk(), isTrue);
@@ -76,7 +78,10 @@ void main() {
     final harness = await _Harness.create(server: server, store: FakeManagedPrivateKeyStore());
     addTearDown(harness.dispose);
 
-    final result = await harness.subject(server: server, enabled: true, draft: _draft());
+    final result = await harness.subject(
+      server: server,
+      update: SaveServerManagementConfig(_draft()),
+    );
 
     expect(result.unwrapErr().toString(), 'Exception: Select an SSH private key.');
     expect(harness.api.updateServerCallCount, 0);
@@ -102,8 +107,7 @@ void main() {
 
     final result = await harness.subject(
       server: server,
-      enabled: true,
-      draft: _draft(selectedPrivateKey: _selected()),
+      update: SaveServerManagementConfig(_draft(selectedPrivateKey: _selected())),
     );
 
     expect(result.isOk(), isTrue);
@@ -123,8 +127,7 @@ void main() {
 
     final result = await harness.subject(
       server: server,
-      enabled: true,
-      draft: _draft(selectedPrivateKey: _selected()),
+      update: SaveServerManagementConfig(_draft(selectedPrivateKey: _selected())),
     );
 
     expect(result.isErr(), isTrue);
@@ -151,8 +154,7 @@ void main() {
 
     final result = await harness.subject(
       server: server,
-      enabled: true,
-      draft: _draft(selectedPrivateKey: _selected()),
+      update: SaveServerManagementConfig(_draft(selectedPrivateKey: _selected())),
     );
 
     expect(result.unwrapErr(), same(persistenceError));
@@ -175,8 +177,7 @@ void main() {
 
     final result = await harness.subject(
       server: server,
-      enabled: true,
-      draft: _draft(selectedPrivateKey: _selected()),
+      update: SaveServerManagementConfig(_draft(selectedPrivateKey: _selected())),
     );
 
     expect(result.unwrapErr(), same(persistenceError));
@@ -199,7 +200,10 @@ void main() {
     harness = await _Harness.create(server: server, store: store);
     addTearDown(harness.dispose);
 
-    final result = await harness.subject(server: server, enabled: false);
+    final result = await harness.subject(
+      server: server,
+      update: const DisableServerManagementConfig(),
+    );
 
     expect(result.isOk(), isTrue);
     expect(oldKeyDeleted, isTrue);
@@ -220,7 +224,10 @@ void main() {
     harness.api.updateServerResult = Err(Exception('persistence failed'));
     addTearDown(harness.dispose);
 
-    final result = await harness.subject(server: server, enabled: false);
+    final result = await harness.subject(
+      server: server,
+      update: const DisableServerManagementConfig(),
+    );
 
     expect(result.isErr(), isTrue);
     expect(deleteCalls, 0);
@@ -242,10 +249,9 @@ void main() {
       final result = operation == 'replacement'
           ? await harness.subject(
               server: server,
-              enabled: true,
-              draft: _draft(selectedPrivateKey: _selected()),
+              update: SaveServerManagementConfig(_draft(selectedPrivateKey: _selected())),
             )
-          : await harness.subject(server: server, enabled: false);
+          : await harness.subject(server: server, update: const DisableServerManagementConfig());
 
       expect(result.isOk(), isTrue);
       expect(result.unwrap().cleanupWarning, contains('could not remove the old private key'));

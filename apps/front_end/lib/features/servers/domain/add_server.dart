@@ -54,6 +54,7 @@ class AddServer {
         managementConfigResult = Err(Exception('Select an SSH private key.'));
       } else {
         managementConfigResult = (await _importSshPrivateKey(selectedPrivateKey))
+            // Widen the storage error so the result can compose with repository errors below.
             .mapErr<Exception>((error) => error)
             .map<ServerManagementConfig?>(
               (privateKey) => ServerManagementConfig(

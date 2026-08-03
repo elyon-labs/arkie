@@ -41,10 +41,12 @@ class _Body extends StatelessWidget {
       builder: (context, state) {
         final cubit = context.read<EditServerManagementCubit>();
         final isBusy = state.isSaving || state.isSelectingPrivateKey;
+        final availableWidth = MediaQuery.sizeOf(context).width - (context.sizes.edgeSpacing * 4);
+        final contentWidth = (availableWidth * 0.6).clamp(320.0, 560.0);
         return AlertDialog(
           title: const Text('Server management'),
           content: SizedBox(
-            width: 440,
+            width: contentWidth,
             child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,

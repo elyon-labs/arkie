@@ -31,24 +31,30 @@ class UpdateServerManagementConfig {
 
   Future<Result<ServerManagementUpdate, Exception>> call({
     required Server server,
-    required bool enabled,
-    ServerManagementDraft? draft,
+    required ServerManagementConfigUpdate update,
+  }) {
+    return switch (update) {
+      SaveServerManagementConfig(:final draft) => _save(server: server, draft: draft),
+      DisableServerManagementConfig() => _disable(server),
+    };
+  }
+
+  Future<Result<ServerManagementUpdate, Exception>> _disable(Server server) async {
+    final oldReference = server.managementConfig?.privateKey;
+    final persistenceResult = await _serversRepository.updateServer(
+      server.copyWith(managementConfig: null),
+    );
+    if (persistenceResult.isErr()) {
+      return Err(persistenceResult.unwrapErr());
+    }
+    return Ok(ServerManagementUpdate(cleanupWarning: await _deleteWarning(oldReference)));
+  }
+
+  Future<Result<ServerManagementUpdate, Exception>> _save({
+    required Server server,
+    required ServerManagementDraft draft,
   }) async {
     final oldReference = server.managementConfig?.privateKey;
-    if (!enabled) {
-      final persistenceResult = await _serversRepository.updateServer(
-        server.copyWith(managementConfig: null),
-      );
-      if (persistenceResult.isErr()) {
-        return Err(persistenceResult.unwrapErr());
-      }
-      return Ok(ServerManagementUpdate(cleanupWarning: await _deleteWarning(oldReference)));
-    }
-
-    if (draft == null) {
-      return Err(Exception('Server management settings are required.'));
-    }
-
     final selectedPrivateKey = draft.selectedPrivateKey;
     ManagedPrivateKeyReference? replacement;
     if (selectedPrivateKey != null) {
@@ -96,6 +102,20 @@ class UpdateServerManagementConfig {
       err: (error) => 'Server saved, but Arkie could not remove the old private key: $error',
     );
   }
+}
+
+sealed class ServerManagementConfigUpdate {
+  const ServerManagementConfigUpdate();
+}
+
+final class SaveServerManagementConfig extends ServerManagementConfigUpdate {
+  const SaveServerManagementConfig(this.draft);
+
+  final ServerManagementDraft draft;
+}
+
+final class DisableServerManagementConfig extends ServerManagementConfigUpdate {
+  const DisableServerManagementConfig();
 }
 
 class ServerManagementUpdate {

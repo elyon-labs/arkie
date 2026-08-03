@@ -110,21 +110,19 @@ class EditServerManagementCubit extends Cubit<EditServerManagementState> {
     }
 
     safeEmit(state.copyWith(isSaving: true, error: null));
-    final draft = state.enabled
-        ? ServerManagementDraft(
-            backend: ServerManagementBackend.systemd,
-            sshHost: state.sshHost.trim(),
-            sshPort: state.sshPort,
-            sshUser: state.sshUser.trim(),
-            selectedPrivateKey: _selectedPrivateKey,
-            hostKeyFingerprint: state.hostKeyFingerprint.trim(),
+    final update = state.enabled
+        ? SaveServerManagementConfig(
+            ServerManagementDraft(
+              backend: ServerManagementBackend.systemd,
+              sshHost: state.sshHost.trim(),
+              sshPort: state.sshPort,
+              sshUser: state.sshUser.trim(),
+              selectedPrivateKey: _selectedPrivateKey,
+              hostKeyFingerprint: state.hostKeyFingerprint.trim(),
+            ),
           )
-        : null;
-    final result = await _updateServerManagementConfig(
-      server: _server,
-      enabled: state.enabled,
-      draft: draft,
-    );
+        : const DisableServerManagementConfig();
+    final result = await _updateServerManagementConfig(server: _server, update: update);
     result.match((update) {
       _clearSelectedPrivateKey();
       safeEmit(state.copyWith(isSaving: false, saved: true, cleanupWarning: update.cleanupWarning));
