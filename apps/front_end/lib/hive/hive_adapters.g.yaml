@@ -17,8 +17,6 @@ types:
         index: 3
       port:
         index: 4
-      managementConfig:
-        index: 5
   Message:
     typeId: 1
     nextIndex: 5
@@ -53,33 +51,3 @@ types:
         index: 2
       name:
         index: 3
-  ServerManagementConfig:
-    typeId: 4
-    nextIndex: 7
-    fields:
-      backend:
-        index: 0
-      sshHost:
-        index: 1
-      sshPort:
-        index: 2
-      sshUser:
-        index: 3
-      hostKeyFingerprint:
-        index: 5
-      privateKey:
-        index: 6
-  ServerManagementBackend:
-    typeId: 5
-    nextIndex: 1
-    fields:
-      systemd:
-        index: 0
-  ManagedPrivateKeyReference:
-    typeId: 6
-    nextIndex: 2
-    fields:
-      id:
-        index: 0
-      displayName:
-        index: 1

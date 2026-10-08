@@ -1,160 +1,65 @@
-import 'dart:typed_data';
-
-import 'package:cs2_rcon_front_end/features/server_management/data/managed_private_key_store.dart';
-import 'package:cs2_rcon_front_end/features/server_management/domain/delete_managed_private_key.dart';
-import 'package:cs2_rcon_front_end/features/server_management/domain/import_ssh_private_key.dart';
-import 'package:cs2_rcon_front_end/features/server_management/domain/models/managed_private_key_reference.dart';
-import 'package:cs2_rcon_front_end/features/server_management/domain/models/selected_private_key.dart';
-import 'package:cs2_rcon_front_end/features/servers/data/models/server_management_config.dart';
 import 'package:cs2_rcon_front_end/features/servers/data/repository/servers_repository.dart';
 import 'package:cs2_rcon_front_end/features/servers/domain/add_server.dart';
-import 'package:cs2_rcon_front_end/features/servers/domain/models/server_management_draft.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:oxidized/oxidized.dart';
 
-import '../../../fakes/fake_managed_private_key_store.dart';
 import '../../../fakes/fake_servers_api.dart';
 import '../../../fakes/fake_settings_repository.dart';
 
 void main() {
-  const reference = ManagedPrivateKeyReference(id: 'managed-id', displayName: 'id_ed25519');
-
-  test('imports and persists a managed key reference without deleting it', () async {
-    var importCalls = 0;
-    var deleteCalls = 0;
-    final store = FakeManagedPrivateKeyStore(
-      onImportKey: (_) async {
-        importCalls++;
-        return const Ok(reference);
-      },
-      onDeleteKey: (_) async {
-        deleteCalls++;
-        return const Ok(null);
-      },
-    );
-    final harness = await _Harness.create(store: store);
+  test('persists the server and selects it when it is the first one', () async {
+    final harness = await _Harness.create();
     addTearDown(harness.dispose);
 
     final result = await harness.subject(
-      name: 'Managed server',
+      name: 'First server',
       address: '127.0.0.1',
       port: 27015,
       password: 'secret',
-      managementDraft: _draft(),
     );
 
-    expect(result.unwrap().managementConfig?.privateKey, reference);
-    expect(importCalls, 1);
-    expect(deleteCalls, 0);
+    final server = result.unwrap();
     expect(harness.api.addServerCallCount, 1);
+    expect(await harness.settings.watchSelectedServer().first, server.id);
   });
 
-  test('does not persist when managed-key import fails', () async {
-    final store = FakeManagedPrivateKeyStore(
-      onImportKey: (_) async => const Err(
-        ManagedPrivateKeyStorageException('Arkie could not import the selected private key.'),
-      ),
-    );
-    final harness = await _Harness.create(store: store);
+  test('leaves the selection alone when a server already exists', () async {
+    final harness = await _Harness.create();
     addTearDown(harness.dispose);
-
-    final result = await harness.subject(
-      name: 'Managed server',
+    final first = (await harness.subject(
+      name: 'First server',
       address: '127.0.0.1',
       port: 27015,
       password: 'secret',
-      managementDraft: _draft(),
+    )).unwrap();
+
+    await harness.subject(
+      name: 'Second server',
+      address: '127.0.0.2',
+      port: 27015,
+      password: 'secret',
     );
 
-    expect(result.isErr(), isTrue);
-    expect(harness.api.addServerCallCount, 0);
+    expect(harness.api.addServerCallCount, 2);
+    expect(await harness.settings.watchSelectedServer().first, first.id);
   });
 
-  test('deletes the imported key when server persistence fails', () async {
-    String? deletedId;
-    final store = FakeManagedPrivateKeyStore(
-      onImportKey: (_) async => const Ok(reference),
-      onDeleteKey: (id) async {
-        deletedId = id;
-        return const Ok(null);
-      },
-    );
+  test('propagates a persistence failure', () async {
+    final harness = await _Harness.create();
+    addTearDown(harness.dispose);
     final persistenceError = Exception('persistence failed');
-    final harness = await _Harness.create(store: store);
     harness.api.addServerResult = Err(persistenceError);
-    addTearDown(harness.dispose);
 
     final result = await harness.subject(
-      name: 'Managed server',
+      name: 'Server',
       address: '127.0.0.1',
       port: 27015,
       password: 'secret',
-      managementDraft: _draft(),
     );
 
     expect(result.unwrapErr(), same(persistenceError));
-    expect(deletedId, reference.id);
+    expect(await harness.settings.watchSelectedServer().first, isNull);
   });
-
-  test('cleanup failure does not replace the persistence error', () async {
-    final store = FakeManagedPrivateKeyStore(
-      onImportKey: (_) async => const Ok(reference),
-      onDeleteKey: (_) async => const Err(
-        ManagedPrivateKeyStorageException('Arkie could not delete the managed private key.'),
-      ),
-    );
-    final persistenceError = Exception('persistence failed');
-    final harness = await _Harness.create(store: store);
-    harness.api.addServerResult = Err(persistenceError);
-    addTearDown(harness.dispose);
-
-    final result = await harness.subject(
-      name: 'Managed server',
-      address: '127.0.0.1',
-      port: 27015,
-      password: 'secret',
-      managementDraft: _draft(),
-    );
-
-    expect(result.unwrapErr(), same(persistenceError));
-  });
-
-  test('management-disabled save does not import a key', () async {
-    var importCalls = 0;
-    final store = FakeManagedPrivateKeyStore(
-      onImportKey: (_) async {
-        importCalls++;
-        return const Ok(reference);
-      },
-    );
-    final harness = await _Harness.create(store: store);
-    addTearDown(harness.dispose);
-
-    final result = await harness.subject(
-      name: 'RCON-only server',
-      address: '127.0.0.1',
-      port: 27015,
-      password: 'secret',
-    );
-
-    expect(result.unwrap().managementConfig, isNull);
-    expect(importCalls, 0);
-    expect(harness.api.addServerCallCount, 1);
-  });
-}
-
-ServerManagementDraft _draft() {
-  return ServerManagementDraft(
-    backend: ServerManagementBackend.systemd,
-    sshHost: 'server.example.com',
-    sshPort: 22,
-    sshUser: 'arkie-cs2',
-    selectedPrivateKey: SelectedPrivateKey(
-      displayName: 'id_ed25519',
-      pemBytes: Uint8List.fromList([1, 2, 3]),
-    ),
-    hostKeyFingerprint: 'fingerprint',
-  );
 }
 
 class _Harness {
@@ -165,18 +70,13 @@ class _Harness {
     required this.api,
   });
 
-  static Future<_Harness> create({required FakeManagedPrivateKeyStore store}) async {
+  static Future<_Harness> create() async {
     final api = FakeServersApi();
     final repository = ServersRepository(api: api);
     await repository.refresh();
     final settings = FakeSettingsRepository();
     return _Harness(
-      subject: AddServer(
-        serversRepository: repository,
-        settingsRepository: settings,
-        importSshPrivateKey: ImportSshPrivateKey(store: store),
-        deleteManagedPrivateKey: DeleteManagedPrivateKey(store: store),
-      ),
+      subject: AddServer(serversRepository: repository, settingsRepository: settings),
       repository: repository,
       settings: settings,
       api: api,

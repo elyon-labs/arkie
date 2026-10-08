@@ -13,9 +13,7 @@ dependencies:
   cs2_rcon_client:
     path: ../../packages/client
   dart_mappable: ^4.2.2
-  dartssh2: ^2.12.0
   equatable: ^2.0.5
-  file_selector: ^1.0.3
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1

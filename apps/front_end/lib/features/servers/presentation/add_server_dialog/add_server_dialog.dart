@@ -7,7 +7,6 @@ import 'package:cs2_rcon_front_end/features/servers/presentation/add_server_dial
 import 'package:cs2_rcon_front_end/features/servers/presentation/add_server_dialog/widgets/server_name_field.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/add_server_dialog/widgets/server_password_field.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/add_server_dialog/widgets/server_port_field.dart';
-import 'package:cs2_rcon_front_end/features/servers/presentation/server_management_form/server_management_form.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:oxidized/oxidized.dart';
@@ -78,29 +77,26 @@ class _AddServerFormBody extends StatelessWidget {
       child: BlocBuilder<AddServerDialogCubit, AddServerDialogState>(
         builder: (context, state) {
           final isSaving = state.addServerResult is Loading<Result<Server, String>>;
-          final isBusy = isSaving || state.isSelectingPrivateKey;
 
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(height: context.sizes.unit),
-              ServerNameField(enabled: !isBusy),
+              ServerNameField(enabled: !isSaving),
               SizedBox(height: context.sizes.unit),
-              ServerAddressField(enabled: !isBusy),
+              ServerAddressField(enabled: !isSaving),
               SizedBox(height: context.sizes.unit),
-              ServerPortField(enabled: !isBusy),
+              ServerPortField(enabled: !isSaving),
               SizedBox(height: context.sizes.unit),
-              ServerPasswordField(enabled: !isBusy),
-              SizedBox(height: context.sizes.unit),
-              const _ServerManagementFields(),
+              ServerPasswordField(enabled: !isSaving),
               SizedBox(height: context.sizes.unit * 2),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  TextButton(onPressed: isBusy ? null : onCancel, child: const Text('Cancel')),
+                  TextButton(onPressed: isSaving ? null : onCancel, child: const Text('Cancel')),
                   SizedBox(width: context.sizes.unit),
                   TextButton(
-                    onPressed: isBusy
+                    onPressed: isSaving
                         ? null
                         : () async {
                             await context.read<AddServerDialogCubit>().saveServer();
@@ -113,49 +109,6 @@ class _AddServerFormBody extends StatelessWidget {
           );
         },
       ),
-    );
-  }
-}
-
-class _ServerManagementFields extends StatelessWidget {
-  const _ServerManagementFields();
-
-  @override
-  Widget build(BuildContext context) {
-    final state = context.select((AddServerDialogCubit cubit) => cubit.state);
-    final isSaving = state.addServerResult is Loading<Result<Server, String>>;
-    final controlsEnabled = !isSaving && !state.isSelectingPrivateKey;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: const Text('Manage server over SSH'),
-          subtitle: const Text('Systemd backend via the arkie-cs2 dispatcher'),
-          value: state.enableManagement,
-          onChanged: controlsEnabled
-              ? context.read<AddServerDialogCubit>().setEnableManagement
-              : null,
-        ),
-        if (state.enableManagement) ...[
-          ServerManagementForm(
-            sshHost: state.sshHost,
-            sshPort: state.sshPort,
-            sshUser: state.sshUser,
-            hostKeyFingerprint: state.hostKeyFingerprint,
-            privateKeyDisplayName: state.privateKeyDisplayName,
-            privateKeyError: state.privateKeySelectionError,
-            isBusy: !controlsEnabled,
-            isSelectingPrivateKey: state.isSelectingPrivateKey,
-            onSshHostChanged: context.read<AddServerDialogCubit>().setSshHost,
-            onSshPortChanged: context.read<AddServerDialogCubit>().setSshPort,
-            onSshUserChanged: context.read<AddServerDialogCubit>().setSshUser,
-            onHostKeyFingerprintChanged: context.read<AddServerDialogCubit>().setHostKeyFingerprint,
-            onSelectPrivateKey: context.read<AddServerDialogCubit>().selectPrivateKey,
-          ),
-        ],
-      ],
     );
   }
 }

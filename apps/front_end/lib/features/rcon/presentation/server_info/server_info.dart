@@ -95,10 +95,7 @@ class _LoadedView extends HookWidget {
             back: switch (view.value) {
               _ServerInfoView.editSavedMessages => EditSavedMessages(onClose: onCloseSidebar),
               _ServerInfoView.managePlayers => ManagePlayers(onClose: onCloseSidebar),
-              _ServerInfoView.serverStatusDetails => ServerStatusDetails(
-                server: server,
-                onClose: onCloseSidebar,
-              ),
+              _ServerInfoView.serverStatusDetails => ServerStatusDetails(onClose: onCloseSidebar),
               // Show a blank sidebar for the default case
               _ => SidebarWrapper(child: Container()),
             },
