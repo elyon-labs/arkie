@@ -1,6 +1,5 @@
 import 'package:cs2_rcon_front_end/features/servers/data/api/servers_api.dart';
 import 'package:cs2_rcon_front_end/features/servers/data/models/server.dart';
-import 'package:cs2_rcon_front_end/features/servers/data/models/server_management_config.dart';
 import 'package:oxidized/oxidized.dart';
 
 class FakeServersApi implements ServersApi {
@@ -32,20 +31,13 @@ class FakeServersApi implements ServersApi {
     required String address,
     required int port,
     required String password,
-    ServerManagementConfig? managementConfig,
   }) async {
     addServerCallCount++;
     final result = addServerResult;
     if (result != null) {
       return result;
     }
-    final server = Server.create(
-      name: name,
-      password: password,
-      address: address,
-      port: port,
-      managementConfig: managementConfig,
-    );
+    final server = Server.create(name: name, password: password, address: address, port: port);
     _servers.add(server);
     return Result.ok(server);
   }

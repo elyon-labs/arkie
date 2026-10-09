@@ -22,14 +22,13 @@ class ServerAdapter extends TypeAdapter<Server> {
       password: fields[2] as String,
       address: fields[3] as String,
       port: (fields[4] as num).toInt(),
-      managementConfig: fields[5] as ServerManagementConfig?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Server obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -39,9 +38,7 @@ class ServerAdapter extends TypeAdapter<Server> {
       ..writeByte(3)
       ..write(obj.address)
       ..writeByte(4)
-      ..write(obj.port)
-      ..writeByte(5)
-      ..write(obj.managementConfig);
+      ..write(obj.port);
   }
 
   @override
@@ -171,120 +168,4 @@ class SavedMessageAdapter extends TypeAdapter<SavedMessage> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is SavedMessageAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
-}
-
-class ServerManagementConfigAdapter extends TypeAdapter<ServerManagementConfig> {
-  @override
-  final typeId = 4;
-
-  @override
-  ServerManagementConfig read(BinaryReader reader) {
-    final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
-    };
-    return ServerManagementConfig(
-      backend: fields[0] as ServerManagementBackend,
-      sshHost: fields[1] as String,
-      sshPort: (fields[2] as num).toInt(),
-      sshUser: fields[3] as String,
-      privateKey: fields[6] as ManagedPrivateKeyReference?,
-      hostKeyFingerprint: fields[5] as String,
-    );
-  }
-
-  @override
-  void write(BinaryWriter writer, ServerManagementConfig obj) {
-    writer
-      ..writeByte(6)
-      ..writeByte(0)
-      ..write(obj.backend)
-      ..writeByte(1)
-      ..write(obj.sshHost)
-      ..writeByte(2)
-      ..write(obj.sshPort)
-      ..writeByte(3)
-      ..write(obj.sshUser)
-      ..writeByte(5)
-      ..write(obj.hostKeyFingerprint)
-      ..writeByte(6)
-      ..write(obj.privateKey);
-  }
-
-  @override
-  int get hashCode => typeId.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ServerManagementConfigAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
-}
-
-class ServerManagementBackendAdapter extends TypeAdapter<ServerManagementBackend> {
-  @override
-  final typeId = 5;
-
-  @override
-  ServerManagementBackend read(BinaryReader reader) {
-    switch (reader.readByte()) {
-      case 0:
-        return ServerManagementBackend.systemd;
-      default:
-        return ServerManagementBackend.systemd;
-    }
-  }
-
-  @override
-  void write(BinaryWriter writer, ServerManagementBackend obj) {
-    switch (obj) {
-      case ServerManagementBackend.systemd:
-        writer.writeByte(0);
-    }
-  }
-
-  @override
-  int get hashCode => typeId.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ServerManagementBackendAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
-}
-
-class ManagedPrivateKeyReferenceAdapter extends TypeAdapter<ManagedPrivateKeyReference> {
-  @override
-  final typeId = 6;
-
-  @override
-  ManagedPrivateKeyReference read(BinaryReader reader) {
-    final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
-    };
-    return ManagedPrivateKeyReference(id: fields[0] as String, displayName: fields[1] as String);
-  }
-
-  @override
-  void write(BinaryWriter writer, ManagedPrivateKeyReference obj) {
-    writer
-      ..writeByte(2)
-      ..writeByte(0)
-      ..write(obj.id)
-      ..writeByte(1)
-      ..write(obj.displayName);
-  }
-
-  @override
-  int get hashCode => typeId.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ManagedPrivateKeyReferenceAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
 }
