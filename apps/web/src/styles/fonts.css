@@ -1,0 +1,25 @@
+/*
+ * Space Mono, the face the desktop app renders in, subset to Latin and
+ * punctuation and served from this origin. See the README for the command
+ * that regenerates the two files from the app's TTFs.
+ *
+ * `swap` rather than `block`: the fallback stack in `--font-mono` is also
+ * monospace, so text that reflows when the webfont lands moves very little,
+ * and nothing is invisible while it loads.
+ */
+
+@font-face {
+  font-family: 'Space Mono';
+  src: url('/fonts/space-mono-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Space Mono';
+  src: url('/fonts/space-mono-bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}

@@ -1,0 +1,59 @@
+/*
+ * The app's design tokens, transcribed for the web.
+ *
+ * The source of truth is Dart: `apps/front_end/lib/core_ui/colors.dart`,
+ * `sizes.dart` and `text.dart`. The desktop app renders from those directly,
+ * so a colour changed there has to be changed here too — there is no shared
+ * package between a Flutter app and an Astro site to carry it across.
+ *
+ * The site is dark only. The app offers both, but a landing page is read once
+ * and the dark palette is the one Arkie is recognised by.
+ */
+
+:root {
+  color-scheme: dark;
+
+  --font-mono: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono',
+    monospace;
+
+  /* colors.dart, dark theme */
+  --color-background: #121212;
+  --color-background-secondary: #0b0b0b;
+  --color-surface: #1e1e1e;
+  --color-surface-raised: #1f1f1f;
+  --color-foreground: #ffffff;
+  --color-foreground-muted: #999999;
+  --color-foreground-faint: #6a6a6a;
+  --color-border: #333333;
+  --color-border-strong: #4a4a4a;
+  --color-accent: #bb86fc;
+  --color-accent-pressed: #9f63e8;
+  --color-accent-surface: #1d1526;
+  --color-on-accent: #11071d;
+  --color-good: #00ff00;
+  --color-error: #ff6b6b;
+
+  /* sizes.dart: unit 8, edgeSpacing 16, borderRadius 8 */
+  --space-unit: 4px;
+  --space-tight: 8px;
+  --space-snug: 12px;
+  --space-edge: 16px;
+  --space-loose: 24px;
+  --space-section: 32px;
+
+  --radius-element: 8px;
+  --radius-pill: 999px;
+
+  /* text.dart: caption 12, body 14, title 16, header 18 */
+  --font-size-caption: 12px;
+  --font-size-small: 13px;
+  --font-size-body: 14px;
+  --font-size-title: 16px;
+  --font-size-header: 18px;
+
+  --font-weight-regular: 400;
+  --font-weight-bold: 700;
+
+  --letter-spacing-tight: -0.2px;
+  --letter-spacing-wide: 0.6px;
+}

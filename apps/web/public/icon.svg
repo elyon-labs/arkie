@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="Arkie">
+  <rect id="plate" width="1024" height="1024" rx="224" fill="#121212" />
+  <g
+    fill="none"
+    stroke="#BB86FC"
+    stroke-width="84"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polyline points="322,330 492,512 322,694" />
+    <line x1="594" y1="694" x2="702" y2="694" />
+  </g>
+</svg>

@@ -1,0 +1,30 @@
+---
+import { exampleTranscript } from '@/data/content';
+
+interface Props {
+  caption: string;
+}
+
+const { caption } = Astro.props;
+
+const lines = exampleTranscript.filter((line) => line.kind !== 'status');
+const status = exampleTranscript.find((line) => line.kind === 'status');
+---
+
+<figure class="console-figure">
+  <div class="console">
+    <div class="console-chrome" aria-hidden="true">
+      <span class="console-tab" aria-current="true">Larry’s Server</span>
+      <span class="console-tab">Scrim</span>
+    </div>
+    <div class="console-body">
+      {
+        lines.map((line) => (
+          <span class={`console-line console-line-${line.kind}`}>{line.text}</span>
+        ))
+      }
+      {status && <span class="console-status">{status.text}</span>}
+    </div>
+  </div>
+  <figcaption class="console-caption">{caption}</figcaption>
+</figure>

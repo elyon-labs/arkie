@@ -1,0 +1,14 @@
+packages:
+  - apps/web
+
+autoInstallPeers: false
+strictPeerDependencies: true
+minimumReleaseAge: 10080
+trustPolicy: no-downgrade
+
+# Astro bundles through esbuild, and Wrangler runs the site on Workerd. Both
+# ship a native binary their install script puts in place, so a build without
+# these fails rather than degrading.
+onlyBuiltDependencies:
+  - esbuild
+  - workerd

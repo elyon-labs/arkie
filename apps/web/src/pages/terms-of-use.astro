@@ -1,0 +1,176 @@
+---
+import { repositoryUrl, site } from '@/data/site';
+import LegalLayout from '@/layouts/legal.astro';
+import { supportMailtoUrl } from '@/lib/urls';
+---
+
+<LegalLayout
+  title={`Terms of Use — ${site.name}`}
+  description="The terms that govern your use of the Arkie desktop app."
+  heading="Terms of Use"
+>
+  <p>
+    These Terms of Use (“Terms”) govern your access to and use of the Arkie desktop application
+    (the “App”). By downloading, installing or using the App, you agree to them.
+  </p>
+
+  <h2>1. Acknowledgement</h2>
+  <p>
+    These Terms are between you and Elyon Labs, LLC (“Developer”, “we”, “us”), not the store you
+    downloaded the App from (the “Platform Provider”, e.g. Apple). The Developer is solely
+    responsible for the App and its content. These Terms do not override the Platform Provider's
+    own usage rules, which you acknowledge you have had the opportunity to review.
+  </p>
+
+  <h2>2. Scope of licence</h2>
+  <p>
+    Arkie's source code is released under the {site.license} licence, and that licence — not this
+    section — governs what you may do with the source. The full text ships with the <a
+      href={`${repositoryUrl}/blob/main/LICENSE`}>repository</a
+    >. Nothing in these Terms is intended to narrow the rights it grants you.
+  </p>
+  <p>
+    These Terms govern the compiled application we distribute. You are granted a limited,
+    non-transferable, non-exclusive, revocable licence to install and run it on devices you own or
+    control, in line with the Platform Provider's usage rules where the App came from a store.
+  </p>
+
+  <h2>3. Licence restrictions</h2>
+  <p>
+    Beyond the conditions of the {site.license} licence, you may not:
+  </p>
+  <ul>
+    <li>
+      present a modified build as the official Arkie, or use the Arkie name or marks to imply the
+      Developer endorses or supports something it does not;
+    </li>
+    <li>remove or alter the copyright and licence notices the App carries;</li>
+    <li>use the App for unlawful, fraudulent or unauthorised purposes;</li>
+    <li>
+      circumvent, disable or interfere with security features of the App or of the Platform
+      Provider.
+    </li>
+  </ul>
+
+  <h2>4. Your server is your responsibility</h2>
+  <p>
+    RCON is full administrative control of a game server. The App sends the commands you type,
+    exactly as you type them, to the server you pointed it at. A command can restart the match,
+    change the map, remove players, or change any setting the server exposes — and it takes effect
+    immediately, for everyone connected.
+  </p>
+  <p>You are responsible for:</p>
+  <ul>
+    <li>
+      having the authority to administer the server whose credentials you enter, and for how that
+      authority is used;
+    </li>
+    <li>
+      the commands you send and their consequences, including disruption to matches in progress and
+      to the people playing them;
+    </li>
+    <li>
+      the security of your RCON credentials. They are stored unencrypted on your machine so the App
+      can use them, and Source RCON sends them over the network unencrypted, which is a property of
+      the protocol rather than of the App.
+    </li>
+  </ul>
+  <p>
+    The App does not review, filter or validate commands before sending them, and it cannot tell
+    you whether a command is safe to run on your server.
+  </p>
+
+  <h2>5. No affiliation with Valve</h2>
+  <p>
+    Elyon Labs, LLC is not affiliated, associated or in any way officially connected with Valve
+    Corporation, and Arkie is not endorsed or sponsored by Valve. “Counter-Strike”, “Counter-Strike
+    2”, “Source”, “Steam” and related names, marks and logos are the property of Valve Corporation.
+    Arkie is an independent client that speaks a protocol Valve's server software already exposes.
+  </p>
+  <p>
+    Using the App does not exempt you from Valve's terms, from the Steam Subscriber Agreement, or
+    from the terms of whoever hosts your server. Where they conflict with how you want to use the
+    App, they govern.
+  </p>
+
+  <h2>6. Maintenance and support</h2>
+  <p>
+    The Developer is solely responsible for maintenance and support of the App. The Platform
+    Provider has no obligation to furnish any such services. Support is offered on a best-effort
+    basis through the <a href={`${repositoryUrl}/issues`}>issue tracker</a>.
+  </p>
+
+  <h2>7. Warranty</h2>
+  <p>
+    The Developer is solely responsible for any warranties for the App, whether express or implied
+    by law, to the extent not effectively disclaimed. To the maximum extent permitted by law, the
+    Platform Provider has no warranty obligation, and all other claims are the responsibility of
+    the Developer.
+  </p>
+
+  <h2>8. Product claims</h2>
+  <p>
+    The Developer, not the Platform Provider, is responsible for addressing any claims by you or
+    third parties relating to the App or its use, including product liability, non-compliance with
+    legal or regulatory requirements, and consumer protection, privacy or similar claims.
+  </p>
+
+  <h2>9. Intellectual property rights</h2>
+  <p>
+    If a third party claims the App infringes their intellectual property rights, the Developer,
+    not the Platform Provider, will handle the investigation, defence, settlement and resolution.
+  </p>
+
+  <h2>10. Legal compliance</h2>
+  <p>You represent and warrant that:</p>
+  <ul>
+    <li>
+      you are not located in a country subject to a U.S. Government embargo or designated as
+      supporting terrorism;
+    </li>
+    <li>you are not on any U.S. Government list of prohibited or restricted parties.</li>
+  </ul>
+
+  <h2>11. Limitation of liability</h2>
+  <p>To the fullest extent permitted by law:</p>
+  <ul>
+    <li>the App is provided “as is” and “as available”, without warranties of any kind;</li>
+    <li>
+      the Developer shall not be liable for any indirect, incidental, special, consequential or
+      punitive damages arising out of or related to your use of the App, including loss of server
+      configuration, disruption of a game in progress, or unauthorised access to a server;
+    </li>
+    <li>the Developer's total liability for any claim will not exceed USD $100.</li>
+  </ul>
+
+  <h2>12. Termination</h2>
+  <p>
+    We may suspend or terminate your access to the App at any time, with or without notice, if you
+    violate these Terms. Upon termination, your right to use the distributed App ceases; your
+    rights in the source code under the {site.license} licence are unaffected.
+  </p>
+
+  <h2>13. Third-party terms</h2>
+  <p>
+    When using the App you must comply with any applicable third-party terms, including those of
+    your operating system vendor, your server host, and Valve Corporation.
+  </p>
+
+  <h2>14. Third-party beneficiary</h2>
+  <p>
+    You and the Developer acknowledge that the Platform Provider and its subsidiaries are
+    third-party beneficiaries of these Terms. Upon your acceptance of these Terms, they will have
+    the right to enforce them against you.
+  </p>
+
+  <h2>15. Developer information</h2>
+  <p>
+    The App is developed and maintained by <strong>Elyon Labs, LLC</strong>. Questions, complaints
+    or claims should be directed to <a href={supportMailtoUrl}>{site.supportEmail}</a>.
+  </p>
+
+  <p>
+    By using {site.name}, you acknowledge that you have read, understood and agree to be bound by
+    these Terms of Use.
+  </p>
+</LegalLayout>

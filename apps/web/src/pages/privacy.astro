@@ -1,0 +1,93 @@
+---
+import { repositoryUrl, site } from '@/data/site';
+import LegalLayout from '@/layouts/legal.astro';
+import { supportMailtoUrl } from '@/lib/urls';
+---
+
+<LegalLayout
+  title={`Privacy Policy — ${site.name}`}
+  description="Arkie collects nothing. What it stores, where it stores it, and what it connects to."
+  heading="Privacy Policy"
+>
+  <h2>The short version</h2>
+  <p>
+    Arkie collects no personal data and sends nothing to us. There is no account, no analytics, no
+    telemetry and no crash reporting. The only machine Arkie connects to is the Counter-Strike 2
+    server whose address you typed in.
+  </p>
+
+  <h2>What we collect</h2>
+  <p>Nothing. Specifically, Arkie does not collect, log, transmit or process:</p>
+  <ul>
+    <li>personal information of any kind;</li>
+    <li>usage analytics or product metrics;</li>
+    <li>telemetry or crash reports;</li>
+    <li>
+      any IP address other than the ones you enter yourself in order to reach your own servers.
+    </li>
+  </ul>
+
+  <h2>What Arkie stores, and where</h2>
+  <p>
+    Saved servers — the name, address, port and RCON password — are written to your computer's
+    local application storage so Arkie can reconnect without asking you again. The same goes for
+    commands you save, and for your theme and privacy-mode preferences.
+  </p>
+  <p>
+    None of it is uploaded, synchronised or backed up by Arkie. It stays on the machine you put it
+    on, and it is removed when you delete the server or uninstall the app.
+  </p>
+  <p>
+    <strong>That local storage is not encrypted, and RCON passwords are part of it.</strong> A
+    password has to be readable for Arkie to send it. Treat the machine running Arkie the way you
+    would treat the server's console.
+  </p>
+
+  <h2>Network connections</h2>
+  <ul>
+    <li>Arkie connects only to servers you explicitly configure, at the address and port you give.</li>
+    <li>Every connection is one you started, and it goes straight to your server.</li>
+    <li>Arkie does not talk to any server we run, to any third party, or to any analytics service.</li>
+    <li>
+      Source RCON is an unencrypted protocol. Your password and your commands travel to your server
+      in the clear, the same as they would from any other RCON client. Over an untrusted network,
+      put the connection inside a VPN or an SSH tunnel.
+    </li>
+  </ul>
+
+  <h2>Third-party services</h2>
+  <p>
+    Arkie integrates with no third-party service and bundles no analytics, advertising or
+    attribution SDK.
+  </p>
+  <p>
+    Downloading Arkie is a separate matter: the Mac App Store and GitHub each apply their own
+    privacy policies to a download, and we receive nothing from either beyond the aggregate counts
+    they show publicly.
+  </p>
+
+  <h2>Verifying this yourself</h2>
+  <p>
+    Arkie is open source under the {site.license} licence. You do not have to take any of this on
+    trust — <a href={repositoryUrl}>read the source</a> and confirm it.
+  </p>
+
+  <h2>Children's privacy</h2>
+  <p>
+    Arkie does not knowingly collect personal information from anyone, including children under the
+    age of 13, because it does not collect personal information at all.
+  </p>
+
+  <h2>Changes to this policy</h2>
+  <p>
+    If this policy changes, the updated version will be published here and in the repository, and
+    the date at the top of this page will change with it.
+  </p>
+
+  <h2>Contact</h2>
+  <p>
+    Questions about this policy or about what Arkie does on your machine go to <a
+      href={supportMailtoUrl}>{site.supportEmail}</a
+    >, or to the <a href={`${repositoryUrl}/issues`}>issue tracker</a>.
+  </p>
+</LegalLayout>

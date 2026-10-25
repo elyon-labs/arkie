@@ -1,0 +1,8 @@
+# Shapes the notes `generate_release_notes` writes for a release, which are
+# also what the website's release notes page is built from. A pull request
+# labelled `internal` is left out of both, so label the plumbing — CI, build
+# config, dependency bumps — or it is published as a user-facing change.
+changelog:
+  exclude:
+    labels:
+      - internal

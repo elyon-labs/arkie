@@ -1,0 +1,21 @@
+{
+  "name": "@arkie/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "typecheck": "astro sync && tsc --noEmit",
+    "deploy": "wrangler deploy",
+    "assets:render": "node scripts/render-assets.mjs"
+  },
+  "dependencies": {
+    "astro": "^7.3.0"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.2",
+    "wrangler": "^4.147.0"
+  }
+}

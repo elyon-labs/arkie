@@ -1,0 +1,15 @@
+---
+import { navLinks, site } from '@/data/site';
+---
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a class="site-brand" href="/">
+      <img class="site-brand-mark" src="/icon.svg" alt="" width="24" height="24" />
+      {site.wordmark}
+    </a>
+    <nav class="site-nav" aria-label="Main">
+      {navLinks.map((link) => <a href={link.href}>{link.label}</a>)}
+    </nav>
+  </div>
+</header>

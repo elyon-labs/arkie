@@ -1,0 +1,50 @@
+---
+import { releasesUrl, site } from '@/data/site';
+import BaseLayout from '@/layouts/base.astro';
+import { formatReleaseDate, releases } from '@/lib/releases';
+
+const published = await releases();
+---
+
+<BaseLayout
+  title={`Releases — ${site.name}`}
+  description="What changed in each release of Arkie, newest first."
+>
+  <section class="section section-narrow">
+    <p class="section-label">Releases</p>
+    <h1 class="section-title">What changed</h1>
+    <p class="legal-meta">
+      Every published version, newest first. Installers for each one are attached to the <a
+        href={releasesUrl}>release on GitHub</a
+      >.
+    </p>
+
+    {
+      published.length > 0 ? (
+        <div class="releases">
+          {published.map((release) => (
+            <article class="release" id={release.id}>
+              <header class="release-header">
+                <h2 class="release-version">
+                  <a href={`#${release.id}`}>v{release.version}</a>
+                </h2>
+                <p class="release-date">{formatReleaseDate(release.publishedAt)}</p>
+              </header>
+              {release.changes.length > 0 ? (
+                <ul class="release-changes">
+                  {release.changes.map((change) => (
+                    <li>{change}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p class="release-note">Maintenance only.</p>
+              )}
+            </article>
+          ))}
+        </div>
+      ) : (
+        <p class="release-empty">Nothing has been published yet.</p>
+      )
+    }
+  </section>
+</BaseLayout>

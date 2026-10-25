@@ -19,3 +19,6 @@ mise.local.toml
 **/Flutter/ephemeral/
 **/FlutterInputs.xcfilelist
 **/FlutterOutputs.xcfilelist
+
+# JavaScript (apps/web)
+node_modules/
