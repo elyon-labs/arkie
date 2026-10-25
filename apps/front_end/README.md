@@ -49,6 +49,26 @@ Release artifacts land in the standard Flutter `build/<platform>` folders.
 | Regenerate mappers after editing models | `melos run codegen` or `flutter pub run build_runner build --delete-conflicting-outputs` |
 | Format/analyze | `melos run format:flutter` / `melos run analyze:flutter:ci` |
 | Tests | `flutter test` |
+| Regenerate launcher icons after editing the icon | `pnpm app:icon:render` (root), then `dart run flutter_launcher_icons` |
+
+### Icons
+
+`assets/icon.svg` is the source of truth for every Arkie icon, including the website's favicon.
+Two steps turn it into what each platform wants, and both are run by hand because everything they
+produce is committed:
+
+1. `pnpm app:icon:render` from the repository root rasterises it with headless Chrome into
+   `assets/icon.png`, the plate at full bleed for Windows and the Debian package, and
+   `assets/icon-macos.png`, inset to Apple's icon grid because macOS draws app icons inside a
+   smaller box than their canvas and expects the art to carry its own rounded shape.
+2. `dart run flutter_launcher_icons` from this directory pushes those into
+   `macos/Runner/Assets.xcassets` and `windows/runner/resources/app_icon.ico`.
+
+The script overrides `#plate` and `#mark` per target rather than editing the SVG, so keep both
+ids. The colours are `background` and `accent` from `lib/core_ui/colors.dart` — change them there
+and here together.
+
+The website keeps its own copy at `apps/web/public/icon.svg`; copy it across if the icon changes.
 
 ### Troubleshooting
 

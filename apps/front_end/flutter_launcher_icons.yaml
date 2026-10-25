@@ -1,30 +1,27 @@
-# flutter pub run flutter_launcher_icons
+# Regenerate with `dart run flutter_launcher_icons` from this directory.
+#
+# The PNGs below are rendered from assets/icon.svg by `pnpm app:icon:render`
+# at the repository root. Edit the SVG, re-render, then re-run this — the PNGs
+# and everything it generates are committed.
 flutter_launcher_icons:
-  image_path: "assets/rcon_icon.png"
+  image_path: "assets/icon.png"
 
   ios: false
-  # image_path_ios: "assets/icon.png"
-  # remove_alpha_channel_ios: true
-  # image_path_ios_dark_transparent: "assets/icon_transparent.png"
-  # image_path_ios_tinted_grayscale: "assets/icon.png"
-  # desaturate_tinted_to_grayscale_ios: true
-
   android: false
-  # android: "ic_launcher"
-  # image_path_android: "assets/icon.png"
-  # min_sdk_android: 21 # android min sdk min:16, default 21
-  # adaptive_icon_background: "#000000"
-  # adaptive_icon_foreground: "assets/icon_transparent.png"
-  # adaptive_icon_monochrome: "assets/icon_transparent.png"
 
   web:
     generate: false
-    background_color: "#hexcode"
-    theme_color: "#hexcode"
 
+  # Windows composites nothing of its own, so it takes the plate at full
+  # bleed, with only the rounded corners transparent.
   windows:
     generate: true
+    image_path: "assets/icon.png"
     icon_size: 48 # min:48, max:256, default: 48
 
+  # macOS draws app icons inside a smaller box than their canvas and expects
+  # the art to carry its own rounded shape, so this one is inset to Apple's
+  # grid rather than full bleed.
   macos:
     generate: true
+    image_path: "assets/icon-macos.png"

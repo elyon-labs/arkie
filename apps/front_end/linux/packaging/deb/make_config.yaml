@@ -13,7 +13,7 @@ installed_size: 15700
 
 essential: false
 
-icon: assets/rcon_icon.png
+icon: assets/icon.png
 
 postuninstall_scripts:
   - echo "Sorry to see you go."
