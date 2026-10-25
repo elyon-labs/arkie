@@ -1,6 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="Arkie">
+  <!--
+    The source of truth for every Arkie icon: the launcher icons on all three
+    desktops, and the site's favicon and header mark.
+
+    `plate` and `mark` are targeted by tool/render-icon.mjs, which overrides
+    them per platform rather than editing this file. Keep both ids.
+
+    The colours are the app's own: `background` and `accent` from the dark
+    theme in lib/core_ui/colors.dart.
+  -->
   <rect id="plate" width="1024" height="1024" rx="224" fill="#121212" />
   <g
+    id="mark"
     fill="none"
     stroke="#BB86FC"
     stroke-width="84"

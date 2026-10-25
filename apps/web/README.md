@@ -94,14 +94,14 @@ mid-word.
 
 ## Icon, social card and screenshot
 
-`public/icon.svg` is the site's own mark: the app's accent purple on its background colour. It
-serves as the favicon, the header mark and the hero image. `pnpm web:assets:render` rasterises it
-into `public/apple-touch-icon.png` and the 1200x630 `public/og-image.png` using headless Chrome.
-Both PNGs are committed, so a build never needs it to have run.
+`public/icon.svg` is a copy of `apps/front_end/assets/icon.svg`, which is the source of truth for
+every Arkie icon — the launcher icons on all three desktops are rendered from it too. Copy it
+across again if it changes; there is no build step that does it for you. It serves as the
+favicon, the header mark and the hero image.
 
-The mark deliberately does not match the launcher icon the app currently ships
-(`apps/front_end/assets/rcon_icon.png`), which is green and reads "RCON" — it predates both the
-Arkie name and the purple accent. When that icon is redrawn, bring this one in line with it.
+`pnpm web:assets:render` rasterises it into `public/apple-touch-icon.png` and the 1200x630
+`public/og-image.png` using headless Chrome, overriding `#plate` to square off the touch icon.
+Both PNGs are committed, so a build never needs it to have run.
 
 `public/screenshot.webp` is `apps/front_end/images/arkie.png`, cropped to the window and
 re-encoded:

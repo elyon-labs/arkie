@@ -9,6 +9,7 @@
     "web:preview": "pnpm --dir apps/web preview",
     "web:typecheck": "pnpm --dir apps/web typecheck",
     "web:deploy": "pnpm --dir apps/web run deploy",
-    "web:assets:render": "pnpm --dir apps/web assets:render"
+    "web:assets:render": "pnpm --dir apps/web assets:render",
+    "app:icon:render": "node apps/front_end/tool/render-icon.mjs"
   }
 }
