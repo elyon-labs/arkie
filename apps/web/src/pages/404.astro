@@ -1,0 +1,16 @@
+---
+import { site } from '@/data/site';
+import BaseLayout from '@/layouts/base.astro';
+---
+
+<BaseLayout
+  title={`Page not found — ${site.name}`}
+  description="That page does not exist."
+  noindex
+>
+  <section class="section section-narrow not-found">
+    <p class="not-found-code">404</p>
+    <h1 class="section-title">Unknown command</h1>
+    <p class="hero-lede">That page does not exist. <a href="/">Back to the start</a>.</p>
+  </section>
+</BaseLayout>

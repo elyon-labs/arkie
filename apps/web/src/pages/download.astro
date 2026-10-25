@@ -1,0 +1,85 @@
+---
+import { releasesUrl, site } from '@/data/site';
+import BaseLayout from '@/layouts/base.astro';
+import { formatBytes, platformDownloads } from '@/lib/downloads';
+import { formatReleaseDate, latestRelease } from '@/lib/releases';
+
+const downloads = await platformDownloads();
+const release = await latestRelease();
+---
+
+<BaseLayout
+  title={`Download — ${site.name}`}
+  description="Download Arkie for macOS, Windows or Linux. Installers for every release are published on GitHub."
+>
+  <section class="section">
+    <p class="section-label">Download</p>
+    <h1 class="section-title">Get Arkie</h1>
+    <p class="section-lede">
+      One app, built from the same source for all three desktops. Installers are published with
+      every release; macOS goes through the Mac App Store so it stays signed and up to date on its
+      own.
+    </p>
+
+    <ul class="downloads">
+      {
+        downloads.map((download) => (
+          <li class="download">
+            <p class="download-platform">{download.platform}</p>
+            <p class="download-format">
+              {download.format}
+              {download.size !== null && ` · ${formatBytes(download.size)}`}
+            </p>
+            <div class="download-action">
+              {download.href ? (
+                <a class="button" href={download.href}>
+                  Download
+                </a>
+              ) : (
+                <span class="download-pending">{download.note}</span>
+              )}
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+
+    {
+      release && (
+        <p class="download-meta">
+          Latest release <a href="/releases">v{release.version}</a>, published{' '}
+          {formatReleaseDate(release.publishedAt)}. Older versions are kept on{' '}
+          <a href={releasesUrl}>GitHub</a>.
+        </p>
+      )
+    }
+
+    <div class="install-notes">
+      <h2>Installing</h2>
+      <dl class="spec-list">
+        <div>
+          <dt>macOS</dt>
+          <dd>
+            Through the Mac App Store, so it is signed, sandboxed and updated by the system. There
+            is no separate .dmg to keep track of.
+          </dd>
+        </div>
+        <div>
+          <dt>Windows</dt>
+          <dd>
+            Run the installer. It is not signed with a commercial certificate, so SmartScreen will
+            warn you the first time — "More info", then "Run anyway".
+          </dd>
+        </div>
+        <div>
+          <dt>Linux</dt>
+          <dd>
+            Install the package for your architecture with <strong>sudo apt install
+            ./arkie.deb</strong>, which pulls in the GTK libraries it needs. Debian, Ubuntu and
+            their derivatives.
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+</BaseLayout>

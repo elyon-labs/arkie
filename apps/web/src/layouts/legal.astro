@@ -1,0 +1,27 @@
+---
+import { legalLastUpdated, site } from '@/data/site';
+import BaseLayout from '@/layouts/base.astro';
+import { supportMailtoUrl } from '@/lib/urls';
+
+interface Props {
+  title: string;
+  description: string;
+  heading: string;
+}
+
+const { title, description, heading } = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="section section-narrow">
+    <h1 class="section-title">{heading}</h1>
+    <p class="legal-meta">
+      Last updated {legalLastUpdated}. Questions? Email <a href={supportMailtoUrl}
+        >{site.supportEmail}</a
+      >.
+    </p>
+    <div class="prose">
+      <slot />
+    </div>
+  </section>
+</BaseLayout>

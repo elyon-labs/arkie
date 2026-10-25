@@ -1,0 +1,18 @@
+---
+import { repositoryUrl, site } from '@/data/site';
+import { supportMailtoUrl } from '@/lib/urls';
+---
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>&copy; {site.copyrightYear} {site.vendor}</span>
+    <div class="site-footer-links">
+      <a href="/download">Download</a>
+      <a href="/releases">Releases</a>
+      <a href={repositoryUrl}>Source</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/terms-of-use">Terms of Use</a>
+      <a href={supportMailtoUrl}>{site.supportEmail}</a>
+    </div>
+  </div>
+</footer>

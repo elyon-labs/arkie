@@ -1,0 +1,92 @@
+---
+import Console from '@/components/console.astro';
+import FeatureCard from '@/components/feature-card.astro';
+import { features, requirements, steps } from '@/data/content';
+import { repositoryUrl, site } from '@/data/site';
+import BaseLayout from '@/layouts/base.astro';
+---
+
+<BaseLayout title={`${site.name} — ${site.tagline}`} description={site.description}>
+  <section class="section hero">
+    <img class="hero-icon" src="/icon.svg" alt="" width="112" height="112" />
+    <p class="hero-wordmark">{site.wordmark}</p>
+    <h1 class="hero-title">{site.tagline}</h1>
+    <p class="hero-lede">
+      Arkie is an RCON client for Counter-Strike 2. Save your servers, send commands, change the
+      map and deal with players — from a desktop window instead of the developer console.
+    </p>
+    <div class="actions">
+      <a class="button" href="/download">Download Arkie</a>
+      <a class="button button-secondary" href={repositoryUrl}>View the source</a>
+    </div>
+    <p class="hero-note">macOS &middot; Windows &middot; Linux &middot; MIT licensed</p>
+  </section>
+
+  <section class="section">
+    <Console
+      caption="One tab per server, the full transcript, and a connection that says when it was last checked."
+    />
+  </section>
+
+  <section class="section" id="features">
+    <p class="section-label">What it does</p>
+    <h2 class="section-title">Everything rcon_password already gets you, in a window</h2>
+    <div class="feature-grid">
+      {features.map((feature) => <FeatureCard title={feature.title} body={feature.body} />)}
+    </div>
+  </section>
+
+  <section class="section">
+    <figure class="shot">
+      <img
+        src="/screenshot.webp"
+        alt="The Arkie desktop window: a server console on the left, and a sidebar with server status, saved commands and a grid of maps on the right."
+        width="1600"
+        height="1029"
+        loading="lazy"
+        decoding="async"
+      />
+      <figcaption>Arkie on macOS, connected to a server.</figcaption>
+    </figure>
+  </section>
+
+  <section class="section" id="how-it-works">
+    <p class="section-label">How it works</p>
+    <h2 class="section-title">Add a server, then stop typing into the game</h2>
+    <ol class="steps">
+      {
+        steps.map((step) => (
+          <li class="step">
+            <h3 class="step-title">{step.title}</h3>
+            <p class="step-body">{step.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="section" id="requirements">
+    <p class="section-label">What you need</p>
+    <h2 class="section-title">Before you start</h2>
+    <dl class="spec-list">
+      {
+        requirements.map((requirement) => (
+          <div>
+            <dt>{requirement.label}</dt>
+            <dd>{requirement.value}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </section>
+
+  <section class="section" id="open-source">
+    <div class="banner">
+      <p class="banner-text">
+        <strong>Arkie is open source, under the {site.license} licence.</strong> The desktop app, the
+        Dart RCON client underneath it and a terminal client built on the same code are all in one repository.
+      </p>
+      <a class="button button-secondary" href={repositoryUrl}>Read the code</a>
+    </div>
+  </section>
+</BaseLayout>

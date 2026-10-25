@@ -1,0 +1,14 @@
+{
+  "name": "arkie",
+  "private": true,
+  "packageManager": "pnpm@10.34.7",
+  "scripts": {
+    "web": "pnpm --dir apps/web",
+    "web:dev": "pnpm --dir apps/web dev",
+    "web:build": "pnpm --dir apps/web build",
+    "web:preview": "pnpm --dir apps/web preview",
+    "web:typecheck": "pnpm --dir apps/web typecheck",
+    "web:deploy": "pnpm --dir apps/web run deploy",
+    "web:assets:render": "pnpm --dir apps/web assets:render"
+  }
+}

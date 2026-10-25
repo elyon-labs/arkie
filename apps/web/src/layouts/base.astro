@@ -1,0 +1,62 @@
+---
+import '@/styles/tokens.css';
+import '@/styles/fonts.css';
+import '@/styles/global.css';
+
+import SiteFooter from '@/components/site-footer.astro';
+import SiteHeader from '@/components/site-header.astro';
+import { site } from '@/data/site';
+import { canonicalUrl } from '@/lib/urls';
+
+interface Props {
+  title: string;
+  description: string;
+  noindex?: boolean;
+}
+
+const { title, description, noindex = false } = Astro.props;
+const canonical = canonicalUrl(Astro.url.pathname);
+const socialImage = canonicalUrl('/og-image.png');
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {!noindex && <link rel="canonical" href={canonical} />}
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link
+      rel="preload"
+      href="/fonts/space-mono-regular.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <meta name="theme-color" content="#121212" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${site.name} — ${site.tagline}`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={socialImage} />
+  </head>
+  <body>
+    <div class="site-shell">
+      <SiteHeader />
+      <main class="site-main">
+        <slot />
+      </main>
+      <SiteFooter />
+    </div>
+  </body>
+</html>

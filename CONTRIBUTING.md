@@ -38,6 +38,14 @@ melos run test:flutter:ci
 melos run test:dart:ci
 ```
 
+Changes under `apps/web` are checked separately, because the site is JavaScript rather than Dart:
+
+```bash
+pnpm install
+pnpm web:typecheck
+pnpm web:build
+```
+
 ## Releases
 
 Release signing, App Store deployment, release tags, and binary asset publishing are intentionally handled outside this public repository. Public pull requests should not add signing credentials, release credentials, or workflows that require repository secrets.

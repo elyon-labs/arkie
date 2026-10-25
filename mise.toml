@@ -1,3 +1,5 @@
 [tools]
 flutter = "3.35.7"
+node = "22.23.2"
+pnpm = "10"
 ruby = "3.3.6"
