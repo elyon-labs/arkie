@@ -44,9 +44,10 @@ Three things shape what a reader sees:
 deployment repository's release workflow; if it renames an asset, a platform silently falls back to
 "Not in the latest release" rather than linking at something that 404s.
 
-A release does not touch `apps/web`, so publishing one cannot deploy the site through the path
-filter. `web_deploy.yml` runs on the `release` event instead, for `published`, `edited` and
-`deleted`.
+Because both pages are read at build time, a release going out is what makes them stale. The
+deploy is chained onto the end of the release pipeline for exactly that reason — see
+**Deploying** below. Editing a release body by hand afterwards does not redeploy anything; run
+the deploy yourself if you need the correction published.
 
 If the API read fails the build fails with it, rather than quietly publishing pages that read as
 though nothing has ever shipped.
@@ -133,22 +134,29 @@ Keep the word before an inline `<a>` or `<strong>` on the same line as the tag a
 
 ## Deploying
 
-Pushes to `main` that touch `apps/web` run `.github/workflows/web_deploy.yml`, which builds the
-site and uploads `dist/` to Cloudflare as a static-assets Worker (`arkie-web`, configured in
-`wrangler.jsonc`). There is no Worker code — just the assets and a custom domain binding for
-`arkie.elyon-labs.com`.
+The deploy does not live in this repository. The Cloudflare credentials are organisation secrets
+scoped to private repositories, and `CONTRIBUTING.md` asks that workflows requiring secrets stay
+out of the public tree, so `web_deploy.yml` lives in the private `elyon-labs/arkie-deployment`
+repository alongside the rest of the release automation.
 
-Two repository secrets are required:
+It builds this directory and uploads `dist/` to Cloudflare as a static-assets Worker
+(`arkie-web`, configured in `wrangler.jsonc`). There is no Worker code — just the assets and a
+custom domain binding for `arkie.elyon-labs.com`, which needs `elyon-labs.com` to be a zone on
+that Cloudflare account.
 
-| Secret | What it is |
-| --- | --- |
-| `CLOUDFLARE_API_TOKEN` | API token with the **Workers Scripts: Edit** permission |
-| `CLOUDFLARE_ACCOUNT_ID` | The Cloudflare account the Worker lives in |
+It runs two ways:
 
-The custom domain in `wrangler.jsonc` needs `elyon-labs.com` to be a zone on that account.
-`arkie.elyon-labs.com` previously pointed at GitHub Pages, so **delete that DNS record before the
-first deploy** — Cloudflare will not bind a custom domain over an existing record, and the deploy
-fails until it is gone.
+- Automatically after a release is published, chained onto the end of that repository's
+  `deploy.yml`. The releases page and the download links are built from the releases themselves,
+  so this is the moment they would otherwise go stale.
+- By hand, by running **Web Deploy** there, for a change to the site's own content. It takes the
+  ref of this repository to build, defaulting to `main`.
+
+Either way it builds the default branch of this repository rather than a tag, so a site change
+merged since the last release is not rolled back by deploying one.
+
+What does run here is `.github/workflows/web_checks.yml`, which typechecks and builds the site on
+every pull request that touches it. It needs no secrets, so it works from a fork.
 
 `pnpm web:deploy` does the same thing from a laptop, against whatever Cloudflare account
 `wrangler login` is holding.
