@@ -1,0 +1,19 @@
+name: PR Title
+
+on:
+  pull_request:
+    # A rename fires `edited` and nothing else, so without it a title can be
+    # fixed to pass and then changed back.
+    types:
+      - opened
+      - edited
+      - reopened
+      - synchronize
+
+permissions:
+  contents: read
+
+jobs:
+  title:
+    name: Title
+    uses: elyon-labs/workflows/.github/workflows/validate-pr-title.yml@main

@@ -8,8 +8,10 @@
     "web:build": "pnpm --dir apps/web build",
     "web:preview": "pnpm --dir apps/web preview",
     "web:typecheck": "pnpm --dir apps/web typecheck",
+    "web:test": "pnpm --dir apps/web test",
     "web:deploy": "pnpm --dir apps/web run deploy",
     "web:assets:render": "pnpm --dir apps/web assets:render",
-    "app:icon:render": "node apps/front_end/tool/render-icon.mjs"
+    "app:icon:render": "node apps/front_end/tool/render-icon.mjs",
+    "test": "pnpm web:test"
   }
 }

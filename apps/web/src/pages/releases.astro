@@ -3,7 +3,11 @@ import { releasesUrl, site } from '@/data/site';
 import BaseLayout from '@/layouts/base.astro';
 import { formatReleaseDate, releases } from '@/lib/releases';
 
-const published = await releases();
+// `releases()` is also what the download page reads, so it keeps every
+// version and its installers. A version whose work was all maintenance has
+// nothing to tell a reader, so it is left off this page rather than listed
+// with an empty body.
+const published = (await releases()).filter((release) => release.changes.length > 0);
 ---
 
 <BaseLayout
@@ -30,15 +34,11 @@ const published = await releases();
                 </h2>
                 <p class="release-date">{formatReleaseDate(release.publishedAt)}</p>
               </header>
-              {release.changes.length > 0 ? (
-                <ul class="release-changes">
-                  {release.changes.map((change) => (
-                    <li>{change}</li>
-                  ))}
-                </ul>
-              ) : (
-                <p class="release-note">Maintenance only.</p>
-              )}
+              <ul class="release-changes">
+                {release.changes.map((change) => (
+                  <li>{change}</li>
+                ))}
+              </ul>
             </article>
           ))}
         </div>

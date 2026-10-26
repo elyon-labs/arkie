@@ -710,12 +710,6 @@ img {
   margin-top: var(--space-unit);
 }
 
-.release-note {
-  margin: var(--space-snug) 0 0;
-  color: var(--color-foreground-faint);
-  font-size: var(--font-size-small);
-}
-
 .release-empty {
   margin-top: var(--space-section);
   color: var(--color-foreground-muted);

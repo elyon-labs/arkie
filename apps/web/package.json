@@ -8,6 +8,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "typecheck": "astro sync && tsc --noEmit",
+    "test": "vitest run",
     "deploy": "wrangler deploy",
     "assets:render": "node scripts/render-assets.mjs"
   },
@@ -16,6 +17,7 @@
   },
   "devDependencies": {
     "typescript": "~5.9.2",
+    "vitest": "4.1.8",
     "wrangler": "^4.147.0"
   }
 }

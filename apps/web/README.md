@@ -27,17 +27,22 @@ GITHUB_TOKEN="$(gh auth token)" pnpm web:build
 releases, so nothing is written by hand. `src/lib/releases.ts` reads the API once per build and
 both pages share the result.
 
-Three things shape what a reader sees:
+Four things shape what a reader sees:
 
+- Pull request titles are conventional commits, and `src/lib/changes.ts` publishes only the `feat`
+  and `fix` ones, with the type stripped back off. Everything else — `chore`, `docs`, `refactor`,
+  `test`, `build`, `ci` — is work on the app rather than a change to it. A version left with
+  nothing to say is skipped on `/releases`, though `releases()` keeps it so `/download` still has
+  its installers. The `PR Title` check keeps titles in the shape this depends on.
 - A pull request labelled `internal` is kept out of the notes altogether, by `.github/release.yml`.
-  Label the plumbing — CI, build config, dependency bumps — or it is published as a user-facing
-  change.
+  The type already hides the plumbing, so this is for a `feat` or `fix` that should not be
+  announced at all.
 - Only the first `##` section of a release body survives. `generate_release_notes` writes the
   changes under `## What's Changed` and then a `## New Contributors` list, which belongs on GitHub
   rather than on a release notes page. Within that section only `*` or `-` list items are read, so
   a body rewritten by hand has to keep its changes as bullets.
 - `firstPublicVersion` in `src/data/site.ts` is the earliest version the page will show. Raise it
-  to drop older history that was generated before the `internal` label existed.
+  to drop older history.
 
 `src/lib/downloads.ts` picks installers out of the latest release by filename suffix
 (`-macos.dmg`, `-windows-setup.exe`, `-linux-amd64.deb`, `-linux-arm64.deb`). Those names are set

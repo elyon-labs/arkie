@@ -1,6 +1,7 @@
 import { GITHUB_TOKEN } from 'astro:env/server';
 
 import { firstPublicVersion, site } from '@/data/site';
+import { advertisedChange } from '@/lib/changes';
 
 export interface ReleaseAsset {
   name: string;
@@ -104,12 +105,14 @@ function parseChanges(body: string | null): string[] {
       continue;
     }
 
-    const change = line
+    const title = line
       .slice(2)
       .replace(/\s+by @[\w-]+(?:\s+with @[\w-]+)*\s+in https:\/\/\S+$/, '')
       .trim();
 
-    if (change.length > 0) {
+    const change = advertisedChange(title);
+
+    if (change) {
       changes.push(change);
     }
   }
