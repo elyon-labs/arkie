@@ -1,4 +1,3 @@
-import { storeLinks } from '@/data/site';
 import { latestRelease, type Release, type ReleaseAsset } from '@/lib/releases';
 
 export interface PlatformDownload {
@@ -13,9 +12,10 @@ export interface PlatformDownload {
 }
 
 /**
- * Asset names are set by the private release workflow: the Windows installer
- * is renamed to `arkie-<version>-windows-setup.exe`, and each Debian package
- * keeps the Flutter package name with an `-<arch>.deb` suffix appended.
+ * Asset names are set by the private release workflow: the macOS disk image
+ * and the Windows installer are renamed to `arkie-<version>-macos.dmg` and
+ * `arkie-<version>-windows-setup.exe`, and each Debian package keeps the
+ * Flutter package name with an `-<arch>.deb` suffix appended.
  */
 function findAsset(release: Release, suffix: string): ReleaseAsset | undefined {
   return release.assets.find((asset) => asset.name.endsWith(suffix));
@@ -33,42 +33,22 @@ function installer(
   return { platform, format, href: asset.url, note: null, size: asset.size };
 }
 
-function macOsDownload(): PlatformDownload {
-  const store = storeLinks.find((link) => link.platform === 'macOS');
-
-  if (!store?.available) {
-    return {
-      platform: 'macOS',
-      format: 'Mac App Store',
-      href: null,
-      note: 'Coming soon',
-      size: null,
-    };
-  }
-
-  return {
-    platform: 'macOS',
-    format: 'Mac App Store',
-    href: store.href,
-    note: null,
-    size: null,
-  };
-}
-
 /**
- * Every platform Arkie is built for, in the order they are offered — macOS
- * first because it is the only one that goes through a store, and the Linux
- * architectures last because a reader has to pick between them.
+ * Every platform Arkie is built for, in the order they are offered, with the
+ * Linux architectures last because a reader has to pick between them.
+ *
+ * The macOS image is universal: one download covers Apple silicon and Intel,
+ * so it needs no choice made about it the way the Debian packages do.
  */
 export async function platformDownloads(): Promise<PlatformDownload[]> {
   const release = await latestRelease();
 
   if (!release) {
-    return [macOsDownload()];
+    return [];
   }
 
   return [
-    macOsDownload(),
+    installer('macOS', '.dmg · Apple silicon and Intel', findAsset(release, '-macos.dmg')),
     installer('Windows', '.exe installer', findAsset(release, '-windows-setup.exe')),
     installer('Linux', '.deb package · amd64', findAsset(release, '-linux-amd64.deb')),
     installer('Linux', '.deb package · arm64', findAsset(release, '-linux-arm64.deb')),

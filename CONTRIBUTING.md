@@ -48,4 +48,4 @@ pnpm web:build
 
 ## Releases
 
-Release signing, App Store deployment, release tags, and binary asset publishing are intentionally handled outside this public repository. Public pull requests should not add signing credentials, release credentials, or workflows that require repository secrets.
+Release signing, notarisation, release tags, and binary asset publishing are intentionally handled outside this public repository. Public pull requests should not add signing credentials, release credentials, or workflows that require repository secrets.
