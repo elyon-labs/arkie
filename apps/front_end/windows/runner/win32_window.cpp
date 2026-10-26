@@ -53,6 +53,17 @@ void EnableFullDpiSupportIfAvailable(HWND hwnd) {
   FreeLibrary(user32_module);
 }
 
+// Loads the application icon from the executable's resources at |size|.
+//
+// LoadIcon would always return SM_CXICON and leave Windows to stretch that
+// one frame to every other size it needs, so asking for a size explicitly is
+// what lets the smaller frames in app_icon.ico be used at all.
+HICON LoadAppIcon(HINSTANCE instance, int size) {
+  return static_cast<HICON>(LoadImage(instance, MAKEINTRESOURCE(IDI_APP_ICON),
+                                      IMAGE_ICON, size, size,
+                                      LR_DEFAULTCOLOR));
+}
+
 }  // namespace
 
 // Manages the Win32Window's window class registration.
@@ -88,7 +99,10 @@ WindowClassRegistrar* WindowClassRegistrar::instance_ = nullptr;
 
 const wchar_t* WindowClassRegistrar::GetWindowClass() {
   if (!class_registered_) {
-    WNDCLASS window_class{};
+    // WNDCLASSEX rather than WNDCLASS so the title bar and the taskbar can be
+    // given separately sized icons; WNDCLASS carries only the large one.
+    WNDCLASSEX window_class{};
+    window_class.cbSize = sizeof(window_class);
     window_class.hCursor = LoadCursor(nullptr, IDC_ARROW);
     window_class.lpszClassName = kWindowClassName;
     window_class.style = CS_HREDRAW | CS_VREDRAW;
@@ -96,11 +110,13 @@ const wchar_t* WindowClassRegistrar::GetWindowClass() {
     window_class.cbWndExtra = 0;
     window_class.hInstance = GetModuleHandle(nullptr);
     window_class.hIcon =
-        LoadIcon(window_class.hInstance, MAKEINTRESOURCE(IDI_APP_ICON));
+        LoadAppIcon(window_class.hInstance, GetSystemMetrics(SM_CXICON));
+    window_class.hIconSm =
+        LoadAppIcon(window_class.hInstance, GetSystemMetrics(SM_CXSMICON));
     window_class.hbrBackground = 0;
     window_class.lpszMenuName = nullptr;
     window_class.lpfnWndProc = Win32Window::WndProc;
-    RegisterClass(&window_class);
+    RegisterClassEx(&window_class);
     class_registered_ = true;
   }
   return kWindowClassName;
