@@ -33,7 +33,9 @@ Four things shape what a reader sees:
   and `fix` ones, with the type stripped back off. Everything else — `chore`, `docs`, `refactor`,
   `test`, `build`, `ci` — is work on the app rather than a change to it. A version left with
   nothing to say is skipped on `/releases`, though `releases()` keeps it so `/download` still has
-  its installers. The `PR Title` check keeps titles in the shape this depends on.
+  its installers. The `PR Title` check keeps titles in the shape this depends on; it is spelled
+  out in this repository rather than called out of `elyon-labs/workflows`, because a public
+  repository cannot use a private one's reusable workflows.
 - A pull request labelled `internal` is kept out of the notes altogether, by `.github/release.yml`.
   The type already hides the plumbing, so this is for a `feat` or `fix` that should not be
   announced at all.
