@@ -49,6 +49,9 @@ jobs:
       - name: Typecheck site
         run: pnpm web:typecheck
 
+      - name: Test site
+        run: pnpm web:test
+
       - name: Build site
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
