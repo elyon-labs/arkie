@@ -16,25 +16,6 @@ export const repositoryUrl = `https://github.com/${site.repository}`;
 export const issuesUrl = `${repositoryUrl}/issues/new/choose`;
 export const releasesUrl = `${repositoryUrl}/releases`;
 
-export type StoreLink = {
-  platform: string;
-  label: string;
-  href: string;
-  /** Rendered only when true, so a link never points at a listing that 404s. */
-  available: boolean;
-};
-
-export const storeLinks: readonly StoreLink[] = [
-  {
-    platform: 'macOS',
-    label: 'Download on the Mac App Store',
-    href: 'https://apps.apple.com/app/arkie/id0000000000',
-    available: false,
-  },
-];
-
-export const releasedStoreLinks = storeLinks.filter((link) => link.available);
-
 export type SitePage = {
   path: string;
   includeInSitemap: boolean;

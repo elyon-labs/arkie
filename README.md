@@ -89,7 +89,7 @@ Each package/app ships with its own README that dives into usage details:
 
 ## Releases and support
 
-This repository contains the public source code, documentation, and pull request checks. Release signing, App Store deployment, release tags, and binary asset publishing are handled outside of the public repository so signing credentials and release automation stay private.
+This repository contains the public source code, documentation, and pull request checks. Release signing, notarisation, release tags, and binary asset publishing are handled outside of the public repository so signing credentials and release automation stay private.
 
 Use the GitHub issue tracker for bug reports and feature requests. Please do not include real RCON passwords, private server addresses, or other secrets in issues, discussions, logs, or screenshots.
 

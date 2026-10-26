@@ -34,6 +34,29 @@ flutter build macos   # or flutter build windows / flutter build linux
 
 Release artifacts land in the standard Flutter `build/<platform>` folders.
 
+### macOS
+
+Arkie is distributed with a Developer ID signature and an Apple notarisation rather than through
+the Mac App Store, so a release goes out when it is ready instead of when App Review says so.
+Notarisation is an automated malware scan, not a review — it has no concept of a demo server to
+give a reviewer.
+
+`macos/packaging/make-dmg.sh` is the whole lane: it builds, signs inside out with the hardened
+runtime, lays out a .dmg with an Applications symlink, notarises it and staples the ticket on.
+Stapling is what lets a Mac open the image without phoning Apple first. The script takes its
+credentials from the environment and holds none of its own, which is what keeps it in the public
+tree alongside `windows/ci/cs2-rcon.iss` and `linux/packaging/deb/make_config.yaml`; the private
+deployment repository supplies them. `SKIP_NOTARIZE=1` stops after signing, for checking a build
+without credentials.
+
+The app stays sandboxed. The sandbox is optional under Developer ID, but it works today and
+turning it off would move preferences out of the app's container, losing the saved servers of
+anyone already running it. Nothing else here depends on dropping it. What the lane does add is
+`ENABLE_HARDENED_RUNTIME`, which the notary service refuses a submission without.
+
+The one thing the store used to provide and this does not is updates. Until the app checks for
+them itself, the download page is the only thing that knows a newer version exists.
+
 ## Architecture notes
 
 - **State management** – `flutter_bloc` powers `ServersCubit` (server list) and `RCONCubit` (live console). `safeEmit` helpers avoid state emissions after disposal.

@@ -40,9 +40,12 @@ Three things shape what a reader sees:
   to drop older history that was generated before the `internal` label existed.
 
 `src/lib/downloads.ts` picks installers out of the latest release by filename suffix
-(`-windows-setup.exe`, `-linux-amd64.deb`, `-linux-arm64.deb`). Those names are set by the private
-deployment repository's release workflow; if it renames an asset, a platform silently falls back to
-"Not in the latest release" rather than linking at something that 404s.
+(`-macos.dmg`, `-windows-setup.exe`, `-linux-amd64.deb`, `-linux-arm64.deb`). Those names are set
+by the private deployment repository's release workflow; if it renames an asset, a platform
+silently falls back to "Not in the latest release" rather than linking at something that 404s.
+
+Every platform is served from the release, macOS included — there is no store listing to link at
+and no `available` flag gating one.
 
 Because both pages are read at build time, a release going out is what makes them stale. The
 deploy is chained onto the end of the release pipeline for exactly that reason — see
@@ -51,13 +54,6 @@ the deploy yourself if you need the correction published.
 
 If the API read fails the build fails with it, rather than quietly publishing pages that read as
 though nothing has ever shipped.
-
-## Store links
-
-`storeLinks` in `src/data/site.ts` holds the Mac App Store URL with `available: false`, and the
-placeholder app id it carries is not a real listing. Nothing links to the store until that flag is
-flipped; until then the download page shows a plain "Coming soon" instead. Fill in the real id and
-flip the flag the day the listing goes public.
 
 ## Theme
 
