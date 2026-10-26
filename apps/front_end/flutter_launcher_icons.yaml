@@ -1,8 +1,13 @@
 # Regenerate with `dart run flutter_launcher_icons` from this directory.
 #
-# The PNGs below are rendered from assets/icon.svg by `pnpm app:icon:render`
-# at the repository root. Edit the SVG, re-render, then re-run this — the PNGs
+# The PNG below is rendered from assets/icon.svg by `pnpm app:icon:render` at
+# the repository root. Edit the SVG, re-render, then re-run this — the PNGs
 # and everything it generates are committed.
+#
+# Windows is deliberately absent. This package writes a single-size .ico, and
+# Windows wants every size from 16 to 256; `pnpm app:icon:render` writes
+# windows/runner/resources/app_icon.ico itself, and enabling the target here
+# would overwrite it.
 flutter_launcher_icons:
   image_path: "assets/icon.png"
 
@@ -11,13 +16,6 @@ flutter_launcher_icons:
 
   web:
     generate: false
-
-  # Windows composites nothing of its own, so it takes the plate at full
-  # bleed, with only the rounded corners transparent.
-  windows:
-    generate: true
-    image_path: "assets/icon.png"
-    icon_size: 48 # min:48, max:256, default: 48
 
   # macOS draws app icons inside a smaller box than their canvas and expects
   # the art to carry its own rounded shape, so this one is inset to Apple's

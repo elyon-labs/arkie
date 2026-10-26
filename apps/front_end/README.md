@@ -58,11 +58,19 @@ Two steps turn it into what each platform wants, and both are run by hand becaus
 produce is committed:
 
 1. `pnpm app:icon:render` from the repository root rasterises it with headless Chrome into
-   `assets/icon.png`, the plate at full bleed for Windows and the Debian package, and
-   `assets/icon-macos.png`, inset to Apple's icon grid because macOS draws app icons inside a
-   smaller box than their canvas and expects the art to carry its own rounded shape.
-2. `dart run flutter_launcher_icons` from this directory pushes those into
-   `macos/Runner/Assets.xcassets` and `windows/runner/resources/app_icon.ico`.
+   `assets/icon.png`, the plate at full bleed for the Debian package; `assets/icon-macos.png`,
+   inset to Apple's icon grid because macOS draws app icons inside a smaller box than their
+   canvas and expects the art to carry its own rounded shape; and
+   `windows/runner/resources/app_icon.ico`.
+2. `dart run flutter_launcher_icons` from this directory pushes the macOS PNG into
+   `macos/Runner/Assets.xcassets`.
+
+The `.ico` is written by the render script rather than by `flutter_launcher_icons`, which emits a
+single size. Windows asks for nine, from 16 in a title bar to 256 in Explorer's jumbo view, and
+downscales from whatever it can find when one is missing — a file holding 48 alone left the icon
+soft everywhere else. Each size is rasterised from the vector rather than resampled from a big
+PNG, which matters most at 16 and 20. Adding `windows:` back to `flutter_launcher_icons.yaml`
+would overwrite all of it.
 
 The script overrides `#plate` and `#mark` per target rather than editing the SVG, so keep both
 ids. The colours are `background` and `accent` from `lib/core_ui/colors.dart` — change them there
