@@ -1,0 +1,4 @@
+# This file is intentionally public. Shorebird app identity is not a secret.
+# The private deployment repository owns release credentials and automation.
+# Replace TBD by running `shorebird init` after the first mobile build.
+app_id: TBD
