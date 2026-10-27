@@ -1,4 +1,4 @@
-import 'package:arkie_mobile/mobile_app.dart';
+import 'package:arkie_mobile/app.dart';
 import 'package:cs2_rcon_front_end/di/graph.dart';
 import 'package:cs2_rcon_front_end/environment.dart';
 import 'package:cs2_rcon_front_end/features/rcon/data/connection_cache.dart';
