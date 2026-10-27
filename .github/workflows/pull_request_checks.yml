@@ -12,49 +12,12 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
-
-env:
-  FLUTTER_VERSION: "3.35.7"
-
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-
-      - name: Install Flutter
-        uses: subosito/flutter-action@v2.19.0
-        with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          channel: stable
-
-      - name: Install melos
-        run: dart pub global activate melos
-
-      - name: Install dependencies
-        run: melos bootstrap
-
-      - name: Verify Flutter formatting
-        run: melos run format:flutter:ci
-
-      - name: Verify Dart formatting
-        run: melos run format:dart:ci
-
-      - name: Analyze Flutter project source
-        run: melos run analyze:flutter:ci
-
-      - name: Analyze Dart project source
-        run: melos run analyze:dart:ci
-
-      - name: Run Flutter tests
-        run: melos run test:flutter:ci
-
-      - name: Run Dart tests
-        run: melos run test:dart:ci
+  flutter:
+    name: Flutter and Dart checks
+    uses: elyon-labs/workflows/.github/workflows/validate-flutter-melos.yml@381588c0b1a8e3ae15d52230a20fdd88ef584f1c # v1.0.0
+    with:
+      flutter-version: "3.35.7"
+      melos-version: "8.0.0"
+    permissions:
+      contents: read

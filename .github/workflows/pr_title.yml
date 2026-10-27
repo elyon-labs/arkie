@@ -1,19 +1,7 @@
 name: PR Title
 
-# Pull requests are squash-merged, so the pull request title becomes the commit
-# subject on main and the line `--generate-notes` writes into a release body.
-# The site builds /releases from those lines and shows only the `feat` and `fix`
-# ones, which is why the type has to be there and has to be right: a feature
-# titled `chore:` is a feature nobody is told about.
-#
-# The other Elyon Labs repositories call this out of elyon-labs/workflows. This
-# repository is public and that one is private, which GitHub does not allow
-# across that boundary, so the check lives here in full. Keep the two in step.
-
 on:
   pull_request:
-    # A rename fires `edited` and nothing else, so without it a title can be
-    # fixed to pass and then changed back.
     types:
       - opened
       - edited
@@ -26,48 +14,4 @@ permissions:
 jobs:
   title:
     name: Title
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        shell: bash
-
-    steps:
-      - name: Check the title is a conventional commit
-        env:
-          # Read through the environment rather than interpolated into the
-          # script: a title is attacker-controlled text, and `${{ }}` inside
-          # `run:` would let it run as shell.
-          TITLE: ${{ github.event.pull_request.title }}
-          TYPES: feat|fix|chore|docs|refactor|perf|test|build|ci|style|revert
-        run: |
-          set -euo pipefail
-
-          # type(optional scope), an optional ! for a breaking change, then a
-          # summary that is not empty.
-          if [[ "$TITLE" =~ ^($TYPES)(\([a-z0-9._-]+\))?!?:[[:space:]]+[^[:space:]].*$ ]]; then
-            echo "OK: $TITLE"
-            exit 0
-          fi
-
-          cat >> "$GITHUB_STEP_SUMMARY" <<SUMMARY
-          ## Pull request title is not a conventional commit
-
-          \`$TITLE\`
-
-          Rename it to \`type: summary\`, where type is one of:
-
-          \`\`\`
-          ${TYPES//|/, }
-          \`\`\`
-
-          A scope and a breaking-change marker are both optional, so
-          \`feat(front-end)!: …\` is fine too.
-
-          **\`feat\` and \`fix\` are published on the marketing site**; every
-          other type is treated as work on the app rather than a change to it,
-          and is left off the release notes.
-          SUMMARY
-
-          echo "::error title=Pull request title::'$TITLE' is not a conventional commit. See the job summary."
-          exit 1
+    uses: elyon-labs/workflows/.github/workflows/validate-pr-title.yml@381588c0b1a8e3ae15d52230a20fdd88ef584f1c # v1.0.0
