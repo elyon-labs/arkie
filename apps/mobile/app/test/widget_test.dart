@@ -1,4 +1,4 @@
-import 'package:arkie_mobile/mobile_app.dart';
+import 'package:arkie_mobile/app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
