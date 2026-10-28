@@ -44,7 +44,7 @@ class Messages extends HookWidget {
       child: SingleChildScrollView(
         // Allow some padding at the top so the first message isn't flush against the top edge
         // This allows saving (or-resending) the top message if desired.
-        padding: const EdgeInsets.only(top: Sizes.edgePadding),
+        padding: const EdgeInsets.symmetric(vertical: ArkieMetrics.snug),
         controller: messagesController,
         child: Column(
           children: [

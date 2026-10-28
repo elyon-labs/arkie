@@ -11,11 +11,11 @@ class CenteredHint extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(ArkieMetrics.section),
         child: Text(
           message,
           textAlign: TextAlign.center,
-          style: TextStyle(color: context.colors.muted, height: 1.5),
+          style: context.text.caption.copyWith(color: context.arkieColors.textFaint),
         ),
       ),
     );

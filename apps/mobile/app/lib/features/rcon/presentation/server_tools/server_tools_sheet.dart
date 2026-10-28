@@ -3,7 +3,6 @@ import 'package:arkie_mobile/features/rcon/presentation/server_tools/players_tab
 import 'package:arkie_mobile/features/rcon/presentation/server_tools/saved_commands_tab.dart';
 import 'package:arkie_state/features/rcon/rcon_cubit.dart';
 import 'package:arkie_state/features/rcon/server_info/server_info_cubit.dart';
-import 'package:arkie_ui/arkie_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -31,6 +30,8 @@ Future<void> showServerToolsSheet(BuildContext context) async {
   );
 }
 
+/// The tabs are named for what they hold, in the lower case the rest of the
+/// console uses, so the sheet reads as another pane rather than a new screen.
 class ServerToolsSheet extends StatelessWidget {
   const ServerToolsSheet({super.key});
 
@@ -43,24 +44,11 @@ class ServerToolsSheet extends StatelessWidget {
           length: 3,
           child: Column(
             children: [
-              Padding(
-                padding: EdgeInsets.fromLTRB(20, 0, 20, 14),
-                child: Row(
-                  children: [
-                    Icon(Icons.tune_rounded),
-                    HSpace(space: 10),
-                    Text(
-                      'Server tools',
-                      style: TextStyle(fontSize: 19, fontWeight: FontWeight.w800),
-                    ),
-                  ],
-                ),
-              ),
               TabBar(
                 tabs: [
-                  Tab(icon: Icon(Icons.bookmark_outline_rounded), text: 'Saved'),
-                  Tab(icon: Icon(Icons.map_outlined), text: 'Maps'),
-                  Tab(icon: Icon(Icons.groups_outlined), text: 'Players'),
+                  Tab(text: 'saved'),
+                  Tab(text: 'maps'),
+                  Tab(text: 'players'),
                 ],
               ),
               Expanded(child: TabBarView(children: [SavedCommandsTab(), MapsTab(), PlayersTab()])),

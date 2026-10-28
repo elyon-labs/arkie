@@ -1,6 +1,7 @@
 import 'package:arkie_core/features/rcon/domain/models/player_info.dart';
 import 'package:arkie_core/features/rcon/domain/models/server_status.dart';
 import 'package:arkie_mobile/core/widgets/centered_hint.dart';
+import 'package:arkie_mobile/core/widgets/tool_row.dart';
 import 'package:arkie_mobile/features/rcon/presentation/server_tools/widgets/ban_duration_sheet.dart';
 import 'package:arkie_state/features/rcon/server_info/models/pending_action.dart';
 import 'package:arkie_state/features/rcon/server_info/server_info_cubit.dart';
@@ -64,50 +65,50 @@ class _PlayerList extends StatelessWidget {
     }
 
     return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
+      padding: const EdgeInsets.only(bottom: ArkieMetrics.loose),
       itemCount: players.length,
-      separatorBuilder: (_, _) => const VSpace(),
-      itemBuilder: (context, index) => _PlayerTile(player: players[index]),
+      separatorBuilder: (_, _) => const Divider(),
+      itemBuilder: (context, index) => _PlayerRow(player: players[index]),
     );
   }
 }
 
-class _PlayerTile extends StatelessWidget {
-  const _PlayerTile({required this.player});
+class _PlayerRow extends StatelessWidget {
+  const _PlayerRow({required this.player});
 
   final PlayerInfo player;
 
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<ServerInfoCubit>();
-    return Material(
-      color: context.colors.card,
-      borderRadius: BorderRadius.circular(16),
-      child: ListTile(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        leading: Icon(player.isBot ? context.icons.bot : context.icons.human),
-        title: Text(player.displayName, maxLines: 1, overflow: TextOverflow.ellipsis),
-        subtitle: Text(player.description, maxLines: 1, overflow: TextOverflow.ellipsis),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
+
+    return ToolRow(
+      title: player.displayName,
+      subtitle: player.description,
+      leading: Icon(
+        player.isBot ? context.icons.bot : context.icons.human,
+        size: 18,
+        color: context.colors.muted,
+      ),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            onPressed: () async => await cubit.kickPlayer(player),
+            icon: Icon(context.icons.kick),
+            tooltip: 'Kick',
+          ),
+          if (player.steamId64 != null)
             IconButton(
-              onPressed: () async => await cubit.kickPlayer(player),
-              icon: Icon(context.icons.kick),
-              tooltip: 'Kick',
+              onPressed: () async {
+                final duration = await showBanDurationSheet(context);
+                if (duration == null) return;
+                await cubit.banPlayer(player, duration: duration);
+              },
+              icon: Icon(context.icons.ban),
+              tooltip: 'Ban',
             ),
-            if (player.steamId64 != null)
-              IconButton(
-                onPressed: () async {
-                  final duration = await showBanDurationSheet(context);
-                  if (duration == null) return;
-                  await cubit.banPlayer(player, duration: duration);
-                },
-                icon: Icon(context.icons.ban),
-                tooltip: 'Ban',
-              ),
-          ],
-        ),
+        ],
       ),
     );
   }

@@ -3,7 +3,6 @@ import 'package:cs2_rcon_front_end/features/settings/presentation/settings_cubit
 import 'package:cs2_rcon_front_end/features/settings/presentation/widgets/app_version_row.dart';
 import 'package:cs2_rcon_front_end/features/settings/presentation/widgets/file_issue_row.dart';
 import 'package:cs2_rcon_front_end/features/settings/presentation/widgets/privacy_mode_row.dart';
-import 'package:cs2_rcon_front_end/features/settings/presentation/widgets/theme_mode_row.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -32,11 +31,11 @@ class _Body extends StatelessWidget {
       children: [
         Expanded(
           child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(vertical: Sizes.edgePadding),
+            padding: EdgeInsets.symmetric(vertical: ArkieMetrics.snug),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: Sizes.edgePadding,
-              children: [ThemeModeRow(), PrivacyModeRow(), FileIssueRow()],
+              spacing: ArkieMetrics.tight,
+              children: [PrivacyModeRow(), FileIssueRow()],
             ),
           ),
         ),

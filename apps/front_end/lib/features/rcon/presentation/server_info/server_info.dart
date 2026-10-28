@@ -47,13 +47,29 @@ class _ErrorView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SidebarWrapper(
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(Sizes.edgePadding),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [Text('Error loading server info: $error'), const DeleteServerButton()],
-          ),
+      label: 'offline',
+      child: Padding(
+        padding: const EdgeInsets.all(ArkieMetrics.edge),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'Arkie cannot read this server.',
+                  style: context.text.body.copyWith(color: context.colors.error),
+                ),
+                const VSpace(space: ArkieMetrics.tight),
+                Text(
+                  '$error',
+                  style: context.text.caption.copyWith(color: context.arkieColors.textFaint),
+                ),
+              ],
+            ),
+            const DeleteServerButton(),
+          ],
         ),
       ),
     );
@@ -111,7 +127,7 @@ class _LoadedView extends HookWidget {
                 right: 0,
                 bottom: 0,
                 child: Padding(
-                  padding: const EdgeInsets.all(Sizes.edgePadding),
+                  padding: const EdgeInsets.all(ArkieMetrics.snug),
                   child: CancelPendingActionSnackBar(pendingAction: pendingAction),
                 ),
               );
@@ -134,23 +150,23 @@ class _Sections extends StatelessWidget {
       child: ScrollConfiguration(
         behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false, overscroll: false),
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(Sizes.edgePadding),
+          padding: const EdgeInsets.all(ArkieMetrics.edge),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               ServerStatusSection(
-                padding: const EdgeInsets.symmetric(vertical: Sizes.unit),
+                padding: const EdgeInsets.only(bottom: ArkieMetrics.loose),
                 onMenuTap: () => onServerInfoViewChange(_ServerInfoView.serverStatusDetails),
               ),
               PlayersSection(
-                padding: const EdgeInsets.symmetric(vertical: Sizes.unit),
+                padding: const EdgeInsets.only(bottom: ArkieMetrics.loose),
                 onMenuTap: () => onServerInfoViewChange(_ServerInfoView.managePlayers),
               ),
               SavedMessagesSection(
-                padding: const EdgeInsets.symmetric(vertical: Sizes.unit),
+                padding: const EdgeInsets.only(bottom: ArkieMetrics.loose),
                 onMenuTap: () => onServerInfoViewChange(_ServerInfoView.editSavedMessages),
               ),
-              const MapsSection(padding: EdgeInsets.symmetric(vertical: Sizes.unit * 1.5)),
+              const MapsSection(padding: EdgeInsets.zero),
             ],
           ),
         ),

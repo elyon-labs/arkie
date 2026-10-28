@@ -4,6 +4,10 @@ import 'package:arkie_mobile/features/servers/presentation/widgets/server_list_t
 import 'package:arkie_ui/arkie_ui.dart';
 import 'package:flutter/material.dart';
 
+/// Every server in one pane, divided by hairlines.
+///
+/// A card each would make the list look like more things than it is; the pane
+/// says these are one set, and the count in its border says how many.
 class ServerList extends StatelessWidget {
   const ServerList({super.key, required this.servers});
 
@@ -11,19 +15,37 @@ class ServerList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 104),
-      itemCount: servers.length,
-      separatorBuilder: (_, _) => const VSpace(space: 10),
-      itemBuilder: (context, index) {
-        final server = servers[index];
-        return ServerListTile(
-          server: server,
-          onTap: () => Navigator.of(
-            context,
-          ).push(MaterialPageRoute<void>(builder: (_) => ServerChatPage(server: server))),
-        );
-      },
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(
+        ArkieMetrics.edge,
+        ArkieMetrics.loose,
+        ArkieMetrics.edge,
+        ArkieMetrics.section,
+      ),
+      children: [
+        TerminalPanel(
+          label: 'servers',
+          padding: EdgeInsets.zero,
+          trailing: Text(
+            '${servers.length}',
+            style: context.text.caption.copyWith(color: context.colors.muted),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (final (index, server) in servers.indexed) ...[
+                if (index > 0) const Divider(),
+                ServerListTile(
+                  server: server,
+                  onTap: () => Navigator.of(
+                    context,
+                  ).push(MaterialPageRoute<void>(builder: (_) => ServerChatPage(server: server))),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

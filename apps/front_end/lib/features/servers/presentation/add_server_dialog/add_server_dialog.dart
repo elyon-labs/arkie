@@ -89,7 +89,7 @@ class _AddServerFormBody extends StatelessWidget {
               ServerPortField(enabled: !isSaving),
               const VSpace(),
               ServerPasswordField(enabled: !isSaving),
-              const VSpace(space: Sizes.unit * 2),
+              const VSpace(space: ArkieMetrics.snug),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -101,7 +101,7 @@ class _AddServerFormBody extends StatelessWidget {
                         : () async {
                             await context.read<AddServerDialogCubit>().saveServer();
                           },
-                    child: isSaving ? const Text('Adding...') : const Text('Add'),
+                    child: Text(isSaving ? 'Connecting…' : 'Add server'),
                   ),
                 ],
               ),

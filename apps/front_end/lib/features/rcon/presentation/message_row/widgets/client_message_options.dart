@@ -1,7 +1,8 @@
 import 'package:arkie_ui/arkie_ui.dart';
-import 'package:cs2_rcon_front_end/core_ui/rounded_superellipse_box.dart';
 import 'package:flutter/material.dart';
 
+/// What can be done with a command already in the log. Sized to the line it
+/// sits on, so revealing it on hover does not shift the lines below.
 class ClientMessageOptions extends StatelessWidget {
   const ClientMessageOptions({
     super.key,
@@ -16,39 +17,37 @@ class ClientMessageOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(Sizes.unit),
-      child: RoundedSuperellipseBox(
-        color: context.colors.body,
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _Action(
+          tooltip: isSaved ? 'Remove saved command' : 'Save command',
+          icon: isSaved ? context.icons.unsave : context.icons.save,
+          onPressed: onToggleSave,
+        ),
+        const HSpace(space: ArkieMetrics.gutter),
+        _Action(tooltip: 'Send again', icon: context.icons.send, onPressed: onResend),
+      ],
+    );
+  }
+}
+
+class _Action extends StatelessWidget {
+  const _Action({required this.tooltip, required this.icon, required this.onPressed});
+
+  final String tooltip;
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tooltip,
+      child: InkWell(
+        onTap: onPressed,
         child: Padding(
-          padding: const EdgeInsets.all(Sizes.unit / 2),
-          child: Row(
-            spacing: Sizes.unit / 2,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Tooltip(
-                message: isSaved ? 'Unsave' : 'Save',
-                child: IconButton(
-                  padding: EdgeInsets.zero,
-                  visualDensity: VisualDensity.compact,
-                  icon: Icon(
-                    isSaved ? context.icons.unsave : context.icons.save,
-                    size: Sizes.unit * 2.5,
-                  ),
-                  onPressed: onToggleSave,
-                ),
-              ),
-              Tooltip(
-                message: 'Resend',
-                child: IconButton(
-                  padding: EdgeInsets.zero,
-                  visualDensity: VisualDensity.compact,
-                  icon: Icon(context.icons.send, size: Sizes.unit * 2.5),
-                  onPressed: onResend,
-                ),
-              ),
-            ],
-          ),
+          padding: const EdgeInsets.all(ArkieMetrics.gutter / 2),
+          child: Icon(icon, size: 14, color: context.colors.muted),
         ),
       ),
     );

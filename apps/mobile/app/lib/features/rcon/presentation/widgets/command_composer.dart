@@ -10,9 +10,9 @@ import 'package:dart_foundation/dart_foundation.dart' as app_async;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// The composer at the bottom of the server chat screen. While connected,
-/// typing shows a tappable list of matching commands (from the server's own
-/// `find` command) above the text field; tapping one sends it immediately.
+/// The prompt at the foot of the console. While connected, typing shows the
+/// matching commands (from the server's own `find`) above it; tapping one
+/// sends it immediately.
 class CommandComposer extends StatelessWidget {
   const CommandComposer({super.key});
 
@@ -57,54 +57,79 @@ class _ComposerViewState extends State<_ComposerView> {
     await context.read<RCONCubit>().sendCommand(command.trim());
   }
 
-  Future<void> _selectSuggestion(CommandHelp suggestion) async {
-    await _sendCommand(suggestion.name);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final composer = Padding(
-      padding: EdgeInsets.fromLTRB(12, 8, 12, 12 + MediaQuery.paddingOf(context).bottom),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Expanded(
-            child: TextField(
-              controller: _controller,
-              enabled: widget.hasConnection,
-              minLines: 1,
-              maxLines: 4,
-              textInputAction: TextInputAction.send,
-              onChanged: (text) {
-                if (!widget.hasConnection) return;
-                unawaited(context.read<CommandInputCubit>().onInputChanged(text));
-              },
-              onSubmitted: (text) async {
-                await _sendCommand(text);
-              },
-              decoration: const InputDecoration(
-                hintText: 'Enter an RCON command…',
-                prefixIcon: Icon(Icons.chevron_right_rounded),
-                contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+    final colors = context.colors;
+    final arkie = context.arkieColors;
+
+    final prompt = DecoratedBox(
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(color: arkie.border, width: ArkieMetrics.hairline),
+        ),
+      ),
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          ArkieMetrics.edge,
+          ArkieMetrics.tight,
+          ArkieMetrics.tight,
+          ArkieMetrics.tight + MediaQuery.paddingOf(context).bottom,
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: ArkieMetrics.snug),
+              child: Text(
+                '>',
+                style: context.text.body.copyWith(
+                  color: widget.hasConnection ? colors.accent : arkie.textFaint,
+                ),
               ),
             ),
-          ),
-          const HSpace(),
-          IconButton.filled(
-            onPressed: () async {
-              await _sendCommand(_controller.text);
-            },
-            icon: Icon(context.icons.send),
-            color: context.colors.onPrimary,
-            tooltip: 'Send command',
-          ),
-        ],
+            const HSpace(space: ArkieMetrics.tight),
+            Expanded(
+              child: TextField(
+                controller: _controller,
+                enabled: widget.hasConnection,
+                minLines: 1,
+                maxLines: 4,
+                autocorrect: false,
+                enableSuggestions: false,
+                textInputAction: TextInputAction.send,
+                style: context.text.body,
+                // A block cursor, the width of the characters it sits between.
+                cursorWidth: 8,
+                cursorRadius: Radius.zero,
+                cursorColor: colors.accent,
+                decoration: const InputDecoration(
+                  hintText: 'rcon command',
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  disabledBorder: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(vertical: ArkieMetrics.snug),
+                ),
+                onChanged: (text) {
+                  if (!widget.hasConnection) return;
+                  unawaited(context.read<CommandInputCubit>().onInputChanged(text));
+                },
+                onSubmitted: (text) async => await _sendCommand(text),
+              ),
+            ),
+            IconButton(
+              onPressed: widget.hasConnection
+                  ? () async => await _sendCommand(_controller.text)
+                  : null,
+              icon: Icon(context.icons.send),
+              tooltip: 'Send command',
+            ),
+          ],
+        ),
       ),
     );
 
-    if (!widget.hasConnection) {
-      return composer;
-    }
+    if (!widget.hasConnection) return prompt;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -114,11 +139,11 @@ class _ComposerViewState extends State<_ComposerView> {
             if (state.autoCompleteCommands.isEmpty) return const SizedBox.shrink();
             return _SuggestionsList(
               suggestions: state.autoCompleteCommands,
-              onSelect: _selectSuggestion,
+              onSelect: (suggestion) async => await _sendCommand(suggestion.name),
             );
           },
         ),
-        composer,
+        prompt,
       ],
     );
   }
@@ -132,36 +157,56 @@ class _SuggestionsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(12, 0, 12, 4),
-      constraints: const BoxConstraints(maxHeight: 220),
-      decoration: BoxDecoration(
-        color: context.colors.modal,
-        borderRadius: BorderRadius.circular(16),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        ArkieMetrics.edge,
+        0,
+        ArkieMetrics.edge,
+        ArkieMetrics.snug,
       ),
-      child: ListView.separated(
-        shrinkWrap: true,
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        itemCount: suggestions.length,
-        separatorBuilder: (_, _) => const Divider(height: 1),
-        itemBuilder: (context, index) {
-          final suggestion = suggestions[index];
-          return ListTile(
-            dense: true,
-            leading: const Icon(Icons.terminal_rounded, size: 18),
-            title: Text(suggestion.name, style: const TextStyle(fontWeight: FontWeight.w700)),
-            subtitle: suggestion.description.isEmpty
-                ? null
-                : Text(
-                    suggestion.description,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 11),
+      child: TerminalPanel(
+        label: 'find',
+        padding: EdgeInsets.zero,
+        fill: context.colors.card,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxHeight: 200),
+          child: ListView.builder(
+            shrinkWrap: true,
+            padding: const EdgeInsets.symmetric(vertical: ArkieMetrics.gutter),
+            itemCount: suggestions.length,
+            itemBuilder: (context, index) {
+              final suggestion = suggestions[index];
+              return InkWell(
+                onTap: () => onSelect(suggestion),
+                highlightColor: context.arkieColors.surfacePressed,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: ArkieMetrics.snug,
+                    vertical: ArkieMetrics.tight,
                   ),
-            trailing: const Icon(Icons.arrow_upward_rounded, size: 16),
-            onTap: () => onSelect(suggestion),
-          );
-        },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        suggestion.name,
+                        style: context.text.body.copyWith(color: context.colors.accent),
+                      ),
+                      if (suggestion.description.isNotEmpty)
+                        Text(
+                          suggestion.description,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: context.text.caption.copyWith(
+                            color: context.arkieColors.textFaint,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
       ),
     );
   }

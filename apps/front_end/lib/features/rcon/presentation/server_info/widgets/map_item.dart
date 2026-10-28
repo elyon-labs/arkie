@@ -1,9 +1,12 @@
 import 'package:arkie_core/features/rcon/domain/models/cs2_map.dart';
 import 'package:arkie_ui/arkie_ui.dart';
-import 'package:cs2_rcon_front_end/core_ui/rounded_superellipse_box.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
-class MapItem extends StatelessWidget {
+/// A map as an outlined tile. The one that is loaded keeps the accent, which
+/// is the only thing distinguishing it — no badge, because the border already
+/// has somewhere to say it.
+class MapItem extends HookWidget {
   const MapItem({super.key, required this.map, this.onTap, required this.isCurrentMap});
 
   final bool isCurrentMap;
@@ -12,56 +15,53 @@ class MapItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        onTap?.call(map);
-      },
-      child: Tooltip(
-        message: map.displayName,
-        child: Badge(
-          padding: EdgeInsets.zero,
-          smallSize: Sizes.unit * 1,
-          backgroundColor: context.colors.accent,
-          isLabelVisible: isCurrentMap,
-          label: Padding(
-            padding: const EdgeInsets.all(Sizes.unit * 0.05),
-            child: Icon(context.icons.check),
-          ),
-          child: RoundedSuperellipseBox(
-            color: context.colors.card,
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(Sizes.unit),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBox(
-                      width: 48,
-                      height: 48,
-                      child: Image.asset(
-                        map.assetPath,
-                        package: CS2Map.assetPackage,
-                        fit: BoxFit.fitHeight,
-                      ),
-                    ),
-                    Flexible(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Flexible(
-                            child: Text(
-                              map.displayName,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+    final colors = context.colors;
+    final arkie = context.arkieColors;
+    final hovered = useState(false);
+
+    final borderColor = isCurrentMap
+        ? colors.accent
+        : hovered.value
+        ? arkie.borderStrong
+        : arkie.border;
+
+    return Tooltip(
+      message: map.displayName,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        onEnter: (_) => hovered.value = true,
+        onExit: (_) => hovered.value = false,
+        child: GestureDetector(
+          onTap: () => onTap?.call(map),
+          child: Container(
+            decoration: BoxDecoration(
+              color: isCurrentMap ? arkie.accentSurface : null,
+              border: Border.all(color: borderColor, width: ArkieMetrics.hairline),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: ArkieMetrics.tight),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 28,
+                  height: 28,
+                  child: Image.asset(
+                    map.assetPath,
+                    package: CS2Map.assetPackage,
+                    fit: BoxFit.contain,
+                  ),
                 ),
-              ),
+                const HSpace(space: ArkieMetrics.tight),
+                Expanded(
+                  child: Text(
+                    map.displayName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.text.caption.copyWith(
+                      color: isCurrentMap ? colors.accent : colors.foreground,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),

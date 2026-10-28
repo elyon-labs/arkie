@@ -10,7 +10,7 @@ class BanDurationDialog extends HookWidget {
     final selectedDuration = useState<Duration>(const Duration(hours: 1));
 
     return AlertDialog(
-      title: const Text('Select Ban Duration'),
+      title: const Text('Ban duration'),
       content: RadioGroup<Duration>(
         groupValue: selectedDuration.value,
         onChanged: (value) {
@@ -24,22 +24,22 @@ class BanDurationDialog extends HookWidget {
             Row(
               children: [
                 const Radio(value: Duration(hours: 1)),
-                const HSpace(space: Sizes.unit * 2),
-                Text('1 Hour', style: context.text.title),
+                const HSpace(space: ArkieMetrics.snug),
+                Text('1 hour', style: context.text.body),
               ],
             ),
             Row(
               children: [
                 const Radio(value: Duration(days: 1)),
-                const HSpace(space: Sizes.unit * 2),
-                Text('1 Day', style: context.text.title),
+                const HSpace(space: ArkieMetrics.snug),
+                Text('1 day', style: context.text.body),
               ],
             ),
             Row(
               children: [
                 const Radio(value: Duration.zero),
-                const HSpace(space: Sizes.unit * 2),
-                Text('Permanent', style: context.text.title),
+                const HSpace(space: ArkieMetrics.snug),
+                Text('Permanent', style: context.text.body),
               ],
             ),
           ],
@@ -56,7 +56,7 @@ class BanDurationDialog extends HookWidget {
           onPressed: () async {
             Navigator.of(context).pop(selectedDuration.value);
           },
-          child: const Text('Ban'),
+          child: const Text('Ban player'),
         ),
       ],
     );

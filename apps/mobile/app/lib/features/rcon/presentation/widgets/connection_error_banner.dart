@@ -3,6 +3,7 @@ import 'package:arkie_ui/arkie_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+/// Says what went wrong and offers the one thing that fixes it.
 class ConnectionErrorBanner extends StatelessWidget {
   const ConnectionErrorBanner({super.key, required this.error});
 
@@ -11,29 +12,43 @@ class ConnectionErrorBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.fromLTRB(16, 4, 16, 0),
-      padding: const EdgeInsets.fromLTRB(14, 10, 8, 10),
       decoration: BoxDecoration(
-        color: colors.error.withValues(alpha: 0.16),
-        borderRadius: BorderRadius.circular(16),
+        border: Border(
+          bottom: BorderSide(color: colors.error, width: ArkieMetrics.hairline),
+        ),
+      ),
+      padding: const EdgeInsets.fromLTRB(
+        ArkieMetrics.edge,
+        ArkieMetrics.snug,
+        ArkieMetrics.tight,
+        ArkieMetrics.snug,
       ),
       child: Row(
         children: [
-          Icon(Icons.wifi_off_rounded, color: colors.error, size: 19),
-          const HSpace(space: 10),
           Expanded(
-            child: Text(
-              error,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: colors.error, fontSize: 11),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'The server is not reachable.',
+                  style: context.text.body.copyWith(color: colors.error),
+                ),
+                Text(
+                  error,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.text.caption.copyWith(color: context.arkieColors.textFaint),
+                ),
+              ],
             ),
           ),
+          const HSpace(space: ArkieMetrics.tight),
           TextButton(
             onPressed: () => context.read<RCONCubit>().retryConnection(),
-            child: const Text('Retry'),
+            child: const Text('Reconnect'),
           ),
         ],
       ),

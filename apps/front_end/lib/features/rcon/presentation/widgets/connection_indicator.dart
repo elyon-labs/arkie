@@ -5,57 +5,50 @@ import 'package:dart_foundation/dart_foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+/// The status line under the prompt, carrying the state of the link and, when
+/// it is down, the reason and the way back.
 class ConnectionIndicator extends StatelessWidget {
   const ConnectionIndicator({super.key});
 
   @override
   Widget build(BuildContext context) {
     final state = context.select((RCONCubit cubit) => cubit.state);
-    final lastConnectionCheckTime = state.lastConnectionCheckTime;
-    final child = Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Sizes.unit / 2),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: switch (state.connection) {
-          Loaded<RCONConnection>() => Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.check, color: context.colors.good, size: Sizes.unit * 1.5),
-              const HSpace(),
-              Text('Connected', style: context.text.caption),
-            ],
+    final lastChecked = state.lastConnectionCheckTime;
+
+    final line = switch (state.connection) {
+      Loaded<RCONConnection>() => const StatusLamp(state: LinkState.live),
+      Error<RCONConnection>(:final error) => Row(
+        children: [
+          const StatusLamp(state: LinkState.offline),
+          const HSpace(space: ArkieMetrics.snug),
+          Flexible(
+            child: Text(
+              error.toString(),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: context.text.caption.copyWith(color: context.arkieColors.textFaint),
+            ),
           ),
-          Error<RCONConnection>(:final error) => Row(
-            children: [
-              Icon(Icons.error, color: context.colors.error),
-              const HSpace(),
-              Flexible(child: Text(error.toString(), style: context.text.caption)),
-              TextButton(
-                onPressed: () async {
-                  await context.read<RCONCubit>().retryConnection();
-                },
-                child: const Text('Reconnect'),
-              ),
-            ],
+          TextButton(
+            onPressed: () async => await context.read<RCONCubit>().retryConnection(),
+            child: const Text('Reconnect'),
           ),
-          _ => const SizedBox.square(
-            dimension: Sizes.unit * 2,
-            child: CircularProgressIndicator(strokeWidth: Sizes.unit / 4),
-          ),
-        },
+        ],
+      ),
+      _ => const StatusLamp(state: LinkState.connecting),
+    };
+
+    final row = Align(
+      alignment: Alignment.centerLeft,
+      child: Padding(
+        padding: const EdgeInsets.only(top: ArkieMetrics.tight),
+        child: line,
       ),
     );
-    if (lastConnectionCheckTime != null) {
-      return Align(
-        alignment: Alignment.centerLeft,
-        child: Tooltip(
-          message: 'Last checked: ${lastConnectionCheckTime.toFriendlyString()}',
-          child: child,
-        ),
-      );
-    } else {
-      return child;
-    }
+
+    if (lastChecked == null) return row;
+
+    return Tooltip(message: 'Last checked ${lastChecked.toFriendlyString()}', child: row);
   }
 }
 

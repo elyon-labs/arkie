@@ -2,7 +2,6 @@ import 'package:arkie_core/features/rcon/domain/models/server_status.dart';
 import 'package:arkie_state/features/rcon/server_info/server_info_cubit.dart';
 import 'package:arkie_ui/arkie_ui.dart';
 import 'package:cs2_rcon_front_end/app/presentation/widgets/sensitive_text.dart';
-import 'package:cs2_rcon_front_end/core_ui/label_value.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/widgets/delete_server_button.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/widgets/sidebar_wrapper.dart';
 import 'package:dart_foundation/dart_foundation.dart';
@@ -32,12 +31,13 @@ class _LoadedView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SidebarWrapper(
+      label: 'details',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(Sizes.edgePadding),
+              padding: const EdgeInsets.all(ArkieMetrics.edge),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -45,30 +45,30 @@ class _LoadedView extends StatelessWidget {
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Server Details', style: context.text.headline),
+                      Text('Server details', style: context.text.title),
                       IconButton(onPressed: onClose, icon: Icon(context.icons.close)),
                     ],
                   ),
-                  const VSpace(space: Sizes.unit * 2),
+                  const VSpace(space: ArkieMetrics.snug),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    spacing: Sizes.unit * 1.5,
+                    spacing: ArkieMetrics.gutter,
                     children: [
-                      LabelValue(label: const Text('Hostname'), value: Text(status.hostname)),
+                      LabelValue(label: const Text('hostname'), value: Text(status.hostname)),
                       LabelValue(
-                        label: const Text('Address'),
+                        label: const Text('address'),
                         value: SensitiveText.ipAddress(child: Text(status.address.address)),
                       ),
-                      LabelValue(label: const Text('Port'), value: Text('${status.port}')),
-                      LabelValue(label: const Text('Version'), value: Text(status.version)),
-                      LabelValue(label: const Text('OS'), value: Text(status.os)),
+                      LabelValue(label: const Text('port'), value: Text('${status.port}')),
+                      LabelValue(label: const Text('version'), value: Text(status.version)),
+                      LabelValue(label: const Text('os'), value: Text(status.os)),
                     ],
                   ),
                 ],
               ),
             ),
           ),
-          const Padding(padding: EdgeInsets.all(Sizes.edgePadding), child: DeleteServerButton()),
+          const Padding(padding: EdgeInsets.all(ArkieMetrics.edge), child: DeleteServerButton()),
         ],
       ),
     );

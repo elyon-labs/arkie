@@ -4,8 +4,11 @@ import 'package:arkie_state/features/servers/servers_state.dart';
 import 'package:arkie_ui/arkie_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
-class ServerTab extends StatelessWidget {
+/// One tab in the strip along the top, in the manner of a terminal's window
+/// list: the selected one is underlined in the accent, the rest are quiet.
+class ServerTab extends HookWidget {
   const ServerTab({
     super.key,
     required this.tab,
@@ -21,55 +24,47 @@ class ServerTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const horizontalPadding = Sizes.unit * 1.5;
-    const verticalPadding = Sizes.unit;
-    const closeButtonSize = Sizes.unit * 3;
+    final colors = context.colors;
+    final arkie = context.arkieColors;
+    final hovered = useState(false);
 
-    return GestureDetector(
-      onTap: () => context.read<ServersCubit>().selectTab(tab.id),
-      child: Container(
-        constraints: const BoxConstraints(minHeight: 42),
-        margin: const EdgeInsets.all(Sizes.unit / 2),
-        decoration: isSelected
-            ? ShapeDecoration(
-                color: context.colors.selected,
-                shape: RoundedSuperellipseBorder(
-                  borderRadius: BorderRadius.circular(Sizes.borderRadius),
-                ),
-              )
-            : ShapeDecoration(
-                shape: RoundedSuperellipseBorder(
-                  borderRadius: BorderRadius.circular(Sizes.borderRadius),
-                  side: BorderSide(color: context.colors.selected),
-                ),
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => hovered.value = true,
+      onExit: (_) => hovered.value = false,
+      child: GestureDetector(
+        onTap: () => context.read<ServersCubit>().selectTab(tab.id),
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 36),
+          decoration: BoxDecoration(
+            color: isSelected || hovered.value ? arkie.surfacePressed : null,
+            border: Border(
+              bottom: BorderSide(
+                color: isSelected ? colors.accent : Colors.transparent,
+                width: ArkieMetrics.hairline * 2,
               ),
-        child: Padding(
+            ),
+          ),
           padding: EdgeInsets.only(
-            left: horizontalPadding,
-            top: verticalPadding,
-            bottom: verticalPadding,
-            right: allowClose ? Sizes.unit / 2 : horizontalPadding,
+            left: ArkieMetrics.snug,
+            right: allowClose ? ArkieMetrics.gutter : ArkieMetrics.snug,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(server?.name ?? 'New tab'),
+              Text(
+                server?.name ?? 'new tab',
+                style: context.text.caption.copyWith(
+                  color: isSelected ? colors.foreground : colors.muted,
+                ),
+              ),
               if (allowClose) ...[
-                const HSpace(space: Sizes.unit / 2),
-                SizedBox.square(
-                  dimension: closeButtonSize,
-                  child: IconButton(
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints.tightFor(
-                      width: closeButtonSize,
-                      height: closeButtonSize,
-                    ),
-                    iconSize: Sizes.unit * 1.5,
-                    tooltip: 'Close tab',
-                    onPressed: () => context.read<ServersCubit>().closeTab(tab.id),
-                    icon: Icon(context.icons.close),
-                  ),
+                const HSpace(space: ArkieMetrics.tight),
+                IconButton(
+                  iconSize: 12,
+                  tooltip: 'Close tab',
+                  onPressed: () => context.read<ServersCubit>().closeTab(tab.id),
+                  icon: Icon(context.icons.close),
                 ),
               ],
             ],

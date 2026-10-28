@@ -1,119 +1,95 @@
+import 'package:arkie_ui/src/arkie_colors.dart';
 import 'package:arkie_ui/src/arkie_icons.dart';
+import 'package:arkie_ui/src/arkie_metrics.dart';
 import 'package:design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 
 /// The theme shared by every Arkie app.
 ///
-/// Each app picks one of the predefined themes ([desktopDark], [desktopLight],
-/// [mobile]) and builds its [ThemeData] from it, so every color an app paints
-/// comes from [colors] (read in widgets through `context.colors`).
+/// Each app picks one of the predefined themes ([desktop], [mobile]) and builds
+/// its [ThemeData] from it, so every color an app paints comes from [colors]
+/// (read in widgets through `context.colors`) or [arkieColors].
+///
+/// Both apps are dark. Arkie draws a console, and a console is dark the way a
+/// terminal is: the surfaces are near-black so the text on them is the only
+/// thing with any weight.
 @immutable
 class ArkieTheme {
   const ArkieTheme({
     required this.brightness,
     required this.colors,
+    required this.arkieColors,
     required this.icons,
     required this.fontFamily,
   });
 
   static const String spaceMono = 'packages/arkie_ui/SpaceMono';
 
-  static const desktopDark = ArkieTheme(
+  /// Purple marks what is yours: the command you typed, the pane you are in,
+  /// the map that is loaded. It is never spent on anything else, which is what
+  /// keeps it legible against a screen otherwise made of greys.
+  static const Color _accent = Color(0xFFBB86FC);
+
+  /// The accent while a control is held down.
+  static const Color accentPressed = Color(0xFF9A6AD8);
+
+  /// The neutrals carry a violet cast so they read as belonging to the accent
+  /// rather than as a grey theme that happens to have a purple in it.
+  static const _palette = ElyonColors(
+    primary: _accent,
+    onPrimary: Color(0xFF120018),
+    secondary: Color(0xFF17141D),
+    onSecondary: Color(0xFFE8E2F0),
+    secondaryInteractive: Color(0xFF201B29),
+    onSecondaryInteractive: Color(0xFFE8E2F0),
+    accent: _accent,
+    onAccent: Color(0xFF120018),
+    muted: Color(0xFF968BA6),
+    onMuted: Color(0xFF000000),
+    selected: Color(0xFF1C1026),
+    onSelected: _accent,
+    body: Color(0xFF000000),
+    card: Color(0xFF0E0C12),
+    modal: Color(0xFF17141D),
+    foreground: Color(0xFFE8E2F0),
+    error: Color(0xFFFF7B72),
+    onError: Color(0xFF1A0908),
+    warning: Color(0xFFE8C06A),
+    onWarning: Color(0xFF1A1408),
+    good: Color(0xFF7EE787),
+    onGood: Color(0xFF04140A),
+    divider: Color(0xFF1C1823),
+  );
+
+  static const _terminal = ArkieColors(
+    border: Color(0xFF2A2433),
+    borderStrong: Color(0xFF6B5B80),
+    surfacePressed: Color(0xFF201B29),
+    textFaint: Color(0xFF5F5670),
+    accentSurface: Color(0xFF1C1026),
+    backdrop: Color(0xCC000000),
+  );
+
+  static const desktop = ArkieTheme(
     brightness: Brightness.dark,
     fontFamily: spaceMono,
     icons: _desktopIcons,
-    colors: ElyonColors(
-      primary: Color(0xFFBB86FC),
-      onPrimary: Color(0xFF000000),
-      secondary: Color(0xFF1F1F1F),
-      onSecondary: Color(0xFFFFFFFF),
-      secondaryInteractive: Color(0xFF333333),
-      onSecondaryInteractive: Color(0xFFFFFFFF),
-      accent: Color(0xFFBB86FC),
-      onAccent: Color(0xFF000000),
-      muted: Color(0xFF999999),
-      onMuted: Color(0xFF000000),
-      selected: Color(0xFF1F1F1F),
-      onSelected: Color(0xFFFFFFFF),
-      body: Color(0xFF121212),
-      card: Color(0xFF0B0B0B),
-      modal: Color(0xFF1E1E1E),
-      foreground: Color(0xFFFFFFFF),
-      error: Color(0xFFFF0000),
-      onError: Color(0xFFFFFFFF),
-      warning: Color(0xFFFFC107),
-      onWarning: Color(0xFF000000),
-      good: Color(0xFF00FF00),
-      onGood: Color(0xFF000000),
-      divider: Color(0xFF333333),
-    ),
-  );
-
-  static const desktopLight = ArkieTheme(
-    brightness: Brightness.light,
-    fontFamily: spaceMono,
-    icons: _desktopIcons,
-    colors: ElyonColors(
-      primary: Color(0xFF6200EE),
-      onPrimary: Color(0xFFFFFFFF),
-      secondary: Color(0xFFE0E0E0),
-      onSecondary: Color(0xFF000000),
-      secondaryInteractive: Color(0xFFCCCCCC),
-      onSecondaryInteractive: Color(0xFF000000),
-      accent: Color(0xFF6200EE),
-      onAccent: Color(0xFFFFFFFF),
-      muted: Color(0xFF606060),
-      onMuted: Color(0xFFFFFFFF),
-      selected: Color(0xFFE0E0E0),
-      onSelected: Color(0xFF000000),
-      body: Color(0xFFFFFFFF),
-      card: Color(0xFFF5F5F5),
-      modal: Color(0xFFFFFFFF),
-      foreground: Color(0xFF000000),
-      error: Color(0xFFFF0000),
-      onError: Color(0xFFFFFFFF),
-      warning: Color(0xFFB26A00),
-      onWarning: Color(0xFFFFFFFF),
-      good: Color(0xFF008000),
-      onGood: Color(0xFFFFFFFF),
-      divider: Color(0xFFCCCCCC),
-    ),
+    colors: _palette,
+    arkieColors: _terminal,
   );
 
   static const mobile = ArkieTheme(
     brightness: Brightness.dark,
-    fontFamily: 'monospace',
+    fontFamily: spaceMono,
     icons: _mobileIcons,
-    colors: ElyonColors(
-      primary: Color(0xFFBB86FC),
-      onPrimary: Color(0xFF000000),
-      secondary: Color(0xFFCFC1DA),
-      onSecondary: Color(0xFF362D40),
-      secondaryInteractive: Color(0xFF202530),
-      onSecondaryInteractive: Color(0xFFE8E0E8),
-      accent: Color(0xFFBB86FC),
-      onAccent: Color(0xFF000000),
-      muted: Color(0xFFCCC4CF),
-      onMuted: Color(0xFF0E1014),
-      selected: Color(0xFF543B72),
-      onSelected: Color(0xFFEEDBFF),
-      body: Color(0xFF0E1014),
-      card: Color(0xFF171A21),
-      modal: Color(0xFF202530),
-      foreground: Color(0xFFE8E0E8),
-      error: Color(0xFFFFB4AB),
-      onError: Color(0xFF690005),
-      warning: Color(0xFFFFD740),
-      onWarning: Color(0xFF000000),
-      good: Color(0xFF69F0AE),
-      onGood: Color(0xFF000000),
-      divider: Color(0xFF4A454E),
-    ),
+    colors: _palette,
+    arkieColors: _terminal,
   );
 
   final Brightness brightness;
   final ElyonColors colors;
+  final ArkieColors arkieColors;
   final ArkieIcons icons;
   final String fontFamily;
 
@@ -139,7 +115,7 @@ class ArkieTheme {
       surfaceContainerHighest: colors.modal,
       error: colors.error,
       onError: colors.onError,
-      outline: colors.divider,
+      outline: arkieColors.border,
       outlineVariant: colors.divider,
     );
   }
@@ -150,59 +126,91 @@ class ArkieTheme {
       colorScheme: colorScheme,
       fontFamily: fontFamily,
       scaffoldBackgroundColor: colors.body,
+      // A spreading circle is the one round shape Material insists on. Presses
+      // read as a change of fill instead.
+      splashFactory: NoSplash.splashFactory,
+      textSelectionTheme: TextSelectionThemeData(
+        cursorColor: colors.accent,
+        selectionColor: arkieColors.accentSurface,
+        selectionHandleColor: colors.accent,
+      ),
+      dividerTheme: DividerThemeData(
+        color: colors.divider,
+        thickness: ArkieMetrics.hairline,
+        space: ArkieMetrics.hairline,
+      ),
     );
   }
 
   ElyonText buildText(TextTheme textTheme) {
     return ElyonText(
-      body: textTheme.bodyMedium!.copyWith(fontSize: 14, color: colors.foreground),
-      title: textTheme.titleMedium!.copyWith(fontSize: 16, color: colors.foreground),
-      headline: textTheme.headlineMedium!.copyWith(fontSize: 18, color: colors.foreground),
-      caption: textTheme.bodySmall!.copyWith(fontSize: 12, color: colors.muted),
+      body: textTheme.bodyMedium!.copyWith(
+        fontSize: ArkieFontSize.body,
+        color: colors.foreground,
+        height: 1.45,
+      ),
+      title: textTheme.titleMedium!.copyWith(
+        fontSize: ArkieFontSize.title,
+        color: colors.foreground,
+        fontWeight: FontWeight.w700,
+      ),
+      headline: textTheme.headlineMedium!.copyWith(
+        fontSize: ArkieFontSize.heading,
+        color: colors.foreground,
+        fontWeight: FontWeight.w700,
+      ),
+      caption: textTheme.bodySmall!.copyWith(fontSize: ArkieFontSize.caption, color: colors.muted),
     );
+  }
+
+  /// The theme extensions every Arkie [ThemeData] registers.
+  List<ThemeExtension<dynamic>> extensions(ElyonText text) {
+    return <ThemeExtension<dynamic>>[colors, arkieColors, text, icons];
   }
 }
 
 const _desktopIcons = ArkieIcons(
-  server: Ionicons.server_outline,
-  settings: Ionicons.settings_outline,
-  delete: Ionicons.trash_outline,
-  save: Ionicons.bookmark_outline,
+  server: Ionicons.serverOutline,
+  settings: Ionicons.settingsOutline,
+  delete: Ionicons.trashOutline,
+  save: Ionicons.bookmarkOutline,
   unsave: Ionicons.bookmark,
-  send: Ionicons.paper_plane_outline,
-  edit: Ionicons.pencil_outline,
-  grid: Ionicons.grid_outline,
-  list: Ionicons.list_outline,
-  menu: Ionicons.ellipsis_vertical_outline,
-  back: Ionicons.arrow_back_outline,
-  close: Ionicons.close_outline,
+  send: Ionicons.paperPlaneOutline,
+  edit: Ionicons.pencilOutline,
+  grid: Ionicons.gridOutline,
+  list: Ionicons.listOutline,
+  menu: Ionicons.ellipsisVerticalOutline,
+  back: Ionicons.arrowBackOutline,
+  close: Ionicons.closeOutline,
   bot: Icons.computer_outlined,
-  human: Ionicons.person_outline,
-  kick: Ionicons.log_out_outline,
-  ban: Ionicons.close_circle_outline,
-  add: Ionicons.add_outline,
-  github: Ionicons.logo_github,
-  check: Ionicons.checkmark_outline,
+  human: Ionicons.personOutline,
+  kick: Ionicons.logOutOutline,
+  ban: Ionicons.closeCircleOutline,
+  add: Ionicons.addOutline,
+  github: Ionicons.logoGithub,
+  check: Ionicons.checkmarkOutline,
 );
 
+/// Outline icons throughout: a filled icon next to a pane drawn as an outline
+/// is the one thing on screen with a solid body.
 const _mobileIcons = ArkieIcons(
-  server: Icons.dns_rounded,
-  settings: Icons.settings_rounded,
-  delete: Icons.delete_outline_rounded,
-  save: Icons.bookmark_add_outlined,
-  unsave: Icons.bookmark_remove_outlined,
-  send: Icons.arrow_upward_rounded,
-  edit: Icons.edit_rounded,
-  grid: Icons.grid_view_rounded,
-  list: Icons.list_rounded,
-  menu: Icons.more_vert_rounded,
-  back: Icons.arrow_back_rounded,
-  close: Icons.close_rounded,
-  bot: Icons.smart_toy_outlined,
-  human: Icons.person_outline_rounded,
-  kick: Icons.logout_rounded,
-  ban: Icons.block_rounded,
-  add: Icons.add_rounded,
-  github: Ionicons.logo_github,
-  check: Icons.check_circle_rounded,
+  server: Ionicons.serverOutline,
+  settings: Ionicons.settingsOutline,
+  delete: Ionicons.trashOutline,
+  save: Ionicons.bookmarkOutline,
+  unsave: Ionicons.bookmark,
+  send: Ionicons.returnDownBackOutline,
+  edit: Ionicons.pencilOutline,
+  grid: Ionicons.gridOutline,
+  list: Ionicons.listOutline,
+  menu: Ionicons.ellipsisVerticalOutline,
+  back: Ionicons.chevronBackOutline,
+  close: Ionicons.closeOutline,
+  bot: Icons.computer_outlined,
+  human: Ionicons.personOutline,
+  kick: Ionicons.logOutOutline,
+  ban: Ionicons.closeCircleOutline,
+  add: Ionicons.addOutline,
+  github: Ionicons.logoGithub,
+  check: Ionicons.checkmarkOutline,
 );

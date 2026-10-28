@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:rx_shared_preferences/rx_shared_preferences.dart';
 
 class SettingsRepository {
@@ -10,19 +9,8 @@ class SettingsRepository {
     await _prefs.setBool(kPrivacyModeKey, isEnabled);
   }
 
-  Future<void> setThemeMode(ThemeMode mode) async {
-    await _prefs.setString(kThemeModeKey, mode.name);
-  }
-
   Stream<bool> watchIsPrivacyModeEnabled() {
     return _prefs.getBoolStream(kPrivacyModeKey).map((isEnabled) => isEnabled ?? false);
-  }
-
-  Stream<ThemeMode> watchThemeMode() {
-    return _prefs.getStringStream(kThemeModeKey).map((mode) {
-      if (mode == null) return ThemeMode.system;
-      return ThemeMode.values.byName(mode);
-    });
   }
 
   Future<void> selectServer(String serverId) {
@@ -44,4 +32,3 @@ class SettingsRepository {
 
 const String kPrivacyModeKey = 'privacy_mode';
 const String kSelectedServerKey = 'selected_server';
-const String kThemeModeKey = 'theme_mode';

@@ -17,7 +17,7 @@ jobs:
     name: Flutter and Dart checks
     uses: elyon-labs/workflows/.github/workflows/validate-flutter-melos.yml@381588c0b1a8e3ae15d52230a20fdd88ef584f1c # v1.0.0
     with:
-      flutter-version: "3.35.7"
+      flutter-version: "3.47.8"
       melos-version: "8.0.0"
     permissions:
       contents: read

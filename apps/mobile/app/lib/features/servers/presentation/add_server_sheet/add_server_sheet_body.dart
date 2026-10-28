@@ -23,86 +23,85 @@ class AddServerSheetBody extends HookWidget {
       app_async.Error(:final error) => error.toString(),
       _ => null,
     };
+    final cubit = context.read<AddServerDialogCubit>();
 
     return SafeArea(
       child: Padding(
-        padding: EdgeInsets.fromLTRB(20, 0, 20, MediaQuery.viewInsetsOf(context).bottom + 20),
+        padding: EdgeInsets.fromLTRB(
+          ArkieMetrics.edge,
+          0,
+          ArkieMetrics.edge,
+          MediaQuery.viewInsetsOf(context).bottom + ArkieMetrics.edge,
+        ),
         child: Form(
           key: formKey,
           child: ListView(
             shrinkWrap: true,
             children: [
-              const Text(
-                'Add a server',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
-              ),
-              const VSpace(),
+              Text('Add a server', style: context.text.title),
+              const VSpace(space: ArkieMetrics.tight),
               Text(
-                'Arkie will verify the RCON connection before saving it.',
-                style: TextStyle(color: context.colors.muted),
+                'Arkie connects once to check the details before saving them.',
+                style: context.text.caption.copyWith(color: context.arkieColors.textFaint),
               ),
-              const VSpace(space: 22),
-              TextFormField(
+              const VSpace(space: ArkieMetrics.loose),
+              _Field(
+                label: 'name',
                 controller: nameController,
                 enabled: !isSaving,
                 textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(labelText: 'Server name'),
-                onChanged: context.read<AddServerDialogCubit>().setName,
+                onChanged: cubit.setName,
                 validator: (value) => value == null || value.trim().isEmpty ? 'Enter a name' : null,
               ),
-              const VSpace(space: 12),
-              TextFormField(
+              const VSpace(space: ArkieMetrics.snug),
+              _Field(
+                label: 'address',
                 controller: addressController,
                 enabled: !isSaving,
                 keyboardType: TextInputType.url,
-                autocorrect: false,
-                decoration: const InputDecoration(labelText: 'Address or hostname'),
-                onChanged: context.read<AddServerDialogCubit>().setAddress,
+                onChanged: cubit.setAddress,
                 validator: (value) =>
                     value == null || value.trim().isEmpty ? 'Enter an address' : null,
               ),
-              const VSpace(space: 12),
-              TextFormField(
+              const VSpace(space: ArkieMetrics.snug),
+              _Field(
+                label: 'port',
                 controller: portController,
                 enabled: !isSaving,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Port'),
-                onChanged: (value) =>
-                    context.read<AddServerDialogCubit>().setPort(int.tryParse(value) ?? -1),
+                onChanged: (value) => cubit.setPort(int.tryParse(value) ?? -1),
                 validator: (value) {
                   final port = int.tryParse(value ?? '');
                   return port == null || port < 1 || port > 65535 ? 'Enter a valid port' : null;
                 },
               ),
-              const VSpace(space: 12),
-              TextFormField(
+              const VSpace(space: ArkieMetrics.snug),
+              _Field(
+                label: 'rcon password',
                 controller: passwordController,
                 enabled: !isSaving,
                 obscureText: true,
-                autocorrect: false,
-                decoration: const InputDecoration(labelText: 'RCON password'),
-                onChanged: context.read<AddServerDialogCubit>().setPassword,
+                onChanged: cubit.setPassword,
                 validator: (value) =>
                     value == null || value.isEmpty ? 'Enter the RCON password' : null,
               ),
               if (errorText != null) ...[
-                const VSpace(space: 14),
-                Text(errorText, style: TextStyle(color: context.colors.error)),
+                const VSpace(space: ArkieMetrics.snug),
+                Text(errorText, style: context.text.caption.copyWith(color: context.colors.error)),
               ],
-              const VSpace(space: 22),
+              const VSpace(space: ArkieMetrics.loose),
               FilledButton(
                 onPressed: isSaving
                     ? null
                     : () async {
-                        if (formKey.currentState?.validate() ?? false) {
-                          await context.read<AddServerDialogCubit>().saveServer();
-                          if (!context.mounted) return;
-                          final result = context.read<AddServerDialogCubit>().state.addServerResult;
-                          if (result case app_async.Loaded<Result<Server, String>>(
-                            :final value,
-                          ) when value.isOk()) {
-                            Navigator.of(context).pop();
-                          }
+                        if (!(formKey.currentState?.validate() ?? false)) return;
+                        await cubit.saveServer();
+                        if (!context.mounted) return;
+                        final result = cubit.state.addServerResult;
+                        if (result case app_async.Loaded<Result<Server, String>>(
+                          :final value,
+                        ) when value.isOk()) {
+                          Navigator.of(context).pop();
                         }
                       },
                 child: Text(isSaving ? 'Connecting…' : 'Save server'),
@@ -111,6 +110,54 @@ class AddServerSheetBody extends HookWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// A field labelled above the box rather than inside it, so a column of them
+/// shows every label at once and the boxes stay the same height.
+class _Field extends StatelessWidget {
+  const _Field({
+    required this.label,
+    required this.controller,
+    required this.enabled,
+    required this.onChanged,
+    required this.validator,
+    this.keyboardType,
+    this.textCapitalization = TextCapitalization.none,
+    this.obscureText = false,
+  });
+
+  final String label;
+  final TextEditingController controller;
+  final bool enabled;
+  final ValueChanged<String> onChanged;
+  final FormFieldValidator<String> validator;
+  final TextInputType? keyboardType;
+  final TextCapitalization textCapitalization;
+  final bool obscureText;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: context.text.caption.copyWith(color: context.colors.muted)),
+        const VSpace(space: ArkieMetrics.gutter),
+        TextFormField(
+          controller: controller,
+          enabled: enabled,
+          obscureText: obscureText,
+          autocorrect: false,
+          keyboardType: keyboardType,
+          textCapitalization: textCapitalization,
+          style: context.text.body,
+          cursorWidth: 8,
+          cursorRadius: Radius.zero,
+          onChanged: onChanged,
+          validator: validator,
+        ),
+      ],
     );
   }
 }

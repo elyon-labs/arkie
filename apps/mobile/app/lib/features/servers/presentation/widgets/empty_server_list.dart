@@ -2,49 +2,45 @@ import 'package:arkie_mobile/features/servers/presentation/add_server_sheet/add_
 import 'package:arkie_ui/arkie_ui.dart';
 import 'package:flutter/material.dart';
 
+/// An empty list is an invitation, so the pane is already drawn and waiting —
+/// the same one the servers will fill.
 class EmptyServerList extends StatelessWidget {
   const EmptyServerList({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(32, 48, 32, 128),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(22),
-              decoration: BoxDecoration(
-                color: colors.selected.withValues(alpha: 0.35),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(context.icons.server, size: 42, color: colors.primary),
-            ),
-            const VSpace(space: 24),
-            const Text(
-              'Your server list is quiet',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 21, fontWeight: FontWeight.w800),
-            ),
-            const VSpace(space: 10),
-            Text(
-              'Add a CS2 server to keep its RCON console, saved commands, and maps one tap away.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: colors.muted, height: 1.5),
-            ),
-            const VSpace(space: 24),
-            FilledButton.icon(
-              onPressed: () async {
-                await showAddServerSheet(context);
-              },
-              icon: Icon(context.icons.add),
-              label: const Text('Add your first server'),
-            ),
-          ],
-        ),
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(
+        ArkieMetrics.edge,
+        ArkieMetrics.loose,
+        ArkieMetrics.edge,
+        ArkieMetrics.section,
       ),
+      children: [
+        TerminalPanel(
+          label: 'servers',
+          trailing: Text('0', style: context.text.caption.copyWith(color: context.colors.muted)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'No servers yet.',
+                style: context.text.body.copyWith(color: context.colors.muted),
+              ),
+              const VSpace(space: ArkieMetrics.tight),
+              Text(
+                'Add a CS2 server and Arkie keeps its console, saved commands and maps a tap away.',
+                style: context.text.caption.copyWith(color: context.arkieColors.textFaint),
+              ),
+              const VSpace(space: ArkieMetrics.loose),
+              FilledButton(
+                onPressed: () async => await showAddServerSheet(context),
+                child: const Text('Add a server'),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
