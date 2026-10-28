@@ -3,26 +3,15 @@ import 'package:cs2_rcon_client/cs2_rcon_client.dart';
 import 'package:flutter/widgets.dart';
 
 class FakeConnectionCache implements ConnectionCache {
-  FakeConnectionCache({
-    this.onAddConnection,
-    this.onGetConnection,
-    this.onRemoveConnection,
-    this.onClearAllConnections,
-  });
+  FakeConnectionCache({this.onAddConnection, this.onGetConnection, this.onRemoveConnection});
 
   final ValueSetter<(RCONSocket, RCONConnection)>? onAddConnection;
   final ValueGetter<Future<(RCONSocket, RCONConnection)?>>? onGetConnection;
   final ValueSetter<RCONSocket>? onRemoveConnection;
-  final VoidCallback? onClearAllConnections;
 
   @override
   Future<void> addConnection(RCONSocket socket, RCONConnection connection) async {
     onAddConnection?.call((socket, connection));
-  }
-
-  @override
-  Future<void> clearAllConnections() async {
-    onClearAllConnections?.call();
   }
 
   @override

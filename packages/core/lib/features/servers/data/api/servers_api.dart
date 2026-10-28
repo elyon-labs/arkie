@@ -41,12 +41,6 @@ class ServersApi {
     });
   }
 
-  Future<Result<void, Exception>> clearServers() async {
-    return Result.asyncOf(() async {
-      await _box.clear();
-    });
-  }
-
   Future<List<Server>> fetchServers() {
     return Future.value(_box.values.toList());
   }
@@ -54,12 +48,6 @@ class ServersApi {
   Future<Result<void, Exception>> removeServer(Server server) {
     return Result.asyncOf(() async {
       await _box.delete(server.id);
-    });
-  }
-
-  Future<Result<void, Exception>> updateServer(Server server) {
-    return Result.asyncOf(() async {
-      await _box.put(server.id, server);
     });
   }
 }

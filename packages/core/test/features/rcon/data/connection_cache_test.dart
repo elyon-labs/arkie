@@ -52,22 +52,5 @@ void main() {
         expect(removedSocket, isNull);
       });
     });
-
-    group('clearAllConnections', () {
-      test('clears all cached sockets', () async {
-        final connectionCache = ConnectionCache();
-        final socket1 = FakeRCONSocket(hostAddress: InternetAddress.loopbackIPv4, hostPort: 27015);
-        final socket2 = FakeRCONSocket(hostAddress: InternetAddress.loopbackIPv4, hostPort: 27016);
-        const key1 = ('127.0.0.1', 27015);
-        const key2 = ('127.0.0.1', 27016);
-        await connectionCache.addConnection(socket1, const FakeRCONConnection());
-        await connectionCache.addConnection(socket2, const FakeRCONConnection());
-        await connectionCache.clearAllConnections();
-        final cachedSocket1 = await connectionCache.getConnection(key1);
-        final cachedSocket2 = await connectionCache.getConnection(key2);
-        expect(cachedSocket1, isNull);
-        expect(cachedSocket2, isNull);
-      });
-    });
   });
 }

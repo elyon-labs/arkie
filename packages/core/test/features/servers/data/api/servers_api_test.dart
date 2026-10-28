@@ -103,49 +103,5 @@ void main() {
         expect(fakeBox.get(server.id), isNull);
       });
     });
-
-    group('updateServer', () {
-      test('updates the server in the box', () async {
-        final server = buildServer();
-        final updated = Server(
-          id: server.id,
-          name: 'Updated',
-          address: server.address,
-          port: server.port,
-          password: server.password,
-        );
-        final fakeBox = FakeBox<Server>(initialValues: {server.id: server});
-        final api = ServersApi(box: fakeBox);
-
-        final result = await api.updateServer(updated);
-
-        expect(result.isOk(), isTrue);
-        expect(fakeBox.get(server.id), equals(updated));
-      });
-
-      test('returns an error when the box update fails', () async {
-        final server = buildServer();
-        final error = Exception('update failed');
-        final fakeBox = FakeBox<Server>(onPut: (_, _) => throw error);
-        final api = ServersApi(box: fakeBox);
-
-        final result = await api.updateServer(server);
-
-        expect(result.unwrapErr(), same(error));
-      });
-    });
-
-    group('clearServers', () {
-      test('clears all servers from the box', () async {
-        final server = buildServer();
-        final fakeBox = FakeBox<Server>(initialValues: {server.id: server});
-        final api = ServersApi(box: fakeBox);
-
-        final result = await api.clearServers();
-
-        expect(result.isOk(), isTrue);
-        expect(fakeBox.values, isEmpty);
-      });
-    });
   });
 }

@@ -25,17 +25,6 @@ class ServersRepository {
 
   Stream<List<Server>> watchServers() => _subject.stream;
 
-  Stream<Server?> watchServer(String serverName) {
-    return _subject.stream.map((servers) {
-      for (final server in servers) {
-        if (server.name == serverName) {
-          return server;
-        }
-      }
-      return null;
-    });
-  }
-
   Future<Result<Server, Exception>> addServer({
     required String name,
     required String address,
@@ -53,14 +42,6 @@ class ServersRepository {
 
   Future<Result<void, Exception>> removeServer(Server server) {
     return _mutate(() => _api.removeServer(server));
-  }
-
-  Future<Result<void, Exception>> updateServer(Server server) {
-    return _mutate(() => _api.updateServer(server));
-  }
-
-  Future<Result<void, Exception>> clearServers() {
-    return _mutate(_api.clearServers);
   }
 
   Future<Result<T, Exception>> _mutate<T>(Future<Result<T, Exception>> Function() mutation) async {

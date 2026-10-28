@@ -12,21 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:oxidized/oxidized.dart';
 
-class AddServerDialog extends StatelessWidget {
-  const AddServerDialog({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Add server'),
-      content: AddServerForm(
-        onServerAdded: (_) => Navigator.of(context).pop(),
-        onCancel: () => Navigator.of(context).pop(),
-      ),
-    );
-  }
-}
-
 class AddServerForm extends StatelessWidget {
   const AddServerForm({
     super.key,

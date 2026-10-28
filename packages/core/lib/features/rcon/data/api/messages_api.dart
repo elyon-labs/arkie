@@ -19,10 +19,6 @@ class MessagesApi {
     await _box.put(message.id, message);
   }
 
-  Future<void> deleteMessage(String messageId) async {
-    await _box.delete(messageId);
-  }
-
   Future<void> clearMessages(String serverId) async {
     final keysToDelete = _box.values
         .where((message) => message.serverId == serverId)
