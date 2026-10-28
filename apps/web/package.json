@@ -13,7 +13,7 @@
     "assets:render": "node scripts/render-assets.mjs"
   },
   "dependencies": {
-    "astro": "^7.3.0"
+    "astro": "^7.4.2"
   },
   "devDependencies": {
     "typescript": "~5.9.2",
