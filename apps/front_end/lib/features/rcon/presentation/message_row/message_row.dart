@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:provider/provider.dart';
 
+/// One line of the console log. Hovering a command you sent reveals what can
+/// be done with it, so the actions cost nothing until they are wanted.
 class MessageRow extends HookWidget {
   const MessageRow({super.key, required this.message, required this.associatedSavedMessage});
 
@@ -15,70 +17,35 @@ class MessageRow extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isInput = message.sender == Sender.client;
     final showOptions = useState(false);
 
-    final color = switch (message.sender) {
-      Sender.client => context.colors.foreground,
-      Sender.server => context.colors.accent,
-    };
-
-    final child = Stack(
-      alignment: Alignment.centerLeft,
-      clipBehavior: Clip.none,
-      children: [
-        ColoredBox(
-          color: showOptions.value && message.sender == Sender.client
-              ? context.colors.modal
-              : Colors.transparent,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: Sizes.edgePadding,
-              vertical: Sizes.unit,
-            ),
-            child: SizedBox(
-              width: double.infinity,
-              child: Text(message.body, style: TextStyle(color: color)),
-            ),
-          ),
-        ),
-        if (showOptions.value && message.sender == Sender.client)
-          Positioned(
-            top: 0,
-            right: 0,
-            child: Align(
-              alignment: Alignment.topRight,
-              child: FractionalTranslation(
-                translation: const Offset(0, -0.5),
-                child: ClientMessageOptions(
-                  isSaved: associatedSavedMessage != null,
-                  onToggleSave: () async {
-                    if (associatedSavedMessage != null) {
-                      await context.read<RCONCubit>().unsaveMessage(associatedSavedMessage!);
-                    } else {
-                      await context.read<RCONCubit>().saveMessage(message);
-                    }
-                  },
-                  onResend: () => context.read<RCONCubit>().sendCommand(message.body),
-                ),
-              ),
-            ),
-          ),
-      ],
+    final line = ConsoleLine(
+      text: message.body,
+      isInput: isInput,
+      marked: associatedSavedMessage != null,
+      highlighted: showOptions.value && isInput,
+      trailing: showOptions.value && isInput
+          ? ClientMessageOptions(
+              isSaved: associatedSavedMessage != null,
+              onToggleSave: () async {
+                if (associatedSavedMessage != null) {
+                  await context.read<RCONCubit>().unsaveMessage(associatedSavedMessage!);
+                } else {
+                  await context.read<RCONCubit>().saveMessage(message);
+                }
+              },
+              onResend: () => context.read<RCONCubit>().sendCommand(message.body),
+            )
+          : null,
     );
 
-    if (message.sender == Sender.server) {
-      return child;
-    }
+    if (!isInput) return line;
 
-    // Allow user to save client messages to favorite commands
     return MouseRegion(
-      onEnter: (event) {
-        showOptions.value = true;
-      },
-      onExit: (event) {
-        showOptions.value = false;
-      },
-      child: child,
+      onEnter: (_) => showOptions.value = true,
+      onExit: (_) => showOptions.value = false,
+      child: line,
     );
   }
 }

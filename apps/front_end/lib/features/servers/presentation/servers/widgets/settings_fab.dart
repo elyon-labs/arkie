@@ -8,19 +8,15 @@ class SettingsFab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(Sizes.edgePadding),
-      child: SizedBox(
-        height: Sizes.unit * 4.5,
-        width: Sizes.unit * 4.5,
-        child: FloatingActionButton.small(
-          tooltip: 'Settings',
-          onPressed: () async {
-            await Navigator.of(
-              context,
-            ).push(MaterialPageRoute(builder: (context) => const Settings()));
-          },
-          child: Icon(context.icons.settings),
-        ),
+      padding: const EdgeInsets.symmetric(horizontal: ArkieMetrics.tight),
+      child: IconButton(
+        tooltip: 'Settings',
+        onPressed: () async {
+          await Navigator.of(
+            context,
+          ).push(MaterialPageRoute<void>(builder: (context) => const Settings()));
+        },
+        icon: Icon(context.icons.settings),
       ),
     );
   }

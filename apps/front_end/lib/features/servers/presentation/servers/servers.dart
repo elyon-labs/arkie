@@ -34,44 +34,67 @@ class _Body extends StatelessWidget {
 
     return Column(
       children: [
-        Row(
-          children: [
-            const AddServerFAB(),
-            ...state.openTabs.map(
-              (tab) => ServerTab(
-                tab: tab,
-                server: _serverForTab(tab, servers),
-                isSelected: tab.id == selectedTab?.id,
-                allowClose:
-                    state.openTabs.isNotEmpty &&
-                    (state.openTabs.length != 1 || state.openTabs.single is NonEmptyServerTab),
-              ),
-            ),
-            const Spacer(),
-            const SettingsFab(),
-          ],
-        ),
-        if (selectedTabServer != null && selectedTab != null) ...[
+        const _TabStrip(),
+        if (selectedTabServer != null && selectedTab != null)
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(
-                left: Sizes.edgePadding,
-                right: Sizes.edgePadding,
-                bottom: Sizes.edgePadding,
+              padding: const EdgeInsets.fromLTRB(
+                ArkieMetrics.snug,
+                ArkieMetrics.loose,
+                ArkieMetrics.snug,
+                ArkieMetrics.snug,
               ),
               child: RCON(server: selectedTabServer, key: ValueKey(selectedTabServer)),
             ),
-          ),
-        ] else if (selectedTab != null) ...[
-          Expanded(child: _OpenTabEmptyState(servers: servers)),
-        ] else ...[
+          )
+        else if (selectedTab != null)
+          Expanded(child: _OpenTabEmptyState(servers: servers))
+        else
           Expanded(
             child: Center(
               child: TextButton(onPressed: cubit.openTab, child: const Text('Open a tab')),
             ),
           ),
-        ],
       ],
+    );
+  }
+}
+
+/// The strip the whole window hangs off, ruled off from the pane below it.
+class _TabStrip extends StatelessWidget {
+  const _TabStrip();
+
+  @override
+  Widget build(BuildContext context) {
+    final state = context.select((ServersCubit cubit) => cubit.state);
+    final selectedTab = state.selectedTab;
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: context.arkieColors.border, width: ArkieMetrics.hairline),
+        ),
+      ),
+      child: Row(
+        children: [
+          const HSpace(space: ArkieMetrics.snug),
+          Text('arkie', style: context.text.caption.copyWith(color: context.colors.accent)),
+          const HSpace(space: ArkieMetrics.snug),
+          ...state.openTabs.map(
+            (tab) => ServerTab(
+              tab: tab,
+              server: _serverForTab(tab, state.servers),
+              isSelected: tab.id == selectedTab?.id,
+              allowClose:
+                  state.openTabs.isNotEmpty &&
+                  (state.openTabs.length != 1 || state.openTabs.single is NonEmptyServerTab),
+            ),
+          ),
+          const AddServerFAB(),
+          const Spacer(),
+          const SettingsFab(),
+        ],
+      ),
     );
   }
 }
@@ -117,31 +140,37 @@ class _SelectServerForTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text('Open tab', style: context.text.caption),
-        const VSpace(),
-        if (servers.isEmpty) ...[
-          const Text('Add a server to use this tab.'),
-        ] else ...[
-          ...servers.map(
-            (server) => ListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: Sizes.unit),
-              title: Text(server.name),
-              onTap: () => context.read<ServersCubit>().selectServerForSelectedTab(server),
-            ),
+    return TerminalPanel(
+      label: 'open',
+      padding: const EdgeInsets.symmetric(vertical: ArkieMetrics.tight),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (servers.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: ArkieMetrics.snug),
+              child: Text(
+                'No servers yet.',
+                style: context.text.body.copyWith(color: context.colors.muted),
+              ),
+            )
+          else ...[
+            for (final server in servers)
+              ListTile(
+                title: Text(server.name),
+                subtitle: Text('${server.address}:${server.port}'),
+                onTap: () => context.read<ServersCubit>().selectServerForSelectedTab(server),
+              ),
+            const Divider(),
+          ],
+          ListTile(
+            leading: Icon(context.icons.add),
+            title: const Text('Add a server'),
+            onTap: onAddServer,
           ),
-          const Divider(),
         ],
-        ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: Sizes.unit),
-          leading: Icon(context.icons.add),
-          title: const Text('Add new server'),
-          onTap: onAddServer,
-        ),
-      ],
+      ),
     );
   }
 }

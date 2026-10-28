@@ -1,6 +1,7 @@
 import 'package:arkie_core/features/rcon/domain/models/cs2_map.dart';
 import 'package:arkie_core/features/rcon/domain/models/server_status.dart';
 import 'package:arkie_mobile/core/widgets/centered_hint.dart';
+import 'package:arkie_mobile/core/widgets/tool_row.dart';
 import 'package:arkie_state/features/rcon/server_info/server_info_cubit.dart';
 import 'package:arkie_ui/arkie_ui.dart';
 import 'package:dart_foundation/dart_foundation.dart' as app_async;
@@ -29,54 +30,46 @@ class MapsTab extends StatelessWidget {
     );
 
     return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
+      padding: const EdgeInsets.only(bottom: ArkieMetrics.loose),
       itemCount: maps.length,
-      separatorBuilder: (_, _) => const VSpace(),
+      separatorBuilder: (_, _) => const Divider(),
       itemBuilder: (context, index) {
         final map = maps[index];
-        return _MapTile(map: map, isCurrentMap: map.name == currentMap);
+        return _MapRow(map: map, isCurrentMap: map.name == currentMap);
       },
     );
   }
 }
 
-class _MapTile extends StatelessWidget {
-  const _MapTile({required this.map, required this.isCurrentMap});
+class _MapRow extends StatelessWidget {
+  const _MapRow({required this.map, required this.isCurrentMap});
 
   final CS2Map map;
   final bool isCurrentMap;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: context.colors.card,
-      borderRadius: BorderRadius.circular(16),
-      child: ListTile(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        leading: SizedBox(
-          width: 44,
-          height: 44,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Image.asset(map.assetPath, package: CS2Map.assetPackage, fit: BoxFit.cover),
-          ),
-        ),
-        title: Text(map.displayName),
-        subtitle: Text(map.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-        trailing: Icon(
-          isCurrentMap ? context.icons.check : Icons.arrow_forward_rounded,
-          color: isCurrentMap ? context.colors.primary : null,
-        ),
-        onTap: () async {
-          final result = await context.read<ServerInfoCubit>().changeMap(map);
-          if (!context.mounted) return;
-          if (result.isErr()) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text('The server rejected the map change.')));
-          }
-        },
+    return ToolRow(
+      title: map.displayName,
+      subtitle: map.name,
+      selected: isCurrentMap,
+      leading: SizedBox(
+        width: 36,
+        height: 36,
+        child: Image.asset(map.assetPath, package: CS2Map.assetPackage, fit: BoxFit.cover),
       ),
+      trailing: isCurrentMap
+          ? Text('loaded', style: context.text.caption.copyWith(color: context.colors.accent))
+          : null,
+      onTap: () async {
+        final result = await context.read<ServerInfoCubit>().changeMap(map);
+        if (!context.mounted) return;
+        if (result.isErr()) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('The server rejected the map change.')));
+        }
+      },
     );
   }
 }

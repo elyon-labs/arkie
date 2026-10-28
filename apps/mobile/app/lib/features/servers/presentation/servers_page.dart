@@ -24,39 +24,35 @@ class _ServersView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        titleSpacing: 20,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Arkie', style: TextStyle(fontWeight: FontWeight.w800)),
-            Text(
-              'YOUR SERVERS',
-              style: TextStyle(fontSize: 11, letterSpacing: 1.8, color: context.colors.muted),
-            ),
-          ],
-        ),
+        title: const _Wordmark(),
         actions: [
           IconButton(
-            onPressed: () => showAboutDialog(
-              context: context,
-              applicationName: 'Arkie',
-              applicationVersion: 'Mobile preview',
-              applicationLegalese: 'RCON console for Counter-Strike 2 servers.',
-            ),
-            icon: const Icon(Icons.info_outline_rounded),
-            tooltip: 'About Arkie',
+            onPressed: () async => await showAddServerSheet(context),
+            icon: Icon(context.icons.add),
+            tooltip: 'Add a server',
           ),
-          const HSpace(),
+          const HSpace(space: ArkieMetrics.tight),
         ],
       ),
       body: servers.isEmpty ? const EmptyServerList() : ServerList(servers: servers),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          await showAddServerSheet(context);
-        },
-        icon: Icon(context.icons.add),
-        label: const Text('Add server'),
-      ),
+    );
+  }
+}
+
+/// The prompt the whole app hangs off: `arkie` is the command you would have
+/// typed to get here.
+class _Wordmark extends StatelessWidget {
+  const _Wordmark();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text('>', style: context.text.title.copyWith(color: context.colors.accent)),
+        const HSpace(space: ArkieMetrics.tight),
+        Text('arkie', style: context.text.title),
+      ],
     );
   }
 }

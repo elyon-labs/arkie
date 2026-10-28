@@ -87,8 +87,10 @@ class _ViewState extends State<_View> {
           width: min(size.width, screenSize.width / 2),
           child: ConstrainedBox(
             constraints: BoxConstraints(maxHeight: maxHeightAboveTextField - 20),
-            child: Material(
-              elevation: 4,
+            child: TerminalPanel(
+              label: 'find',
+              padding: EdgeInsets.zero,
+              fill: context.colors.card,
               child: SingleChildScrollView(
                 controller: _scrollController,
                 reverse: true,
@@ -124,9 +126,15 @@ class _ViewState extends State<_View> {
                         final isSelected = _highlightedIndex.value == index;
                         return ListTile(
                           key: _itemKeys[index],
-                          title: Text('${suggestion.name} ${isSelected ? "<" : ""}'),
+                          title: Text(suggestion.name),
                           selected: isSelected,
-                          subtitle: Text(suggestion.description),
+                          subtitle: suggestion.description.isEmpty
+                              ? null
+                              : Text(
+                                  suggestion.description,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                           onTap: () {
                             final completion = suggestion.name;
                             _controller
@@ -173,13 +181,32 @@ class _ViewState extends State<_View> {
       key: _textFieldKey,
       enabled: widget.hasConnection,
       controller: _controller,
-      cursorHeight: Sizes.unit * 2,
-      cursorWidth: Sizes.unit,
+      autocorrect: false,
+      style: context.text.body,
+      // A block cursor, the width of the characters it sits between.
+      cursorWidth: 8,
+      cursorRadius: Radius.zero,
+      cursorColor: context.colors.accent,
       textAlignVertical: TextAlignVertical.top,
       decoration: InputDecoration(
-        hintText: 'Enter RCON command',
+        hintText: 'rcon command',
         border: InputBorder.none,
-        hintStyle: context.text.caption,
+        enabledBorder: InputBorder.none,
+        focusedBorder: InputBorder.none,
+        disabledBorder: InputBorder.none,
+        isDense: true,
+        contentPadding: EdgeInsets.zero,
+        prefixIcon: Padding(
+          padding: const EdgeInsets.only(right: ArkieMetrics.tight),
+          child: Text(
+            '>',
+            style: context.text.body.copyWith(
+              color: widget.hasConnection ? context.colors.accent : context.arkieColors.textFaint,
+            ),
+          ),
+        ),
+        prefixIconConstraints: const BoxConstraints(),
+        hintStyle: context.text.body.copyWith(color: context.arkieColors.textFaint),
       ),
       onChanged: (text) {
         // Only try to call the cubit when we *know* we have a connection.

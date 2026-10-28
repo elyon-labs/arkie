@@ -26,23 +26,14 @@ class AppStateMapper extends ClassMapperBase<AppState> {
     'isPrivacyModeEnabled',
     _$isPrivacyModeEnabled,
   );
-  static ThemeMode _$themeMode(AppState v) => v.themeMode;
-  static const Field<AppState, ThemeMode> _f$themeMode = Field(
-    'themeMode',
-    _$themeMode,
-  );
 
   @override
   final MappableFields<AppState> fields = const {
     #isPrivacyModeEnabled: _f$isPrivacyModeEnabled,
-    #themeMode: _f$themeMode,
   };
 
   static AppState _instantiate(DecodingData data) {
-    return AppState(
-      isPrivacyModeEnabled: data.dec(_f$isPrivacyModeEnabled),
-      themeMode: data.dec(_f$themeMode),
-    );
+    return AppState(isPrivacyModeEnabled: data.dec(_f$isPrivacyModeEnabled));
   }
 
   @override
@@ -102,7 +93,7 @@ extension AppStateValueCopy<$R, $Out> on ObjectCopyWith<$R, AppState, $Out> {
 
 abstract class AppStateCopyWith<$R, $In extends AppState, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
-  $R call({bool? isPrivacyModeEnabled, ThemeMode? themeMode});
+  $R call({bool? isPrivacyModeEnabled});
   AppStateCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -115,11 +106,10 @@ class _AppStateCopyWithImpl<$R, $Out>
   late final ClassMapperBase<AppState> $mapper =
       AppStateMapper.ensureInitialized();
   @override
-  $R call({bool? isPrivacyModeEnabled, ThemeMode? themeMode}) => $apply(
+  $R call({bool? isPrivacyModeEnabled}) => $apply(
     FieldCopyWithData({
       if (isPrivacyModeEnabled != null)
         #isPrivacyModeEnabled: isPrivacyModeEnabled,
-      if (themeMode != null) #themeMode: themeMode,
     }),
   );
   @override
@@ -128,7 +118,6 @@ class _AppStateCopyWithImpl<$R, $Out>
       #isPrivacyModeEnabled,
       or: $value.isPrivacyModeEnabled,
     ),
-    themeMode: data.get(#themeMode, or: $value.themeMode),
   );
 
   @override

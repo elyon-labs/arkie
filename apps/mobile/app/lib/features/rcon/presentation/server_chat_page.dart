@@ -6,7 +6,6 @@ import 'package:arkie_core/features/servers/data/models/server.dart';
 import 'package:arkie_mobile/features/rcon/presentation/server_tools/server_tools_sheet.dart';
 import 'package:arkie_mobile/features/rcon/presentation/widgets/command_composer.dart';
 import 'package:arkie_mobile/features/rcon/presentation/widgets/connection_error_banner.dart';
-import 'package:arkie_mobile/features/rcon/presentation/widgets/connection_pill.dart';
 import 'package:arkie_mobile/features/rcon/presentation/widgets/message_list.dart';
 import 'package:arkie_state/features/rcon/rcon_cubit.dart';
 import 'package:arkie_state/features/rcon/server_info/server_info_cubit.dart';
@@ -71,6 +70,12 @@ class _ServerChatScaffold extends StatelessWidget {
     final savedMessages = context.select((RCONCubit cubit) => cubit.state.savedMessages);
     final connection = context.select((RCONCubit cubit) => cubit.state.connection);
 
+    final link = switch (connection) {
+      app_async.Loaded<RCONConnection>() => LinkState.live,
+      app_async.Error<RCONConnection>() => LinkState.offline,
+      _ => LinkState.connecting,
+    };
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -85,20 +90,21 @@ class _ServerChatScaffold extends StatelessWidget {
             Text(server.name, maxLines: 1, overflow: TextOverflow.ellipsis),
             Text(
               '${server.address}:${server.port}',
-              style: TextStyle(color: context.colors.muted, fontSize: 11),
+              style: context.text.caption.copyWith(color: context.arkieColors.textFaint),
             ),
           ],
         ),
         actions: [
-          ConnectionPill(connection: connection),
+          StatusLamp(state: link),
+          const HSpace(space: ArkieMetrics.snug),
           IconButton(
             onPressed: () async {
               await showServerToolsSheet(context);
             },
-            icon: const Icon(Icons.tune_rounded),
+            icon: Icon(context.icons.grid),
             tooltip: 'Commands, maps, and players',
           ),
-          const HSpace(space: 4),
+          const HSpace(space: ArkieMetrics.tight),
         ],
       ),
       body: Column(

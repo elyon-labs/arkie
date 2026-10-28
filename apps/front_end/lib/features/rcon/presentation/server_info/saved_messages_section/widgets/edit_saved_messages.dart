@@ -17,17 +17,18 @@ class EditSavedMessages extends HookWidget {
     final savedMessages = context.select((RCONCubit cubit) => cubit.state.savedMessages).toList();
     final dialogContext = Navigator.of(context, rootNavigator: true).context;
     return SidebarWrapper(
+      label: 'commands',
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(Sizes.edgePadding),
+        padding: const EdgeInsets.all(ArkieMetrics.edge),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SectionHeader(
-              title: const Text('Edit Saved Commands'),
+              title: const Text('edit'),
               actions: [IconButton(onPressed: onClose, icon: Icon(context.icons.close))],
             ),
 
-            const VSpace(space: Sizes.unit * 2),
+            const VSpace(space: ArkieMetrics.tight),
 
             for (final savedMessage in savedMessages)
               ListTile(

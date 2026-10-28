@@ -8,7 +8,6 @@ import 'package:arkie_core/hive/hive_registrar.g.dart';
 import 'package:arkie_state/features/servers/servers_cubit.dart';
 import 'package:arkie_ui/arkie_ui.dart';
 import 'package:cs2_rcon_front_end/app/presentation/app_cubit.dart';
-import 'package:cs2_rcon_front_end/app/presentation/app_state.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/servers/servers.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/servers/widgets/server_shortcuts.dart';
 import 'package:flutter/material.dart';
@@ -47,22 +46,11 @@ class MainApp extends StatelessWidget {
         BlocProvider(create: (_) => AppCubit.create()),
         BlocProvider(create: (_) => ServersCubit.create()),
       ],
-      child: BlocBuilder<AppCubit, AppState>(
-        builder: (context, state) {
-          return Builder(
-            builder: (context) {
-              return MaterialApp(
-                themeMode: state.themeMode,
-                debugShowCheckedModeBanner: false,
-                theme: buildDesktopTheme(ArkieTheme.desktopLight),
-                darkTheme: buildDesktopTheme(ArkieTheme.desktopDark),
-                builder: (context, child) =>
-                    ServerShortcuts(child: child ?? const SizedBox.shrink()),
-                home: const Servers(),
-              );
-            },
-          );
-        },
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: buildDesktopTheme(),
+        builder: (context, child) => ServerShortcuts(child: child ?? const SizedBox.shrink()),
+        home: const Servers(),
       ),
     );
   }

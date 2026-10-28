@@ -59,7 +59,7 @@ Neither app depends on the other: anything both use lives in a package.
 
 ## Getting started
 
-1. Install Flutter 3.35.7+ (which ships with Dart >=3.9.0). Desktop targets must be enabled for the platforms you want to run (`flutter config --enable-<platform>-desktop`); the mobile app also needs Xcode (iOS) or the Android SDK.
+1. Install Flutter 3.47.8+ (which ships with Dart >=3.13.7). Desktop targets must be enabled for the platforms you want to run (`flutter config --enable-<platform>-desktop`); the mobile app also needs Xcode (iOS) or the Android SDK.
 2. Install Melos once: `dart pub global activate melos`.
 3. Bootstrap the workspace from the repo root:
 
@@ -121,6 +121,6 @@ Use the GitHub issue tracker for bug reports and feature requests. Please do not
 
 - Prefer running commands through Melos so that every package stays consistent.
 - When editing models in `packages/core` or states in `packages/state`, re-run `melos run codegen` to regenerate the `dart_mappable` and Hive files.
-- Code used by both apps belongs in a package, never in one app imported by the other. Colours come from the app's `ArkieTheme` (`context.colors`), not from literals.
+- Code used by both apps belongs in a package, never in one app imported by the other. Colours come from the app's `ArkieTheme` (`context.colors` and `context.arkieColors`), not from literals.
 - The repo currently targets local networks; make sure the CS2 server’s RCON port is reachable from your machine (default `27015`).
 - See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the full local development and pull request workflow.

@@ -32,15 +32,15 @@ class MapsSection extends StatelessWidget {
         children: [
           if (maps.isNotEmpty)
             _MapGrid(
-              title: 'Maps',
+              title: 'maps',
               maps: maps,
               currentMap: currentMap,
               onTap: (m) async => await context.read<ServerInfoCubit>().changeMap(m),
             ),
-          if (maps.isNotEmpty && workshopMaps.isNotEmpty) const VSpace(space: Sizes.unit * 3),
+          if (maps.isNotEmpty && workshopMaps.isNotEmpty) const VSpace(space: ArkieMetrics.loose),
           if (workshopMaps.isNotEmpty)
             _MapGrid(
-              title: 'Workshop Maps',
+              title: 'workshop maps',
               maps: workshopMaps,
               currentMap: currentMap,
               onTap: (m) async => await context.read<ServerInfoCubit>().changeMap(m),
@@ -70,16 +70,16 @@ class _MapGrid extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SectionHeader(title: Text(title)),
-        const VSpace(space: Sizes.unit * 2),
+        const VSpace(space: ArkieMetrics.snug),
         GridView.builder(
           primary: false,
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            mainAxisSpacing: Sizes.unit,
-            crossAxisSpacing: Sizes.unit * 2,
-            childAspectRatio: 4,
+            mainAxisSpacing: ArkieMetrics.tight,
+            crossAxisSpacing: ArkieMetrics.tight,
+            childAspectRatio: 3.4,
           ),
           itemCount: maps.length,
           itemBuilder: (context, index) {

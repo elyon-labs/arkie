@@ -22,18 +22,19 @@ class ManagePlayers extends StatelessWidget {
     );
 
     return SidebarWrapper(
+      label: 'players',
       child: ScrollConfiguration(
         behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false, overscroll: false),
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(Sizes.edgePadding),
+          padding: const EdgeInsets.all(ArkieMetrics.edge),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SectionHeader(
-                title: const Text('Manage Players'),
+                title: const Text('manage'),
                 actions: [IconButton(onPressed: onClose, icon: Icon(context.icons.close))],
               ),
-              const VSpace(space: Sizes.unit * 2),
+              const VSpace(space: ArkieMetrics.tight),
               for (final player in players)
                 ListTile(
                   contentPadding: EdgeInsets.zero,

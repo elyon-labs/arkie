@@ -16,9 +16,9 @@ class AppVersionRow extends StatelessWidget {
 
     return switch (appVersion) {
       Ok<VersionInfo, Exception>(:final value) => Padding(
-        padding: const EdgeInsets.all(Sizes.edgePadding),
+        padding: const EdgeInsets.all(ArkieMetrics.edge),
         child: Row(
-          spacing: Sizes.unit,
+          spacing: ArkieMetrics.tight,
           children: [
             const _GithubReleasesIcon(),
             _Version(value: value),

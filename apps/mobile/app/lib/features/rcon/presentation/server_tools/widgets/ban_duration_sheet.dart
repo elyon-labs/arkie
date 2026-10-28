@@ -13,8 +13,8 @@ Future<Duration?> showBanDurationSheet(BuildContext context) {
 }
 
 const _options = <(String, Duration)>[
-  ('1 Hour', Duration(hours: 1)),
-  ('1 Day', Duration(days: 1)),
+  ('1 hour', Duration(hours: 1)),
+  ('1 day', Duration(days: 1)),
   ('Permanent', Duration.zero),
 ];
 
@@ -27,13 +27,18 @@ class _BanDurationSheet extends HookWidget {
 
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+        padding: const EdgeInsets.fromLTRB(
+          ArkieMetrics.edge,
+          0,
+          ArkieMetrics.edge,
+          ArkieMetrics.edge,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Ban duration', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-            const VSpace(),
+            Text('Ban duration', style: context.text.title),
+            const VSpace(space: ArkieMetrics.tight),
             RadioGroup<Duration>(
               groupValue: selected.value,
               onChanged: (value) {
@@ -51,7 +56,7 @@ class _BanDurationSheet extends HookWidget {
                 ],
               ),
             ),
-            const VSpace(space: 12),
+            const VSpace(space: ArkieMetrics.snug),
             FilledButton(
               onPressed: () => Navigator.of(context).pop(selected.value),
               child: const Text('Ban player'),
