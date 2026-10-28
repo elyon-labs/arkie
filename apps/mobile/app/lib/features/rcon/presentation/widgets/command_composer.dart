@@ -48,12 +48,16 @@ class _ComposerViewState extends State<_ComposerView> {
     super.dispose();
   }
 
-  Future<void> _sendCommand(String command) async {
-    if (command.trim().isEmpty) return;
+  void _clearInput() {
     _controller.clear();
     if (widget.hasConnection) {
       unawaited(context.read<CommandInputCubit>().onInputChanged(''));
     }
+  }
+
+  Future<void> _sendCommand(String command) async {
+    if (command.trim().isEmpty) return;
+    _clearInput();
     await context.read<RCONCubit>().sendCommand(command.trim());
   }
 
@@ -89,32 +93,48 @@ class _ComposerViewState extends State<_ComposerView> {
             ),
             const HSpace(space: ArkieMetrics.tight),
             Expanded(
-              child: TextField(
-                controller: _controller,
-                enabled: widget.hasConnection,
-                minLines: 1,
-                maxLines: 4,
-                autocorrect: false,
-                enableSuggestions: false,
-                textInputAction: TextInputAction.send,
-                style: context.text.body,
-                // A block cursor, the width of the characters it sits between.
-                cursorWidth: 8,
-                cursorRadius: Radius.zero,
-                cursorColor: colors.accent,
-                decoration: const InputDecoration(
-                  hintText: 'rcon command',
-                  border: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  disabledBorder: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(vertical: ArkieMetrics.snug),
+              child: ValueListenableBuilder(
+                valueListenable: _controller,
+                builder: (context, value, _) => TextField(
+                  controller: _controller,
+                  enabled: widget.hasConnection,
+                  minLines: 1,
+                  maxLines: 4,
+                  autocorrect: false,
+                  enableSuggestions: false,
+                  textInputAction: TextInputAction.send,
+                  style: context.text.body,
+                  // A block cursor, the width of the characters it sits between.
+                  cursorWidth: 8,
+                  cursorRadius: Radius.zero,
+                  cursorColor: colors.accent,
+                  decoration: InputDecoration(
+                    hintText: 'rcon command',
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    disabledBorder: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(vertical: ArkieMetrics.snug),
+                    suffixIconConstraints: const BoxConstraints(
+                      minWidth: ArkieMetrics.section,
+                      minHeight: ArkieMetrics.section,
+                    ),
+                    suffixIcon: value.text.isEmpty
+                        ? null
+                        : IconButton(
+                            onPressed: _clearInput,
+                            padding: EdgeInsets.zero,
+                            iconSize: ArkieFontSize.title,
+                            icon: Icon(context.icons.close, color: arkie.textFaint),
+                            tooltip: 'Clear command',
+                          ),
+                  ),
+                  onChanged: (text) {
+                    if (!widget.hasConnection) return;
+                    unawaited(context.read<CommandInputCubit>().onInputChanged(text));
+                  },
+                  onSubmitted: (text) async => await _sendCommand(text),
                 ),
-                onChanged: (text) {
-                  if (!widget.hasConnection) return;
-                  unawaited(context.read<CommandInputCubit>().onInputChanged(text));
-                },
-                onSubmitted: (text) async => await _sendCommand(text),
               ),
             ),
             IconButton(
