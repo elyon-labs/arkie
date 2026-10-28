@@ -1,4 +1,4 @@
-import 'package:cs2_rcon_front_end/core_ui/_build_context.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:flutter/material.dart';
 
 class RoundedSuperellipseBox extends StatelessWidget {
@@ -15,7 +15,7 @@ class RoundedSuperellipseBox extends StatelessWidget {
         color: color,
         shape: RoundedSuperellipseBorder(
           side: side ?? BorderSide.none,
-          borderRadius: BorderRadius.all(Radius.circular(context.sizes.borderRadius)),
+          borderRadius: const BorderRadius.all(Radius.circular(Sizes.borderRadius)),
         ),
       ),
       child: child,

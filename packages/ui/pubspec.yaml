@@ -1,0 +1,36 @@
+name: arkie_ui
+description: Arkie's shared theme (colors, text, icons, and Material themes) for the desktop and mobile apps.
+version: 0.1.0
+repository: https://github.com/elyon-labs/arkie
+publish_to: none
+
+environment:
+  sdk: '>=3.9.0 <4.0.0'
+
+resolution: workspace
+
+dependencies:
+  design:
+    git:
+      url: https://github.com/elyon-labs/flutter-design.git
+      ref: main
+  flutter:
+    sdk: flutter
+  ionicons: ^0.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  fonts:
+    - family: SpaceMono
+      fonts:
+        - asset: assets/fonts/SpaceMono-Regular.ttf
+        - asset: assets/fonts/SpaceMono-Italic.ttf
+          style: italic
+        - asset: assets/fonts/SpaceMono-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/SpaceMono-BoldItalic.ttf
+          weight: 700
+          style: italic

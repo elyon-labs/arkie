@@ -9,10 +9,18 @@ environment:
   sdk: '>=3.9.0 <4.0.0'
 
 dependencies:
+  arkie_core:
+    path: ../../../packages/core
+  arkie_state:
+    path: ../../../packages/state
+  arkie_ui:
+    path: ../../../packages/ui
   cs2_rcon_client:
     path: ../../../packages/client
-  cs2_rcon_front_end:
-    path: ../../front_end
+  dart_foundation:
+    git:
+      url: https://github.com/elyon-labs/dart-foundation.git
+      ref: main
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1

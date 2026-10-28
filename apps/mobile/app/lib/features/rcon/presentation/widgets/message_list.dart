@@ -1,8 +1,9 @@
 import 'dart:async';
 
+import 'package:arkie_core/features/rcon/data/models/message.dart';
+import 'package:arkie_core/features/rcon/data/models/saved_message.dart';
 import 'package:arkie_mobile/features/rcon/presentation/widgets/message_bubble.dart';
-import 'package:cs2_rcon_front_end/features/rcon/data/models/message.dart';
-import 'package:cs2_rcon_front_end/features/rcon/data/models/saved_message.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -32,20 +33,20 @@ class MessageList extends HookWidget {
     }, [messages.length]);
 
     if (messages.isEmpty) {
-      return const Center(
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(32),
+          padding: const EdgeInsets.all(32),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.terminal_rounded, size: 34, color: Colors.white38),
-              SizedBox(height: 14),
-              Text('No command traffic yet', style: TextStyle(fontWeight: FontWeight.w700)),
-              SizedBox(height: 6),
+              Icon(Icons.terminal_rounded, size: 34, color: context.colors.muted),
+              const VSpace(space: 14),
+              const Text('No command traffic yet', style: TextStyle(fontWeight: FontWeight.w700)),
+              const VSpace(space: 6),
               Text(
                 'Send a command below to start a conversation with the server.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white54, fontSize: 12, height: 1.4),
+                style: TextStyle(color: context.colors.muted, fontSize: 12, height: 1.4),
               ),
             ],
           ),
@@ -57,7 +58,7 @@ class MessageList extends HookWidget {
       controller: scrollController,
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
       itemCount: messages.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 10),
+      separatorBuilder: (_, _) => const VSpace(space: 10),
       itemBuilder: (context, index) {
         final message = messages[index];
         SavedMessage? savedMessage;

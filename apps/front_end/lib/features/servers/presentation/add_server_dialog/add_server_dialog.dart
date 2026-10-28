@@ -1,12 +1,12 @@
-import 'package:cs2_rcon_front_end/core/async.dart';
-import 'package:cs2_rcon_front_end/core_ui/_build_context.dart';
-import 'package:cs2_rcon_front_end/features/servers/data/models/server.dart';
-import 'package:cs2_rcon_front_end/features/servers/presentation/add_server_dialog/add_server_dialog_cubit.dart';
-import 'package:cs2_rcon_front_end/features/servers/presentation/add_server_dialog/add_server_dialog_state.dart';
+import 'package:arkie_core/features/servers/data/models/server.dart';
+import 'package:arkie_state/features/servers/add_server_dialog/add_server_dialog_cubit.dart';
+import 'package:arkie_state/features/servers/add_server_dialog/add_server_dialog_state.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/add_server_dialog/widgets/server_address_field.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/add_server_dialog/widgets/server_name_field.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/add_server_dialog/widgets/server_password_field.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/add_server_dialog/widgets/server_port_field.dart';
+import 'package:dart_foundation/dart_foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:oxidized/oxidized.dart';
@@ -81,20 +81,20 @@ class _AddServerFormBody extends StatelessWidget {
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              SizedBox(height: context.sizes.unit),
+              const VSpace(),
               ServerNameField(enabled: !isSaving),
-              SizedBox(height: context.sizes.unit),
+              const VSpace(),
               ServerAddressField(enabled: !isSaving),
-              SizedBox(height: context.sizes.unit),
+              const VSpace(),
               ServerPortField(enabled: !isSaving),
-              SizedBox(height: context.sizes.unit),
+              const VSpace(),
               ServerPasswordField(enabled: !isSaving),
-              SizedBox(height: context.sizes.unit * 2),
+              const VSpace(space: Sizes.unit * 2),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(onPressed: isSaving ? null : onCancel, child: const Text('Cancel')),
-                  SizedBox(width: context.sizes.unit),
+                  const HSpace(),
                   TextButton(
                     onPressed: isSaving
                         ? null

@@ -1,8 +1,9 @@
 import 'package:arkie_mobile/features/rcon/presentation/server_tools/maps_tab.dart';
 import 'package:arkie_mobile/features/rcon/presentation/server_tools/players_tab.dart';
 import 'package:arkie_mobile/features/rcon/presentation/server_tools/saved_commands_tab.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/rcon_cubit.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/server_info_cubit.dart';
+import 'package:arkie_state/features/rcon/rcon_cubit.dart';
+import 'package:arkie_state/features/rcon/server_info/server_info_cubit.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -47,7 +48,7 @@ class ServerToolsSheet extends StatelessWidget {
                 child: Row(
                   children: [
                     Icon(Icons.tune_rounded),
-                    SizedBox(width: 10),
+                    HSpace(space: 10),
                     Text(
                       'Server tools',
                       style: TextStyle(fontSize: 19, fontWeight: FontWeight.w800),

@@ -1,4 +1,4 @@
-import 'package:cs2_rcon_front_end/core_ui/_build_context.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:cs2_rcon_front_end/core_ui/dot_leaders.dart';
 import 'package:flutter/material.dart';
 
@@ -15,13 +15,11 @@ class LabelValue extends StatelessWidget {
       mainAxisSize: MainAxisSize.max,
       children: [
         DefaultTextStyle.merge(
-          style: context.text.body.copyWith(color: context.colors.foregroundMuted),
+          style: context.text.body.copyWith(color: context.colors.muted),
           child: label,
         ),
         Expanded(
-          child: DotLeaders(
-            style: context.text.body.copyWith(color: context.colors.foregroundMuted),
-          ),
+          child: DotLeaders(style: context.text.body.copyWith(color: context.colors.muted)),
         ),
         DefaultTextStyle.merge(
           textAlign: TextAlign.end,

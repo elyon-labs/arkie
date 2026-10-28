@@ -1,8 +1,10 @@
 # Arkie Mobile
 
-The mobile companion to Arkie’s desktop RCON client. It keeps the same local
-server, message, and saved-command storage as the desktop app while presenting
-servers like a messages inbox and each server as a focused command chat.
+The mobile companion to Arkie’s desktop RCON client. It shares its data and
+domain layer (`arkie_core`), its cubits (`arkie_state`) and its theme
+(`arkie_ui`, built from `ArkieTheme.mobile`) with the desktop app, while
+presenting servers like a messages inbox and each server as a focused command
+chat. Every colour comes from the theme through `context.colors`.
 
 ## Run locally
 

@@ -1,8 +1,8 @@
-import 'package:cs2_rcon_front_end/core_ui/_build_context.dart';
-import 'package:cs2_rcon_front_end/features/rcon/data/models/message.dart';
-import 'package:cs2_rcon_front_end/features/rcon/data/models/saved_message.dart';
+import 'package:arkie_core/features/rcon/data/models/message.dart';
+import 'package:arkie_core/features/rcon/data/models/saved_message.dart';
+import 'package:arkie_state/features/rcon/rcon_cubit.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/message_row/widgets/client_message_options.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/rcon_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:provider/provider.dart';
@@ -31,9 +31,9 @@ class MessageRow extends HookWidget {
               ? context.colors.modal
               : Colors.transparent,
           child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: context.sizes.edgeSpacing,
-              vertical: context.sizes.unit,
+            padding: const EdgeInsets.symmetric(
+              horizontal: Sizes.edgePadding,
+              vertical: Sizes.unit,
             ),
             child: SizedBox(
               width: double.infinity,

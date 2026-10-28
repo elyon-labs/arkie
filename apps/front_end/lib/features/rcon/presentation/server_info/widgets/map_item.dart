@@ -1,6 +1,6 @@
-import 'package:cs2_rcon_front_end/core_ui/_build_context.dart';
+import 'package:arkie_core/features/rcon/domain/models/cs2_map.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:cs2_rcon_front_end/core_ui/rounded_superellipse_box.dart';
-import 'package:cs2_rcon_front_end/features/rcon/domain/models/cs2_map.dart';
 import 'package:flutter/material.dart';
 
 class MapItem extends StatelessWidget {
@@ -20,25 +20,29 @@ class MapItem extends StatelessWidget {
         message: map.displayName,
         child: Badge(
           padding: EdgeInsets.zero,
-          smallSize: context.sizes.unit * 1,
+          smallSize: Sizes.unit * 1,
           backgroundColor: context.colors.accent,
           isLabelVisible: isCurrentMap,
           label: Padding(
-            padding: EdgeInsets.all(context.sizes.unit * 0.05),
+            padding: const EdgeInsets.all(Sizes.unit * 0.05),
             child: Icon(context.icons.check),
           ),
           child: RoundedSuperellipseBox(
-            color: context.colors.backgroundSecondary,
+            color: context.colors.card,
             child: Center(
               child: Padding(
-                padding: EdgeInsets.all(context.sizes.unit),
+                padding: const EdgeInsets.all(Sizes.unit),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     SizedBox(
                       width: 48,
                       height: 48,
-                      child: Image.asset(map.assetPath, fit: BoxFit.fitHeight),
+                      child: Image.asset(
+                        map.assetPath,
+                        package: CS2Map.assetPackage,
+                        fit: BoxFit.fitHeight,
+                      ),
                     ),
                     Flexible(
                       child: Row(

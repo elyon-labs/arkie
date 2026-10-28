@@ -1,5 +1,6 @@
-import 'package:cs2_rcon_front_end/features/rcon/data/models/saved_message.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/rcon_cubit.dart';
+import 'package:arkie_core/features/rcon/data/models/saved_message.dart';
+import 'package:arkie_state/features/rcon/rcon_cubit.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -34,7 +35,7 @@ class RenameSavedMessageDialog extends HookWidget {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(height: 8),
+          const VSpace(),
           TextField(
             controller: controller,
             autofocus: true,

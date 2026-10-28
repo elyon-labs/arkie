@@ -1,4 +1,4 @@
-import 'package:cs2_rcon_front_end/core_ui/_build_context.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:cs2_rcon_front_end/features/settings/presentation/settings.dart';
 import 'package:flutter/material.dart';
 
@@ -8,10 +8,10 @@ class SettingsFab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(context.sizes.edgeSpacing),
+      padding: const EdgeInsets.all(Sizes.edgePadding),
       child: SizedBox(
-        height: context.sizes.unit * 4.5,
-        width: context.sizes.unit * 4.5,
+        height: Sizes.unit * 4.5,
+        width: Sizes.unit * 4.5,
         child: FloatingActionButton.small(
           tooltip: 'Settings',
           onPressed: () async {

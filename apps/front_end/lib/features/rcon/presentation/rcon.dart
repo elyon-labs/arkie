@@ -1,14 +1,14 @@
-import 'package:cs2_rcon_front_end/core_ui/_build_context.dart';
+import 'package:arkie_core/features/rcon/data/api/messages_api.dart';
+import 'package:arkie_core/features/rcon/data/api/saved_messages_api.dart';
+import 'package:arkie_core/features/rcon/data/repository/messages_repository.dart';
+import 'package:arkie_core/features/rcon/data/repository/saved_messages_repository.dart';
+import 'package:arkie_core/features/servers/data/models/server.dart';
+import 'package:arkie_state/features/rcon/rcon_cubit.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:cs2_rcon_front_end/core_ui/rounded_superellipse_box.dart';
-import 'package:cs2_rcon_front_end/features/rcon/data/api/messages_api.dart';
-import 'package:cs2_rcon_front_end/features/rcon/data/api/saved_messages_api.dart';
-import 'package:cs2_rcon_front_end/features/rcon/data/repository/messages_repository.dart';
-import 'package:cs2_rcon_front_end/features/rcon/data/repository/saved_messages_repository.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/command_input/command_input.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/rcon_cubit.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/server_info.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/widgets/messages.dart';
-import 'package:cs2_rcon_front_end/features/servers/data/models/server.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -45,7 +45,7 @@ class _Console extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RoundedSuperellipseBox(
-      color: context.colors.backgroundSecondary,
+      color: context.colors.card,
       child: Row(
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -85,19 +85,15 @@ class _CommandInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(
-        left: context.sizes.edgeSpacing,
-        right: context.sizes.edgeSpacing,
-        bottom: context.sizes.edgeSpacing,
+      padding: const EdgeInsets.only(
+        left: Sizes.edgePadding,
+        right: Sizes.edgePadding,
+        bottom: Sizes.edgePadding,
       ),
       child: RoundedSuperellipseBox(
         color: context.colors.modal,
         child: Padding(
-          padding: EdgeInsets.only(
-            left: context.sizes.unit,
-            right: context.sizes.unit,
-            bottom: context.sizes.unit,
-          ),
+          padding: const EdgeInsets.only(left: Sizes.unit, right: Sizes.unit, bottom: Sizes.unit),
           child: CommandInput(key: ValueKey(server.id)),
         ),
       ),
@@ -110,15 +106,15 @@ class _ServerInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Flexible(
+    return const Flexible(
       flex: 2,
       child: Padding(
         padding: EdgeInsets.only(
-          top: context.sizes.edgeSpacing,
-          bottom: context.sizes.edgeSpacing,
-          right: context.sizes.edgeSpacing,
+          top: Sizes.edgePadding,
+          bottom: Sizes.edgePadding,
+          right: Sizes.edgePadding,
         ),
-        child: const ServerInfo(),
+        child: ServerInfo(),
       ),
     );
   }

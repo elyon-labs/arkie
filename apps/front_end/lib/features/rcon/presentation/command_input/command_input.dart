@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:arkie_core/features/rcon/domain/models/command_help.dart';
+import 'package:arkie_state/features/rcon/command_input/command_input_cubit.dart';
+import 'package:arkie_state/features/rcon/command_input/command_input_state.dart';
+import 'package:arkie_state/features/rcon/rcon_cubit.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:cs2_rcon_client/cs2_rcon_client.dart';
-import 'package:cs2_rcon_front_end/core/async.dart';
-import 'package:cs2_rcon_front_end/core_ui/_build_context.dart';
-import 'package:cs2_rcon_front_end/features/rcon/domain/models/command_help.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/command_input/command_input_cubit.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/command_input/command_input_state.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/rcon_cubit.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/widgets/connection_indicator.dart';
+import 'package:dart_foundation/dart_foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -173,8 +173,8 @@ class _ViewState extends State<_View> {
       key: _textFieldKey,
       enabled: widget.hasConnection,
       controller: _controller,
-      cursorHeight: context.sizes.unit * 2,
-      cursorWidth: context.sizes.unit,
+      cursorHeight: Sizes.unit * 2,
+      cursorWidth: Sizes.unit,
       textAlignVertical: TextAlignVertical.top,
       decoration: InputDecoration(
         hintText: 'Enter RCON command',

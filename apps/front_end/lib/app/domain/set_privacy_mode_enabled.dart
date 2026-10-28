@@ -1,5 +1,5 @@
-import 'package:cs2_rcon_front_end/di/graph.dart';
-import 'package:cs2_rcon_front_end/features/settings/data/repository/settings_repository.dart';
+import 'package:arkie_core/di/graph.dart';
+import 'package:arkie_core/features/settings/data/repository/settings_repository.dart';
 
 class SetPrivacyModeEnabled {
   SetPrivacyModeEnabled({required this.settingsRepository});

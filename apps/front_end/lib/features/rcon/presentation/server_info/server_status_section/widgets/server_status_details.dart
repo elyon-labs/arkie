@@ -1,11 +1,11 @@
+import 'package:arkie_core/features/rcon/domain/models/server_status.dart';
+import 'package:arkie_state/features/rcon/server_info/server_info_cubit.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:cs2_rcon_front_end/app/presentation/widgets/sensitive_text.dart';
-import 'package:cs2_rcon_front_end/core/async.dart';
-import 'package:cs2_rcon_front_end/core_ui/_build_context.dart';
 import 'package:cs2_rcon_front_end/core_ui/label_value.dart';
-import 'package:cs2_rcon_front_end/features/rcon/domain/models/server_status.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/server_info_cubit.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/widgets/delete_server_button.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/widgets/sidebar_wrapper.dart';
+import 'package:dart_foundation/dart_foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -37,7 +37,7 @@ class _LoadedView extends StatelessWidget {
         children: [
           Expanded(
             child: SingleChildScrollView(
-              padding: EdgeInsets.all(context.sizes.edgeSpacing),
+              padding: const EdgeInsets.all(Sizes.edgePadding),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -45,14 +45,14 @@ class _LoadedView extends StatelessWidget {
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Server Details', style: context.text.header),
+                      Text('Server Details', style: context.text.headline),
                       IconButton(onPressed: onClose, icon: Icon(context.icons.close)),
                     ],
                   ),
-                  SizedBox(height: context.sizes.unit * 2),
+                  const VSpace(space: Sizes.unit * 2),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    spacing: context.sizes.unit * 1.5,
+                    spacing: Sizes.unit * 1.5,
                     children: [
                       LabelValue(label: const Text('Hostname'), value: Text(status.hostname)),
                       LabelValue(
@@ -68,10 +68,7 @@ class _LoadedView extends StatelessWidget {
               ),
             ),
           ),
-          Padding(
-            padding: EdgeInsets.all(context.sizes.edgeSpacing),
-            child: const DeleteServerButton(),
-          ),
+          const Padding(padding: EdgeInsets.all(Sizes.edgePadding), child: DeleteServerButton()),
         ],
       ),
     );

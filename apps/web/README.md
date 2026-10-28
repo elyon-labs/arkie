@@ -51,8 +51,10 @@ Four things shape what a reader sees:
 by the private deployment repository's release workflow; if it renames an asset, a platform
 silently falls back to "Not in the latest release" rather than linking at something that 404s.
 
-Every platform is served from the release, macOS included — there is no store listing to link at
-and no `available` flag gating one.
+Every desktop platform is served from the release, macOS included — there is no store listing to
+link at and no `available` flag gating one. The mobile app is the exception: it ships through the
+App Store, so `storeListings` in the same file names it by hand, and a listing with no `href` shows
+a "Coming soon to the App Store" badge in place of a download button.
 
 Because both pages are read at build time, a release going out is what makes them stale. The
 deploy is chained onto the end of the release pipeline for exactly that reason — see
@@ -65,7 +67,8 @@ though nothing has ever shipped.
 ## Theme
 
 Colours, spacing, radii and the type scale live in `src/styles/tokens.css`, transcribed from the
-app's Dart theme in `apps/front_end/lib/core_ui/` — `colors.dart`, `sizes.dart` and `text.dart`.
+apps' shared Dart theme — `ArkieTheme.desktopDark` in `packages/ui/lib/src/arkie_theme.dart`, and
+`Sizes` from the Elyon Labs design package.
 There is no shared package between a Flutter app and an Astro site, so a colour changed there has
 to be changed here too. The site is dark only; the app offers both, but a landing page is read
 once and dark is what Arkie is recognised by.
@@ -77,13 +80,13 @@ Everything else — page widths, display type sizes, the layouts this site uses 
 
 Space Mono, the face the app renders in, is self-hosted from `public/fonts` rather than fetched
 from Google Fonts. The two files are subsets of the TTFs the app ships
-(`apps/front_end/assets/fonts`), about 14 KB each. Regenerate them only if those change:
+(`packages/ui/assets/fonts`), about 14 KB each. Regenerate them only if those change:
 
 ```sh
 pip install 'fonttools[woff]' brotli
 
 for weight in Regular Bold; do
-  pyftsubset "apps/front_end/assets/fonts/SpaceMono-$weight.ttf" \
+  pyftsubset "packages/ui/assets/fonts/SpaceMono-$weight.ttf" \
     --unicodes='U+0000-00FF,U+2000-206F,U+2190-21FF,U+2212,U+2215' \
     --layout-features=kern,liga,calt \
     --flavor=woff2 --desubroutinize \

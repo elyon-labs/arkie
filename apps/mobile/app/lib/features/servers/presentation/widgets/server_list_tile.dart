@@ -1,4 +1,5 @@
-import 'package:cs2_rcon_front_end/features/servers/data/models/server.dart';
+import 'package:arkie_core/features/servers/data/models/server.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:flutter/material.dart';
 
 class ServerListTile extends StatelessWidget {
@@ -9,9 +10,9 @@ class ServerListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colors = context.colors;
     return Material(
-      color: Theme.of(context).colorScheme.surfaceContainer,
+      color: context.colors.card,
       borderRadius: BorderRadius.circular(22),
       child: InkWell(
         onTap: onTap,
@@ -22,14 +23,14 @@ class ServerListTile extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 25,
-                backgroundColor: colorScheme.primaryContainer,
-                foregroundColor: colorScheme.onPrimaryContainer,
+                backgroundColor: colors.selected,
+                foregroundColor: colors.onSelected,
                 child: Text(
                   _serverInitials(server.name),
                   style: const TextStyle(fontWeight: FontWeight.w800),
                 ),
               ),
-              const SizedBox(width: 14),
+              const HSpace(space: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,33 +41,30 @@ class ServerListTile extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                     ),
-                    const SizedBox(height: 5),
+                    const VSpace(space: 5),
                     Text(
                       '${server.address}:${server.port}',
-                      style: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 12),
+                      style: TextStyle(color: colors.muted, fontSize: 12),
                     ),
-                    const SizedBox(height: 8),
+                    const VSpace(),
                     Row(
                       children: [
                         Container(
                           width: 7,
                           height: 7,
-                          decoration: BoxDecoration(
-                            color: colorScheme.onSurfaceVariant,
-                            shape: BoxShape.circle,
-                          ),
+                          decoration: BoxDecoration(color: colors.muted, shape: BoxShape.circle),
                         ),
-                        const SizedBox(width: 6),
+                        const HSpace(space: 6),
                         Text(
                           'Tap to open console',
-                          style: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 11),
+                          style: TextStyle(color: colors.muted, fontSize: 11),
                         ),
                       ],
                     ),
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right_rounded, color: colorScheme.onSurfaceVariant),
+              Icon(Icons.chevron_right_rounded, color: colors.muted),
             ],
           ),
         ),

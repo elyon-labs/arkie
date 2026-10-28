@@ -1,4 +1,4 @@
-import 'package:cs2_rcon_front_end/features/rcon/presentation/rcon_cubit.dart';
+import 'package:arkie_state/features/rcon/rcon_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

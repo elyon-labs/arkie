@@ -1,7 +1,7 @@
-import 'package:arkie_mobile/core/theme.dart';
-import 'package:cs2_rcon_front_end/features/rcon/data/models/message.dart';
-import 'package:cs2_rcon_front_end/features/rcon/data/models/saved_message.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/rcon_cubit.dart';
+import 'package:arkie_core/features/rcon/data/models/message.dart';
+import 'package:arkie_core/features/rcon/data/models/saved_message.dart';
+import 'package:arkie_state/features/rcon/rcon_cubit.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,7 +14,7 @@ class MessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isClient = message.sender == Sender.client;
-    final colorScheme = Theme.of(context).colorScheme;
+    final colors = context.colors;
     return Align(
       alignment: isClient ? Alignment.centerRight : Alignment.centerLeft,
       child: GestureDetector(
@@ -27,7 +27,7 @@ class MessageBubble extends StatelessWidget {
           constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.84),
           padding: const EdgeInsets.fromLTRB(14, 11, 14, 10),
           decoration: BoxDecoration(
-            color: isClient ? colorScheme.primaryContainer : arkieSurface,
+            color: isClient ? colors.selected : context.colors.card,
             borderRadius: BorderRadius.only(
               topLeft: const Radius.circular(18),
               topRight: const Radius.circular(18),
@@ -44,29 +44,29 @@ class MessageBubble extends StatelessWidget {
                   Icon(
                     isClient ? Icons.arrow_upward_rounded : Icons.south_rounded,
                     size: 13,
-                    color: isClient ? colorScheme.onPrimaryContainer : colorScheme.primary,
+                    color: isClient ? colors.onSelected : colors.primary,
                   ),
-                  const SizedBox(width: 5),
+                  const HSpace(space: 5),
                   Text(
                     isClient ? 'COMMAND' : 'SERVER',
                     style: TextStyle(
                       fontSize: 9,
                       letterSpacing: 1.2,
                       fontWeight: FontWeight.w800,
-                      color: isClient ? colorScheme.onPrimaryContainer : colorScheme.primary,
+                      color: isClient ? colors.onSelected : colors.primary,
                     ),
                   ),
                   if (savedMessage != null) ...[
-                    const SizedBox(width: 7),
-                    Icon(Icons.bookmark_rounded, size: 12, color: colorScheme.primary),
+                    const HSpace(space: 7),
+                    Icon(Icons.bookmark_rounded, size: 12, color: colors.primary),
                   ],
                 ],
               ),
-              const SizedBox(height: 6),
+              const VSpace(space: 6),
               SelectableText(
                 message.bodyWithoutTerminalCharacter,
                 style: TextStyle(
-                  color: isClient ? colorScheme.onPrimaryContainer : colorScheme.onSurface,
+                  color: isClient ? colors.onSelected : colors.foreground,
                   fontSize: 13,
                   height: 1.35,
                 ),
@@ -97,9 +97,7 @@ class MessageBubble extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: Icon(
-                savedMessage == null ? Icons.bookmark_add_outlined : Icons.bookmark_remove_outlined,
-              ),
+              leading: Icon(savedMessage == null ? context.icons.save : context.icons.unsave),
               title: Text(savedMessage == null ? 'Save command' : 'Remove saved command'),
               onTap: () async {
                 if (savedMessage == null) {
@@ -110,7 +108,7 @@ class MessageBubble extends StatelessWidget {
                 if (context.mounted) Navigator.of(context).pop();
               },
             ),
-            const SizedBox(height: 8),
+            const VSpace(),
           ],
         ),
       ),

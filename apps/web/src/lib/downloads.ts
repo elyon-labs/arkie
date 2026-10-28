@@ -55,6 +55,23 @@ export async function platformDownloads(): Promise<PlatformDownload[]> {
   ];
 }
 
+export interface StoreListing {
+  platform: string;
+  /** What the reader gets, e.g. `iOS app`. */
+  format: string;
+  store: string;
+  /** Null until the listing is live; the page shows a "coming soon" badge instead. */
+  href: string | null;
+}
+
+/**
+ * The mobile app is distributed through the stores rather than GitHub
+ * releases, so its listings are written here rather than read from a release.
+ */
+export const storeListings: readonly StoreListing[] = [
+  { platform: 'iPhone', format: 'iOS app', store: 'App Store', href: null },
+];
+
 export function formatBytes(bytes: number): string {
   return `${Math.round(bytes / 1_000_000)} MB`;
 }

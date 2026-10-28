@@ -1,3 +1,4 @@
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -32,7 +33,7 @@ class _BanDurationSheet extends HookWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text('Ban duration', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-            const SizedBox(height: 8),
+            const VSpace(),
             RadioGroup<Duration>(
               groupValue: selected.value,
               onChanged: (value) {
@@ -50,7 +51,7 @@ class _BanDurationSheet extends HookWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 12),
+            const VSpace(space: 12),
             FilledButton(
               onPressed: () => Navigator.of(context).pop(selected.value),
               child: const Text('Ban player'),

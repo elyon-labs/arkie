@@ -1,4 +1,4 @@
-import 'package:cs2_rcon_front_end/core_ui/_build_context.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:flutter/material.dart';
 
 class SectionHeader extends StatelessWidget {
@@ -14,7 +14,7 @@ class SectionHeader extends StatelessWidget {
       children: [
         DefaultTextStyle.merge(
           child: title,
-          style: context.text.header,
+          style: context.text.headline,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),

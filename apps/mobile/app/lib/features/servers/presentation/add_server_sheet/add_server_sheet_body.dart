@@ -1,6 +1,7 @@
-import 'package:cs2_rcon_front_end/core/async.dart' as app_async;
-import 'package:cs2_rcon_front_end/features/servers/data/models/server.dart';
-import 'package:cs2_rcon_front_end/features/servers/presentation/add_server_dialog/add_server_dialog_cubit.dart';
+import 'package:arkie_core/features/servers/data/models/server.dart';
+import 'package:arkie_state/features/servers/add_server_dialog/add_server_dialog_cubit.dart';
+import 'package:arkie_ui/arkie_ui.dart';
+import 'package:dart_foundation/dart_foundation.dart' as app_async;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -35,12 +36,12 @@ class AddServerSheetBody extends HookWidget {
                 'Add a server',
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
               ),
-              const SizedBox(height: 8),
+              const VSpace(),
               Text(
                 'Arkie will verify the RCON connection before saving it.',
-                style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: TextStyle(color: context.colors.muted),
               ),
-              const SizedBox(height: 22),
+              const VSpace(space: 22),
               TextFormField(
                 controller: nameController,
                 enabled: !isSaving,
@@ -49,7 +50,7 @@ class AddServerSheetBody extends HookWidget {
                 onChanged: context.read<AddServerDialogCubit>().setName,
                 validator: (value) => value == null || value.trim().isEmpty ? 'Enter a name' : null,
               ),
-              const SizedBox(height: 12),
+              const VSpace(space: 12),
               TextFormField(
                 controller: addressController,
                 enabled: !isSaving,
@@ -60,7 +61,7 @@ class AddServerSheetBody extends HookWidget {
                 validator: (value) =>
                     value == null || value.trim().isEmpty ? 'Enter an address' : null,
               ),
-              const SizedBox(height: 12),
+              const VSpace(space: 12),
               TextFormField(
                 controller: portController,
                 enabled: !isSaving,
@@ -73,7 +74,7 @@ class AddServerSheetBody extends HookWidget {
                   return port == null || port < 1 || port > 65535 ? 'Enter a valid port' : null;
                 },
               ),
-              const SizedBox(height: 12),
+              const VSpace(space: 12),
               TextFormField(
                 controller: passwordController,
                 enabled: !isSaving,
@@ -85,10 +86,10 @@ class AddServerSheetBody extends HookWidget {
                     value == null || value.isEmpty ? 'Enter the RCON password' : null,
               ),
               if (errorText != null) ...[
-                const SizedBox(height: 14),
-                Text(errorText, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                const VSpace(space: 14),
+                Text(errorText, style: TextStyle(color: context.colors.error)),
               ],
-              const SizedBox(height: 22),
+              const VSpace(space: 22),
               FilledButton(
                 onPressed: isSaving
                     ? null
