@@ -1,5 +1,6 @@
 import 'package:arkie_core/features/servers/data/api/servers_api.dart';
 import 'package:arkie_core/features/servers/data/models/server.dart';
+import 'package:collection/collection.dart';
 import 'package:oxidized/oxidized.dart';
 
 class FakeServersApi implements ServersApi {
@@ -10,11 +11,13 @@ class FakeServersApi implements ServersApi {
 
   int fetchServersCallCount = 0;
   int addServerCallCount = 0;
+  int addDemoServerCallCount = 0;
   int removeServerCallCount = 0;
   int updateServerCallCount = 0;
   int clearServersCallCount = 0;
 
   Result<Server, Exception>? addServerResult;
+  Result<Server, Exception>? addDemoServerResult;
   Result<void, Exception>? removeServerResult;
   Result<void, Exception>? updateServerResult;
   Result<void, Exception>? clearServersResult;
@@ -38,6 +41,22 @@ class FakeServersApi implements ServersApi {
       return result;
     }
     final server = Server.create(name: name, password: password, address: address, port: port);
+    _servers.add(server);
+    return Result.ok(server);
+  }
+
+  @override
+  Future<Result<Server, Exception>> addDemoServer() async {
+    addDemoServerCallCount++;
+    final result = addDemoServerResult;
+    if (result != null) {
+      return result;
+    }
+    final existing = _servers.where((candidate) => candidate.isDemo).firstOrNull;
+    if (existing != null) {
+      return Result.ok(existing);
+    }
+    final server = Server.demo();
     _servers.add(server);
     return Result.ok(server);
   }

@@ -1,4 +1,5 @@
 import 'package:arkie_core/features/servers/data/models/server.dart';
+import 'package:arkie_mobile/features/servers/presentation/widgets/demo_server_offer.dart';
 import 'package:arkie_state/features/servers/add_server_dialog/add_server_dialog_cubit.dart';
 import 'package:arkie_ui/arkie_ui.dart';
 import 'package:dart_foundation/dart_foundation.dart' as app_async;
@@ -106,6 +107,10 @@ class AddServerSheetBody extends HookWidget {
                       },
                 child: Text(isSaving ? 'Connecting…' : 'Save server'),
               ),
+              const VSpace(space: ArkieMetrics.loose),
+              const Divider(),
+              const VSpace(space: ArkieMetrics.loose),
+              DemoServerOffer(onAdded: () => Navigator.of(context).pop()),
             ],
           ),
         ),

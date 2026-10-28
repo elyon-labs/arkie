@@ -1,5 +1,6 @@
 import 'package:arkie_core/di/graph.dart';
 import 'package:arkie_core/features/servers/data/models/server.dart';
+import 'package:collection/collection.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:oxidized/oxidized.dart';
 
@@ -20,6 +21,21 @@ class ServersApi {
   }) async {
     return Result.asyncOf(() async {
       final server = Server.create(name: name, address: address, port: port, password: password);
+      await _box.put(server.id, server);
+      return server;
+    });
+  }
+
+  /// Saves the demo server, or returns the one already saved.
+  ///
+  /// Creating it here rather than through [addServer] is what keeps the app to
+  /// a single demo server: there is no way to ask for a second one.
+  Future<Result<Server, Exception>> addDemoServer() async {
+    return Result.asyncOf(() async {
+      final existing = _box.values.firstWhereOrNull((server) => server.isDemo);
+      if (existing != null) return existing;
+
+      final server = Server.demo();
       await _box.put(server.id, server);
       return server;
     });

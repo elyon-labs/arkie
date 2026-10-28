@@ -2,6 +2,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 // ignore_for_file: type=lint
+// ignore_for_file: invalid_use_of_protected_member
 // ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
 // ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
@@ -68,12 +69,6 @@ class ServerStatusMapper extends ClassMapperBase<ServerStatus> {
   );
   static String _$map(ServerStatus v) => v.map;
   static const Field<ServerStatus, String> _f$map = Field('map', _$map);
-  static String _$addressWithPort(ServerStatus v) => v.addressWithPort;
-  static const Field<ServerStatus, String> _f$addressWithPort = Field(
-    'addressWithPort',
-    _$addressWithPort,
-    mode: FieldMode.member,
-  );
 
   @override
   final MappableFields<ServerStatus> fields = const {
@@ -88,7 +83,6 @@ class ServerStatusMapper extends ClassMapperBase<ServerStatus> {
     #numHumans: _f$numHumans,
     #numBots: _f$numBots,
     #map: _f$map,
-    #addressWithPort: _f$addressWithPort,
   };
 
   static ServerStatus _instantiate(DecodingData data) {

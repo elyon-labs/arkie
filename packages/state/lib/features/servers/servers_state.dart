@@ -17,6 +17,10 @@ class ServersState with ServersStateMappable {
   final List<OpenServerTab> openTabs;
   final String? selectedTabId;
 
+  /// Whether the demo server is already saved, which is what hides the offer
+  /// to add it.
+  bool get hasDemoServer => servers.any((server) => server.isDemo);
+
   OpenServerTab? get selectedTab {
     final selectedTabId = this.selectedTabId;
     if (selectedTabId == null) return null;

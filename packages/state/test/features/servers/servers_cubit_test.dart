@@ -2,8 +2,10 @@
 
 import 'package:arkie_core/features/servers/data/models/server.dart';
 import 'package:arkie_core/features/servers/data/repository/servers_repository.dart';
+import 'package:arkie_core/features/servers/domain/add_demo_server.dart';
 import 'package:arkie_core/features/servers/domain/watch_servers.dart';
 import 'package:arkie_core/testing/fake_servers_api.dart';
+import 'package:arkie_core/testing/fake_settings_repository.dart';
 import 'package:arkie_state/features/servers/servers_cubit.dart';
 import 'package:arkie_state/features/servers/servers_state.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -25,7 +27,13 @@ void main() {
 
       await pumpEventQueue(); // Allow server fetch to complete before subscribing.
 
-      final cubit = ServersCubit(watchServers: WatchServers(repository: serversRepository));
+      final cubit = ServersCubit(
+        watchServers: WatchServers(repository: serversRepository),
+        addDemoServer: AddDemoServer(
+          serversRepository: serversRepository,
+          settingsRepository: FakeSettingsRepository(),
+        ),
+      );
 
       await pumpEventQueue();
       return cubit;
@@ -41,6 +49,46 @@ void main() {
 
       return null;
     }
+
+    group('addDemoServer', () {
+      test('saves the demo server and reports it in state', () async {
+        final cubit = await buildSubject();
+        expect(cubit.state.hasDemoServer, isFalse);
+
+        final server = await cubit.addDemoServer();
+        await pumpEventQueue();
+
+        expect(server, isNotNull);
+        expect(server!.isDemo, isTrue);
+        expect(cubit.state.servers, [server]);
+        expect(cubit.state.hasDemoServer, isTrue);
+        await cubit.close();
+      });
+
+      test('only ever saves one', () async {
+        final cubit = await buildSubject();
+
+        final first = await cubit.addDemoServer();
+        final second = await cubit.addDemoServer();
+        await pumpEventQueue();
+
+        expect(second!.id, first!.id);
+        expect(cubit.state.servers, hasLength(1));
+        await cubit.close();
+      });
+
+      test('leaves real servers alone', () async {
+        final server = buildServer();
+        final cubit = await buildSubject(servers: [server]);
+
+        await cubit.addDemoServer();
+        await pumpEventQueue();
+
+        expect(cubit.state.servers, hasLength(2));
+        expect(cubit.state.servers, contains(server));
+        await cubit.close();
+      });
+    });
 
     group('openTab', () {
       test('starts with an empty selected tab without selecting a saved server', () async {

@@ -47,6 +47,10 @@ class ServersRepository {
     );
   }
 
+  Future<Result<Server, Exception>> addDemoServer() {
+    return _mutate(_api.addDemoServer);
+  }
+
   Future<Result<void, Exception>> removeServer(Server server) {
     return _mutate(() => _api.removeServer(server));
   }

@@ -1,5 +1,6 @@
 import 'package:arkie_core/di/graph.dart';
 import 'package:arkie_core/features/rcon/data/repository/messages_repository.dart';
+import 'package:arkie_core/features/rcon/demo/demo_connections.dart';
 import 'package:arkie_core/features/servers/data/models/server.dart';
 import 'package:arkie_core/features/servers/data/repository/servers_repository.dart';
 import 'package:arkie_core/features/servers/domain/watch_selected_server.dart';
@@ -13,10 +14,12 @@ class RemoveServer {
     required ServersRepository serversRepository,
     required MessagesRepository messagesRepository,
     required WatchSelectedServer watchSelectedServer,
+    DemoConnections? demoConnections,
   }) : _settingsRepository = settingsRepository,
        _serversRepository = serversRepository,
        _messagesRepository = messagesRepository,
-       _watchSelectedServer = watchSelectedServer;
+       _watchSelectedServer = watchSelectedServer,
+       _demoConnections = demoConnections ?? DemoConnections();
 
   factory RemoveServer.create({required MessagesRepository messagesRepository}) {
     return RemoveServer(
@@ -24,6 +27,7 @@ class RemoveServer {
       serversRepository: inject(),
       messagesRepository: messagesRepository,
       watchSelectedServer: WatchSelectedServer.create(),
+      demoConnections: inject(),
     );
   }
 
@@ -31,6 +35,7 @@ class RemoveServer {
   final ServersRepository _serversRepository;
   final MessagesRepository _messagesRepository;
   final WatchSelectedServer _watchSelectedServer;
+  final DemoConnections _demoConnections;
 
   Future<Result<void, Exception>> call(Server server) async {
     // First, delete all messages associated with the server.
@@ -44,6 +49,12 @@ class RemoveServer {
       if (result.isOk()) {
         if (currentSelectedServer != null && currentSelectedServer.id == server.id) {
           await _settingsRepository.clearSelectedServer();
+        }
+
+        // Deleting the demo server should forget the kicks, bans and map
+        // changes made against it, so adding it again starts over.
+        if (server.isDemo) {
+          _demoConnections.clear();
         }
       }
 

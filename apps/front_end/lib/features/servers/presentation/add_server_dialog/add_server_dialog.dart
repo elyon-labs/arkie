@@ -6,6 +6,7 @@ import 'package:cs2_rcon_front_end/features/servers/presentation/add_server_dial
 import 'package:cs2_rcon_front_end/features/servers/presentation/add_server_dialog/widgets/server_name_field.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/add_server_dialog/widgets/server_password_field.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/add_server_dialog/widgets/server_port_field.dart';
+import 'package:cs2_rcon_front_end/features/servers/presentation/servers/widgets/demo_server_tile.dart';
 import 'package:dart_foundation/dart_foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,25 +28,43 @@ class AddServerDialog extends StatelessWidget {
 }
 
 class AddServerForm extends StatelessWidget {
-  const AddServerForm({super.key, required this.onServerAdded, required this.onCancel});
+  const AddServerForm({
+    super.key,
+    required this.onServerAdded,
+    required this.onCancel,
+    this.offerDemoServer = false,
+  });
 
   final ValueChanged<Server> onServerAdded;
   final VoidCallback onCancel;
+
+  /// Whether to offer the demo server alongside the form. Only safe where a
+  /// `ServersCubit` is in scope, which is what the demo offer is saved against.
+  final bool offerDemoServer;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => AddServerDialogCubit.create(),
-      child: _AddServerFormBody(onServerAdded: onServerAdded, onCancel: onCancel),
+      child: _AddServerFormBody(
+        onServerAdded: onServerAdded,
+        onCancel: onCancel,
+        offerDemoServer: offerDemoServer,
+      ),
     );
   }
 }
 
 class _AddServerFormBody extends StatelessWidget {
-  const _AddServerFormBody({required this.onServerAdded, required this.onCancel});
+  const _AddServerFormBody({
+    required this.onServerAdded,
+    required this.onCancel,
+    required this.offerDemoServer,
+  });
 
   final ValueChanged<Server> onServerAdded;
   final VoidCallback onCancel;
+  final bool offerDemoServer;
 
   @override
   Widget build(BuildContext context) {
@@ -105,6 +124,7 @@ class _AddServerFormBody extends StatelessWidget {
                   ),
                 ],
               ),
+              if (offerDemoServer) ...[const Divider(), DemoServerTile(onAdded: onServerAdded)],
             ],
           );
         },

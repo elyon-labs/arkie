@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:arkie_core/features/servers/data/models/server.dart';
+import 'package:arkie_core/features/servers/domain/add_demo_server.dart';
 import 'package:arkie_core/features/servers/domain/watch_servers.dart';
 import 'package:arkie_state/core/safe_emit.dart';
 import 'package:arkie_state/features/servers/servers_state.dart';
@@ -8,17 +9,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/utils.dart';
 
 class ServersCubit extends Cubit<ServersState> {
-  ServersCubit({required WatchServers watchServers})
+  ServersCubit({required WatchServers watchServers, required AddDemoServer addDemoServer})
     : _watchServers = watchServers,
+      _addDemoServer = addDemoServer,
       super(ServersState.initial()) {
     unawaited(_init());
   }
 
   factory ServersCubit.create() {
-    return ServersCubit(watchServers: WatchServers.create());
+    return ServersCubit(watchServers: WatchServers.create(), addDemoServer: AddDemoServer.create());
   }
 
   final WatchServers _watchServers;
+  final AddDemoServer _addDemoServer;
 
   final subs = CompositeSubscription();
 
@@ -33,6 +36,14 @@ class ServersCubit extends Cubit<ServersState> {
       );
     });
     subs.add(serversSub);
+  }
+
+  /// Saves the demo server and returns it, or returns null if saving failed.
+  ///
+  /// Asking again once it exists hands back the one already saved.
+  Future<Server?> addDemoServer() async {
+    final result = await _addDemoServer();
+    return result.ok().toNullable();
   }
 
   void openTab() {

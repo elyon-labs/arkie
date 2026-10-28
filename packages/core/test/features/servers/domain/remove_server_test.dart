@@ -1,5 +1,6 @@
 import 'package:arkie_core/features/rcon/data/models/message.dart';
 import 'package:arkie_core/features/rcon/data/repository/messages_repository.dart';
+import 'package:arkie_core/features/rcon/demo/demo_connections.dart';
 import 'package:arkie_core/features/servers/data/models/server.dart';
 import 'package:arkie_core/features/servers/data/repository/servers_repository.dart';
 import 'package:arkie_core/features/servers/domain/remove_server.dart';
@@ -35,6 +36,7 @@ void main() {
       FakeMessagesApi? messagesApi,
       SettingsRepository? settingsRepository,
       String? selectedServerId,
+      DemoConnections? demoConnections,
     }) async {
       final api = serversApi ?? FakeServersApi(initialServers: [server]);
       settingsRepository ??= FakeSettingsRepository(selectedServerId: selectedServerId);
@@ -53,8 +55,44 @@ void main() {
         messagesRepository: messagesRepository,
         watchSelectedServer: watchSelectedServer,
         settingsRepository: settingsRepository,
+        demoConnections: demoConnections,
       );
     }
+
+    test('forgets the demo server state when the demo server goes', () async {
+      final server = Server.demo();
+      final demoConnections = DemoConnections();
+      final connection = demoConnections(address: server.address, port: server.port);
+      await connection.sendCommand('map de_nuke');
+      final subject = await buildSubject(
+        server: server,
+        serversApi: FakeServersApi(initialServers: [server]),
+        demoConnections: demoConnections,
+      );
+
+      await subject(server);
+
+      final fresh = demoConnections(address: server.address, port: server.port);
+      final status = await fresh.sendCommand('status');
+      expect(status.unwrap().body, contains('de_dust2'));
+    });
+
+    test('leaves the demo server state alone when a real server goes', () async {
+      final demoServer = Server.demo();
+      final server = buildServer();
+      final demoConnections = DemoConnections();
+      final connection = demoConnections(address: demoServer.address, port: demoServer.port);
+      await connection.sendCommand('map de_nuke');
+      final subject = await buildSubject(server: server, demoConnections: demoConnections);
+
+      await subject(server);
+
+      final status = await demoConnections(
+        address: demoServer.address,
+        port: demoServer.port,
+      ).sendCommand('status');
+      expect(status.unwrap().body, contains('de_nuke'));
+    });
 
     test('clears messages then removes server', () async {
       final server = buildServer();

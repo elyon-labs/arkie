@@ -2,6 +2,7 @@ import 'package:arkie_core/environment.dart';
 import 'package:arkie_core/features/rcon/data/connection_cache.dart';
 import 'package:arkie_core/features/rcon/data/models/message.dart';
 import 'package:arkie_core/features/rcon/data/models/saved_message.dart';
+import 'package:arkie_core/features/rcon/demo/demo_connections.dart';
 import 'package:arkie_core/features/servers/data/models/server.dart';
 import 'package:arkie_core/features/servers/data/repository/servers_repository.dart';
 import 'package:arkie_core/features/settings/data/repository/settings_repository.dart';
@@ -20,6 +21,7 @@ Future<void> setUpGraph({
   required LazyBuilder<ServersRepository> serversRepository,
   required LazyBuilder<SettingsRepository> settingsRepository,
   required LazyBuilder<ConnectionCache> connectionCache,
+  required LazyBuilder<DemoConnections> demoConnections,
   required Future<Box<Message>> messagesBox,
   required Future<Box<SavedMessage>> savedMessagesBox,
   required Future<Box<Server>> serversBox,
@@ -30,6 +32,7 @@ Future<void> setUpGraph({
     ..registerLazySingleton(serversRepository, dispose: (db) => db.dispose())
     ..registerLazySingleton(settingsRepository, dispose: (db) => db.dispose())
     ..registerLazySingleton(connectionCache)
+    ..registerLazySingleton(demoConnections)
     ..registerSingletonAsync(() async => await messagesBox)
     ..registerSingletonAsync(() async => await savedMessagesBox)
     ..registerSingletonAsync(() async => await serversBox)

@@ -120,6 +120,7 @@ class RCONCubit extends Cubit<RCONState> {
       address: _server.address,
       port: _server.port,
       password: _server.password,
+      isDemo: _server.isDemo,
     );
 
     final newState = await result.match(

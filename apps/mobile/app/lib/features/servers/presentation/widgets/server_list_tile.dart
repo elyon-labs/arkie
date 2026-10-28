@@ -29,11 +29,21 @@ class ServerListTile extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: context.text.body,
             ),
-            Text(
-              '${server.address}:${server.port}',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: context.text.caption.copyWith(color: context.arkieColors.textFaint),
+            Row(
+              children: [
+                Flexible(
+                  child: Text(
+                    '${server.address}:${server.port}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.text.caption.copyWith(color: context.arkieColors.textFaint),
+                  ),
+                ),
+                if (server.isDemo) ...[
+                  const HSpace(space: ArkieMetrics.tight),
+                  Text('demo', style: context.text.caption.copyWith(color: context.colors.accent)),
+                ],
+              ],
             ),
           ],
         ),
