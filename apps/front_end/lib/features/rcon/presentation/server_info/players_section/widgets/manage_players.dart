@@ -1,10 +1,10 @@
-import 'package:cs2_rcon_front_end/core/async.dart';
-import 'package:cs2_rcon_front_end/core_ui/_build_context.dart';
-import 'package:cs2_rcon_front_end/features/rcon/domain/models/player_info.dart';
+import 'package:arkie_core/features/rcon/domain/models/player_info.dart';
+import 'package:arkie_state/features/rcon/server_info/server_info_cubit.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/players_section/widgets/ban_duration_dialog.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/server_info_cubit.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/widgets/section_header.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/widgets/sidebar_wrapper.dart';
+import 'package:dart_foundation/dart_foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -25,7 +25,7 @@ class ManagePlayers extends StatelessWidget {
       child: ScrollConfiguration(
         behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false, overscroll: false),
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(context.sizes.edgeSpacing),
+          padding: const EdgeInsets.all(Sizes.edgePadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -33,7 +33,7 @@ class ManagePlayers extends StatelessWidget {
                 title: const Text('Manage Players'),
                 actions: [IconButton(onPressed: onClose, icon: Icon(context.icons.close))],
               ),
-              SizedBox(height: context.sizes.unit * 2),
+              const VSpace(space: Sizes.unit * 2),
               for (final player in players)
                 ListTile(
                   contentPadding: EdgeInsets.zero,

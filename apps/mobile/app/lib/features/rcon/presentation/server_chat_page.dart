@@ -1,17 +1,18 @@
+import 'package:arkie_core/features/rcon/data/api/messages_api.dart';
+import 'package:arkie_core/features/rcon/data/api/saved_messages_api.dart';
+import 'package:arkie_core/features/rcon/data/repository/messages_repository.dart';
+import 'package:arkie_core/features/rcon/data/repository/saved_messages_repository.dart';
+import 'package:arkie_core/features/servers/data/models/server.dart';
 import 'package:arkie_mobile/features/rcon/presentation/server_tools/server_tools_sheet.dart';
 import 'package:arkie_mobile/features/rcon/presentation/widgets/command_composer.dart';
 import 'package:arkie_mobile/features/rcon/presentation/widgets/connection_error_banner.dart';
 import 'package:arkie_mobile/features/rcon/presentation/widgets/connection_pill.dart';
 import 'package:arkie_mobile/features/rcon/presentation/widgets/message_list.dart';
+import 'package:arkie_state/features/rcon/rcon_cubit.dart';
+import 'package:arkie_state/features/rcon/server_info/server_info_cubit.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:cs2_rcon_client/cs2_rcon_client.dart';
-import 'package:cs2_rcon_front_end/core/async.dart' as app_async;
-import 'package:cs2_rcon_front_end/features/rcon/data/api/messages_api.dart';
-import 'package:cs2_rcon_front_end/features/rcon/data/api/saved_messages_api.dart';
-import 'package:cs2_rcon_front_end/features/rcon/data/repository/messages_repository.dart';
-import 'package:cs2_rcon_front_end/features/rcon/data/repository/saved_messages_repository.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/rcon_cubit.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/server_info_cubit.dart';
-import 'package:cs2_rcon_front_end/features/servers/data/models/server.dart';
+import 'package:dart_foundation/dart_foundation.dart' as app_async;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -74,7 +75,7 @@ class _ServerChatScaffold extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.arrow_back_rounded),
+          icon: Icon(context.icons.back),
           tooltip: 'Back to servers',
         ),
         titleSpacing: 0,
@@ -84,7 +85,7 @@ class _ServerChatScaffold extends StatelessWidget {
             Text(server.name, maxLines: 1, overflow: TextOverflow.ellipsis),
             Text(
               '${server.address}:${server.port}',
-              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 11),
+              style: TextStyle(color: context.colors.muted, fontSize: 11),
             ),
           ],
         ),
@@ -97,7 +98,7 @@ class _ServerChatScaffold extends StatelessWidget {
             icon: const Icon(Icons.tune_rounded),
             tooltip: 'Commands, maps, and players',
           ),
-          const SizedBox(width: 4),
+          const HSpace(space: 4),
         ],
       ),
       body: Column(

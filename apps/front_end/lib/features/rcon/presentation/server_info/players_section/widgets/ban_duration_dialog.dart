@@ -1,4 +1,4 @@
-import 'package:cs2_rcon_front_end/core_ui/_build_context.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -24,21 +24,21 @@ class BanDurationDialog extends HookWidget {
             Row(
               children: [
                 const Radio(value: Duration(hours: 1)),
-                SizedBox(width: context.sizes.unit * 2),
+                const HSpace(space: Sizes.unit * 2),
                 Text('1 Hour', style: context.text.title),
               ],
             ),
             Row(
               children: [
                 const Radio(value: Duration(days: 1)),
-                SizedBox(width: context.sizes.unit * 2),
+                const HSpace(space: Sizes.unit * 2),
                 Text('1 Day', style: context.text.title),
               ],
             ),
             Row(
               children: [
                 const Radio(value: Duration.zero),
-                SizedBox(width: context.sizes.unit * 2),
+                const HSpace(space: Sizes.unit * 2),
                 Text('Permanent', style: context.text.title),
               ],
             ),

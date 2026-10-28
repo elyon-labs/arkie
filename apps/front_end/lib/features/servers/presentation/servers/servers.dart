@@ -1,13 +1,13 @@
+import 'package:arkie_core/features/servers/data/models/server.dart';
+import 'package:arkie_state/features/servers/servers_cubit.dart';
+import 'package:arkie_state/features/servers/servers_state.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:collection/collection.dart';
-import 'package:cs2_rcon_front_end/core_ui/_build_context.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/rcon.dart';
-import 'package:cs2_rcon_front_end/features/servers/data/models/server.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/add_server_dialog/add_server_dialog.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/servers/widgets/add_server_fab.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/servers/widgets/server_tab.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/servers/widgets/settings_fab.dart';
-import 'package:cs2_rcon_front_end/features/servers/presentation/servers_cubit.dart';
-import 'package:cs2_rcon_front_end/features/servers/presentation/servers_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -54,10 +54,10 @@ class _Body extends StatelessWidget {
         if (selectedTabServer != null && selectedTab != null) ...[
           Expanded(
             child: Padding(
-              padding: EdgeInsets.only(
-                left: context.sizes.edgeSpacing,
-                right: context.sizes.edgeSpacing,
-                bottom: context.sizes.edgeSpacing,
+              padding: const EdgeInsets.only(
+                left: Sizes.edgePadding,
+                right: Sizes.edgePadding,
+                bottom: Sizes.edgePadding,
               ),
               child: RCON(server: selectedTabServer, key: ValueKey(selectedTabServer)),
             ),
@@ -122,13 +122,13 @@ class _SelectServerForTab extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text('Open tab', style: context.text.caption),
-        SizedBox(height: context.sizes.unit),
+        const VSpace(),
         if (servers.isEmpty) ...[
           const Text('Add a server to use this tab.'),
         ] else ...[
           ...servers.map(
             (server) => ListTile(
-              contentPadding: EdgeInsets.symmetric(horizontal: context.sizes.unit),
+              contentPadding: const EdgeInsets.symmetric(horizontal: Sizes.unit),
               title: Text(server.name),
               onTap: () => context.read<ServersCubit>().selectServerForSelectedTab(server),
             ),
@@ -136,7 +136,7 @@ class _SelectServerForTab extends StatelessWidget {
           const Divider(),
         ],
         ListTile(
-          contentPadding: EdgeInsets.symmetric(horizontal: context.sizes.unit),
+          contentPadding: const EdgeInsets.symmetric(horizontal: Sizes.unit),
           leading: Icon(context.icons.add),
           title: const Text('Add new server'),
           onTap: onAddServer,

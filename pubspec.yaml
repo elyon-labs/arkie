@@ -9,6 +9,9 @@ workspace:
   - apps/front_end
   - apps/mobile/app
   - packages/client
+  - packages/core
+  - packages/state
+  - packages/ui
 
 dev_dependencies:
   melos: ^8.0.0

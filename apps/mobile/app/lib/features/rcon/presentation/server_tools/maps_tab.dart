@@ -1,7 +1,9 @@
-import 'package:cs2_rcon_front_end/core/async.dart' as app_async;
-import 'package:cs2_rcon_front_end/features/rcon/domain/models/cs2_map.dart';
-import 'package:cs2_rcon_front_end/features/rcon/domain/models/server_status.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/server_info_cubit.dart';
+import 'package:arkie_core/features/rcon/domain/models/cs2_map.dart';
+import 'package:arkie_core/features/rcon/domain/models/server_status.dart';
+import 'package:arkie_mobile/core/widgets/centered_hint.dart';
+import 'package:arkie_state/features/rcon/server_info/server_info_cubit.dart';
+import 'package:arkie_ui/arkie_ui.dart';
+import 'package:dart_foundation/dart_foundation.dart' as app_async;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -12,16 +14,7 @@ class MapsTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final serverInfoCubit = context.watch<ServerInfoCubit?>();
     if (serverInfoCubit == null) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.all(32),
-          child: Text(
-            'Connect to the server before changing maps.',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white54, height: 1.5),
-          ),
-        ),
-      );
+      return const CenteredHint('Connect to the server before changing maps.');
     }
 
     final maps = [
@@ -38,7 +31,7 @@ class MapsTab extends StatelessWidget {
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
       itemCount: maps.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 8),
+      separatorBuilder: (_, _) => const VSpace(),
       itemBuilder: (context, index) {
         final map = maps[index];
         return _MapTile(map: map, isCurrentMap: map.name == currentMap);
@@ -56,7 +49,7 @@ class _MapTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Theme.of(context).colorScheme.surfaceContainer,
+      color: context.colors.card,
       borderRadius: BorderRadius.circular(16),
       child: ListTile(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -65,14 +58,14 @@ class _MapTile extends StatelessWidget {
           height: 44,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(10),
-            child: Image.asset(map.assetPath, package: 'cs2_rcon_front_end', fit: BoxFit.cover),
+            child: Image.asset(map.assetPath, package: CS2Map.assetPackage, fit: BoxFit.cover),
           ),
         ),
         title: Text(map.displayName),
         subtitle: Text(map.name, maxLines: 1, overflow: TextOverflow.ellipsis),
         trailing: Icon(
-          isCurrentMap ? Icons.check_circle_rounded : Icons.arrow_forward_rounded,
-          color: isCurrentMap ? Theme.of(context).colorScheme.primary : null,
+          isCurrentMap ? context.icons.check : Icons.arrow_forward_rounded,
+          color: isCurrentMap ? context.colors.primary : null,
         ),
         onTap: () async {
           final result = await context.read<ServerInfoCubit>().changeMap(map);

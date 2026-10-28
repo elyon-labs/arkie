@@ -1,5 +1,5 @@
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:cs2_rcon_front_end/app/presentation/app_cubit.dart';
-import 'package:cs2_rcon_front_end/core_ui/_build_context.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -47,20 +47,20 @@ class ThemeModeRow extends StatelessWidget {
             containedInkWell: true,
             highlightShape: BoxShape.rectangle,
             customBorder: RoundedSuperellipseBorder(
-              borderRadius: BorderRadius.circular(context.sizes.borderRadius),
+              borderRadius: BorderRadius.circular(Sizes.borderRadius),
             ),
             onTap: () => controller.isOpen ? controller.close() : controller.open(),
             child: DecoratedBox(
               decoration: ShapeDecoration(
                 shape: RoundedSuperellipseBorder(
-                  side: BorderSide(color: context.colors.border),
-                  borderRadius: BorderRadius.circular(context.sizes.borderRadius),
+                  side: BorderSide(color: context.colors.divider),
+                  borderRadius: BorderRadius.circular(Sizes.borderRadius),
                 ),
               ),
               child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: context.sizes.edgeSpacing,
-                  vertical: context.sizes.unit,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: Sizes.edgePadding,
+                  vertical: Sizes.unit,
                 ),
                 child: Text(text, style: context.text.title),
               ),
@@ -80,7 +80,7 @@ class _MenuItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: context.sizes.edgeSpacing),
+      padding: const EdgeInsets.symmetric(horizontal: Sizes.edgePadding),
       child: Text(text),
     );
   }

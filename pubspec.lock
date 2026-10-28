@@ -257,6 +257,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
+  dart_foundation:
+    dependency: transitive
+    description:
+      path: "."
+      ref: main
+      resolved-ref: "5dec90d334859a718a3c499d2c5ea347a6df123d"
+      url: "https://github.com/elyon-labs/dart-foundation.git"
+    source: git
+    version: "1.0.0"
   dart_mappable:
     dependency: transitive
     description:
@@ -281,6 +290,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.1"
+  design:
+    dependency: transitive
+    description:
+      path: "."
+      ref: main
+      resolved-ref: c2c0539aae9f0239d56d5cccaad63061e6e7bbe4
+      url: "https://github.com/elyon-labs/flutter-design.git"
+    source: git
+    version: "0.1.0"
   diff_match_patch:
     dependency: transitive
     description:

@@ -1,5 +1,5 @@
-import 'package:arkie_mobile/core/theme.dart';
 import 'package:arkie_mobile/features/servers/presentation/servers_page.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:flutter/material.dart';
 
 class MobileApp extends StatelessWidget {
@@ -12,7 +12,7 @@ class MobileApp extends StatelessWidget {
     return MaterialApp(
       title: 'Arkie',
       debugShowCheckedModeBanner: false,
-      theme: buildArkieTheme(),
+      theme: buildMobileTheme(),
       home: home ?? const ServersPage(),
     );
   }

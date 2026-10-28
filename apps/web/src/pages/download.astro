@@ -1,7 +1,7 @@
 ---
 import { releasesUrl, site } from '@/data/site';
 import BaseLayout from '@/layouts/base.astro';
-import { formatBytes, platformDownloads } from '@/lib/downloads';
+import { formatBytes, platformDownloads, storeListings } from '@/lib/downloads';
 import { formatReleaseDate, latestRelease } from '@/lib/releases';
 
 const downloads = await platformDownloads();
@@ -10,13 +10,13 @@ const release = await latestRelease();
 
 <BaseLayout
   title={`Download — ${site.name}`}
-  description="Download Arkie for macOS, Windows or Linux. Installers for every release are published on GitHub."
+  description="Download Arkie for macOS, Windows or Linux. Installers for every release are published on GitHub, and Arkie for iPhone is coming soon to the App Store."
 >
   <section class="section">
     <p class="section-label">Download</p>
     <h1 class="section-title">Get Arkie</h1>
     <p class="section-lede">
-      One app, built from the same source for all three desktops. Installers are published with
+      One desktop app, built from the same source for all three desktops. Installers are published with
       every release, straight from this site — no store, no account.
     </p>
 
@@ -52,6 +52,36 @@ const release = await latestRelease();
         </p>
       )
     }
+
+    <div class="mobile-downloads">
+      <h2>On your phone</h2>
+      <p class="mobile-downloads-lede">
+        Arkie for iPhone lays your servers out like an inbox and each one as a focused command
+        chat, with saved commands, map changes and player management a tap away.
+      </p>
+      <ul class="downloads">
+        {
+          storeListings.map((listing) => (
+            <li class="download">
+              <p class="download-platform">{listing.platform}</p>
+              <p class="download-format">{listing.format}</p>
+              <div class="download-action">
+                {listing.href ? (
+                  <a class="button" href={listing.href}>
+                    {`Get it on the ${listing.store}`}
+                  </a>
+                ) : (
+                  <span class="store-badge">
+                    <span class="store-badge-eyebrow">Coming soon to the</span>
+                    <span class="store-badge-store">{listing.store}</span>
+                  </span>
+                )}
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
 
     <div class="install-notes">
       <h2>Installing</h2>

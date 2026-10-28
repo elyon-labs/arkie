@@ -73,6 +73,10 @@ export const requirements: readonly Requirement[] = [
     value: 'macOS, Windows, and Debian-based Linux on amd64 or arm64. One app, built from the same source for all three.',
   },
   {
+    label: 'mobile',
+    value: 'iPhone, coming soon to the App Store.',
+  },
+  {
     label: 'server',
     value: 'Any Counter-Strike 2 server with rcon_password set. Arkie speaks the Source RCON protocol, so nothing has to be installed on the server itself.',
   },

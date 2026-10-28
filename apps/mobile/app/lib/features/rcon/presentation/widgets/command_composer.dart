@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:arkie_mobile/core/theme.dart';
+import 'package:arkie_core/features/rcon/domain/models/command_help.dart';
+import 'package:arkie_state/features/rcon/command_input/command_input_cubit.dart';
+import 'package:arkie_state/features/rcon/command_input/command_input_state.dart';
+import 'package:arkie_state/features/rcon/rcon_cubit.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:cs2_rcon_client/cs2_rcon_client.dart';
-import 'package:cs2_rcon_front_end/core/async.dart' as app_async;
-import 'package:cs2_rcon_front_end/features/rcon/domain/models/command_help.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/command_input/command_input_cubit.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/command_input/command_input_state.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/rcon_cubit.dart';
+import 'package:dart_foundation/dart_foundation.dart' as app_async;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -89,13 +89,13 @@ class _ComposerViewState extends State<_ComposerView> {
               ),
             ),
           ),
-          const SizedBox(width: 8),
+          const HSpace(),
           IconButton.filled(
             onPressed: () async {
               await _sendCommand(_controller.text);
             },
-            icon: const Icon(Icons.arrow_upward_rounded),
-            color: Theme.of(context).colorScheme.onPrimary,
+            icon: Icon(context.icons.send),
+            color: context.colors.onPrimary,
             tooltip: 'Send command',
           ),
         ],
@@ -136,7 +136,7 @@ class _SuggestionsList extends StatelessWidget {
       margin: const EdgeInsets.fromLTRB(12, 0, 12, 4),
       constraints: const BoxConstraints(maxHeight: 220),
       decoration: BoxDecoration(
-        color: arkieSurfaceElevated,
+        color: context.colors.modal,
         borderRadius: BorderRadius.circular(16),
       ),
       child: ListView.separated(

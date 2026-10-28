@@ -9,29 +9,31 @@ environment:
 resolution: workspace
 
 dependencies:
+  arkie_core:
+    path: ../../packages/core
+  arkie_state:
+    path: ../../packages/state
+  arkie_ui:
+    path: ../../packages/ui
   collection: ^1.19.1
   cs2_rcon_client:
     path: ../../packages/client
+  dart_foundation:
+    git:
+      url: https://github.com/elyon-labs/dart-foundation.git
+      ref: main
   dart_mappable: ^4.2.2
-  equatable: ^2.0.5
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
   flutter_hooks: ^0.20.5
-  fuzzywuzzy: ^1.2.0
-  get_it: ^9.0.5
-  hive_ce: ^2.15.1
   hive_ce_flutter: ^2.3.3
-  ionicons: ^0.2.2
   oxidized: ^6.2.0
   package_info_plus: ^9.0.0
-  path: ^1.9.1
-  path_provider: ^2.1.5
   provider: ^6.1.2
   rx_shared_preferences: ^4.0.0
   rxdart: ^0.28.0
   url_launcher: ^6.3.2
-  uuid: ^4.5.2
   version: ^3.0.2
 
 
@@ -42,20 +44,6 @@ dev_dependencies:
   flutter_launcher_icons: ^0.14.4
   flutter_test:
     sdk: flutter
-  hive_ce_generator: ^1.9.3
 
 flutter:
   uses-material-design: true
-  assets:
-    - assets/maps/
-  fonts:
-    - family: SpaceMono
-      fonts:
-        - asset: assets/fonts/SpaceMono-Regular.ttf
-        - asset: assets/fonts/SpaceMono-Italic.ttf
-          style: italic
-        - asset: assets/fonts/SpaceMono-Bold.ttf
-          weight: 700
-        - asset: assets/fonts/SpaceMono-BoldItalic.ttf
-          weight: 700
-          style: italic

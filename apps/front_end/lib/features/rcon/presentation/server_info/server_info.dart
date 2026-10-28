@@ -1,20 +1,20 @@
+import 'package:arkie_core/features/servers/data/models/server.dart';
+import 'package:arkie_state/features/rcon/rcon_cubit.dart';
+import 'package:arkie_state/features/rcon/server_info/server_info_cubit.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:cs2_rcon_client/cs2_rcon_client.dart';
-import 'package:cs2_rcon_front_end/core/async.dart';
-import 'package:cs2_rcon_front_end/core_ui/_build_context.dart';
 import 'package:cs2_rcon_front_end/core_ui/flip_card.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/rcon_cubit.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/players_section/players_section.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/players_section/widgets/manage_players.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/saved_messages_section/saved_messages_section.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/saved_messages_section/widgets/edit_saved_messages.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/server_info_cubit.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/server_status_section/server_status_section.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/server_status_section/widgets/server_status_details.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/widgets/cancel_pending_map_change_snackbar.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/widgets/delete_server_button.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/widgets/maps_section.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/widgets/sidebar_wrapper.dart';
-import 'package:cs2_rcon_front_end/features/servers/data/models/server.dart';
+import 'package:dart_foundation/dart_foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -49,7 +49,7 @@ class _ErrorView extends StatelessWidget {
     return SidebarWrapper(
       child: Center(
         child: Padding(
-          padding: EdgeInsets.all(context.sizes.edgeSpacing),
+          padding: const EdgeInsets.all(Sizes.edgePadding),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [Text('Error loading server info: $error'), const DeleteServerButton()],
@@ -111,7 +111,7 @@ class _LoadedView extends HookWidget {
                 right: 0,
                 bottom: 0,
                 child: Padding(
-                  padding: EdgeInsets.all(context.sizes.edgeSpacing),
+                  padding: const EdgeInsets.all(Sizes.edgePadding),
                   child: CancelPendingActionSnackBar(pendingAction: pendingAction),
                 ),
               );
@@ -134,23 +134,23 @@ class _Sections extends StatelessWidget {
       child: ScrollConfiguration(
         behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false, overscroll: false),
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(context.sizes.edgeSpacing),
+          padding: const EdgeInsets.all(Sizes.edgePadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               ServerStatusSection(
-                padding: EdgeInsets.symmetric(vertical: context.sizes.unit),
+                padding: const EdgeInsets.symmetric(vertical: Sizes.unit),
                 onMenuTap: () => onServerInfoViewChange(_ServerInfoView.serverStatusDetails),
               ),
               PlayersSection(
-                padding: EdgeInsets.symmetric(vertical: context.sizes.unit),
+                padding: const EdgeInsets.symmetric(vertical: Sizes.unit),
                 onMenuTap: () => onServerInfoViewChange(_ServerInfoView.managePlayers),
               ),
               SavedMessagesSection(
-                padding: EdgeInsets.symmetric(vertical: context.sizes.unit),
+                padding: const EdgeInsets.symmetric(vertical: Sizes.unit),
                 onMenuTap: () => onServerInfoViewChange(_ServerInfoView.editSavedMessages),
               ),
-              MapsSection(padding: EdgeInsets.symmetric(vertical: context.sizes.unit * 1.5)),
+              const MapsSection(padding: EdgeInsets.symmetric(vertical: Sizes.unit * 1.5)),
             ],
           ),
         ),

@@ -1,10 +1,12 @@
+import 'package:arkie_core/features/rcon/domain/models/player_info.dart';
+import 'package:arkie_core/features/rcon/domain/models/server_status.dart';
+import 'package:arkie_mobile/core/widgets/centered_hint.dart';
 import 'package:arkie_mobile/features/rcon/presentation/server_tools/widgets/ban_duration_sheet.dart';
-import 'package:cs2_rcon_front_end/core/async.dart' as app_async;
-import 'package:cs2_rcon_front_end/features/rcon/domain/models/player_info.dart';
-import 'package:cs2_rcon_front_end/features/rcon/domain/models/server_status.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/models/pending_action.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/server_info_cubit.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/server_info_state.dart';
+import 'package:arkie_state/features/rcon/server_info/models/pending_action.dart';
+import 'package:arkie_state/features/rcon/server_info/server_info_cubit.dart';
+import 'package:arkie_state/features/rcon/server_info/server_info_state.dart';
+import 'package:arkie_ui/arkie_ui.dart';
+import 'package:dart_foundation/dart_foundation.dart' as app_async;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:oxidized/oxidized.dart';
@@ -16,16 +18,7 @@ class PlayersTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final serverInfoCubit = context.watch<ServerInfoCubit?>();
     if (serverInfoCubit == null) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.all(32),
-          child: Text(
-            'Connect to the server to see who is online.',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white54, height: 1.5),
-          ),
-        ),
-      );
+      return const CenteredHint('Connect to the server to see who is online.');
     }
 
     return BlocListener<ServerInfoCubit, ServerInfoState>(
@@ -67,22 +60,13 @@ class _PlayerList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (players.isEmpty) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.all(32),
-          child: Text(
-            'No players are currently connected.',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white54),
-          ),
-        ),
-      );
+      return const CenteredHint('No players are currently connected.');
     }
 
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
       itemCount: players.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 8),
+      separatorBuilder: (_, _) => const VSpace(),
       itemBuilder: (context, index) => _PlayerTile(player: players[index]),
     );
   }
@@ -97,11 +81,11 @@ class _PlayerTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final cubit = context.read<ServerInfoCubit>();
     return Material(
-      color: Theme.of(context).colorScheme.surfaceContainer,
+      color: context.colors.card,
       borderRadius: BorderRadius.circular(16),
       child: ListTile(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        leading: Icon(player.isBot ? Icons.smart_toy_outlined : Icons.person_outline_rounded),
+        leading: Icon(player.isBot ? context.icons.bot : context.icons.human),
         title: Text(player.displayName, maxLines: 1, overflow: TextOverflow.ellipsis),
         subtitle: Text(player.description, maxLines: 1, overflow: TextOverflow.ellipsis),
         trailing: Row(
@@ -109,7 +93,7 @@ class _PlayerTile extends StatelessWidget {
           children: [
             IconButton(
               onPressed: () async => await cubit.kickPlayer(player),
-              icon: const Icon(Icons.logout_rounded),
+              icon: Icon(context.icons.kick),
               tooltip: 'Kick',
             ),
             if (player.steamId64 != null)
@@ -119,7 +103,7 @@ class _PlayerTile extends StatelessWidget {
                   if (duration == null) return;
                   await cubit.banPlayer(player, duration: duration);
                 },
-                icon: const Icon(Icons.block_rounded),
+                icon: Icon(context.icons.ban),
                 tooltip: 'Ban',
               ),
           ],

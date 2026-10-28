@@ -1,10 +1,10 @@
+import 'package:arkie_core/features/rcon/domain/models/server_status.dart';
+import 'package:arkie_state/features/rcon/server_info/server_info_cubit.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:cs2_rcon_front_end/app/presentation/widgets/sensitive_text.dart';
-import 'package:cs2_rcon_front_end/core/async.dart';
-import 'package:cs2_rcon_front_end/core_ui/_build_context.dart';
 import 'package:cs2_rcon_front_end/core_ui/label_value.dart';
-import 'package:cs2_rcon_front_end/features/rcon/domain/models/server_status.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/server_info_cubit.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/widgets/section_header.dart';
+import 'package:dart_foundation/dart_foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -38,13 +38,13 @@ class _LoadedStatus extends StatelessWidget {
       padding: padding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: context.sizes.unit,
+        spacing: Sizes.unit,
         children: [
           SectionHeader(
             title: Text(status.hostname, overflow: TextOverflow.ellipsis, maxLines: 1),
             actions: [IconButton(onPressed: onMenuTap, icon: Icon(context.icons.menu))],
           ),
-          SizedBox(height: context.sizes.unit),
+          const VSpace(),
           LabelValue(
             label: const Text('Address'),
             value: SensitiveText.ipAddress(child: Text(status.address.address)),

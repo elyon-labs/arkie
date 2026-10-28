@@ -1,4 +1,4 @@
-import 'package:cs2_rcon_front_end/core_ui/_build_context.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:cs2_rcon_front_end/features/settings/domain/get_app_version_info.dart';
 import 'package:cs2_rcon_front_end/features/settings/presentation/settings_cubit.dart';
 import 'package:flutter/material.dart';
@@ -16,9 +16,9 @@ class AppVersionRow extends StatelessWidget {
 
     return switch (appVersion) {
       Ok<VersionInfo, Exception>(:final value) => Padding(
-        padding: EdgeInsets.all(context.sizes.edgeSpacing),
+        padding: const EdgeInsets.all(Sizes.edgePadding),
         child: Row(
-          spacing: context.sizes.unit,
+          spacing: Sizes.unit,
           children: [
             const _GithubReleasesIcon(),
             _Version(value: value),
@@ -43,7 +43,7 @@ class _GithubReleasesIcon extends StatelessWidget {
         },
         child: Tooltip(
           message: 'See Releases on GitHub',
-          child: Icon(context.icons.github, color: context.colors.foregroundMuted),
+          child: Icon(context.icons.github, color: context.colors.muted),
         ),
       ),
     );

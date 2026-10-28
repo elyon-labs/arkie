@@ -1,3 +1,4 @@
+import 'package:arkie_core/testing/fake_settings_repository.dart';
 import 'package:cs2_rcon_front_end/app/domain/set_privacy_mode_enabled.dart';
 import 'package:cs2_rcon_front_end/app/domain/set_theme_mode.dart';
 import 'package:cs2_rcon_front_end/app/domain/watch_is_privacy_mode_enabled.dart';
@@ -5,8 +6,6 @@ import 'package:cs2_rcon_front_end/app/domain/watch_theme_mode.dart';
 import 'package:cs2_rcon_front_end/app/presentation/app_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../../fakes/fake_settings_repository.dart';
 
 void main() {
   group('AppCubit', () {

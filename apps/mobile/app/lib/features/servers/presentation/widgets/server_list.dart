@@ -1,6 +1,7 @@
+import 'package:arkie_core/features/servers/data/models/server.dart';
 import 'package:arkie_mobile/features/rcon/presentation/server_chat_page.dart';
 import 'package:arkie_mobile/features/servers/presentation/widgets/server_list_tile.dart';
-import 'package:cs2_rcon_front_end/features/servers/data/models/server.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:flutter/material.dart';
 
 class ServerList extends StatelessWidget {
@@ -13,7 +14,7 @@ class ServerList extends StatelessWidget {
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 104),
       itemCount: servers.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 10),
+      separatorBuilder: (_, _) => const VSpace(space: 10),
       itemBuilder: (context, index) {
         final server = servers[index];
         return ServerListTile(

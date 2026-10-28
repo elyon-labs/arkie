@@ -1,4 +1,4 @@
-import 'package:cs2_rcon_front_end/core_ui/_build_context.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:cs2_rcon_front_end/features/settings/presentation/settings_cubit.dart';
 import 'package:cs2_rcon_front_end/features/settings/presentation/widgets/app_version_row.dart';
 import 'package:cs2_rcon_front_end/features/settings/presentation/widgets/file_issue_row.dart';
@@ -27,20 +27,20 @@ class _Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return const Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Expanded(
           child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(vertical: context.sizes.edgeSpacing),
+            padding: EdgeInsets.symmetric(vertical: Sizes.edgePadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: context.sizes.edgeSpacing,
-              children: const [ThemeModeRow(), PrivacyModeRow(), FileIssueRow()],
+              spacing: Sizes.edgePadding,
+              children: [ThemeModeRow(), PrivacyModeRow(), FileIssueRow()],
             ),
           ),
         ),
-        const AppVersionRow(),
+        AppVersionRow(),
       ],
     );
   }

@@ -1,9 +1,9 @@
 import 'dart:async';
 
+import 'package:arkie_state/features/rcon/rcon_cubit.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:collection/collection.dart';
-import 'package:cs2_rcon_front_end/core_ui/_build_context.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/message_row/message_row.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/rcon_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -44,7 +44,7 @@ class Messages extends HookWidget {
       child: SingleChildScrollView(
         // Allow some padding at the top so the first message isn't flush against the top edge
         // This allows saving (or-resending) the top message if desired.
-        padding: EdgeInsets.only(top: context.sizes.edgeSpacing),
+        padding: const EdgeInsets.only(top: Sizes.edgePadding),
         controller: messagesController,
         child: Column(
           children: [

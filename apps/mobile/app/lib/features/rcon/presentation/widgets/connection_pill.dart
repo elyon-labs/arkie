@@ -1,5 +1,6 @@
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:cs2_rcon_client/cs2_rcon_client.dart';
-import 'package:cs2_rcon_front_end/core/async.dart' as app_async;
+import 'package:dart_foundation/dart_foundation.dart' as app_async;
 import 'package:flutter/material.dart';
 
 class ConnectionPill extends StatelessWidget {
@@ -10,9 +11,9 @@ class ConnectionPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (label, color) = switch (connection) {
-      app_async.Loaded<RCONConnection>() => ('LIVE', Colors.greenAccent),
-      app_async.Error<RCONConnection>() => ('OFFLINE', Theme.of(context).colorScheme.error),
-      _ => ('CONNECTING', Colors.amberAccent),
+      app_async.Loaded<RCONConnection>() => ('LIVE', context.colors.good),
+      app_async.Error<RCONConnection>() => ('OFFLINE', context.colors.error),
+      _ => ('CONNECTING', context.colors.warning),
     };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
@@ -28,7 +29,7 @@ class ConnectionPill extends StatelessWidget {
             height: 6,
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
-          const SizedBox(width: 6),
+          const HSpace(space: 6),
           Text(
             label,
             style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.w800),

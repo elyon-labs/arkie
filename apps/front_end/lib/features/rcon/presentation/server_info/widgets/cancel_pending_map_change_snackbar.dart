@@ -1,7 +1,7 @@
-import 'package:cs2_rcon_front_end/core_ui/_build_context.dart';
+import 'package:arkie_state/features/rcon/server_info/models/pending_action.dart';
+import 'package:arkie_state/features/rcon/server_info/server_info_cubit.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:cs2_rcon_front_end/core_ui/rounded_superellipse_box.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/models/pending_action.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/server_info_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:oxidized/oxidized.dart';
@@ -21,9 +21,9 @@ class CancelPendingActionSnackBar extends StatelessWidget {
           opacity: pendingAction.isSome() ? 1.0 : 0.0,
           duration: const Duration(milliseconds: 100),
           child: RoundedSuperellipseBox(
-            color: context.colors.background,
+            color: context.colors.body,
             child: Padding(
-              padding: EdgeInsets.all(context.sizes.unit),
+              padding: const EdgeInsets.all(Sizes.unit),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

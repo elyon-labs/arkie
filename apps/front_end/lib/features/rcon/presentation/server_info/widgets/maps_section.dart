@@ -1,9 +1,9 @@
-import 'package:cs2_rcon_front_end/core/async.dart';
-import 'package:cs2_rcon_front_end/core_ui/_build_context.dart';
-import 'package:cs2_rcon_front_end/features/rcon/domain/models/cs2_map.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/server_info_cubit.dart';
+import 'package:arkie_core/features/rcon/domain/models/cs2_map.dart';
+import 'package:arkie_state/features/rcon/server_info/server_info_cubit.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/widgets/map_item.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/widgets/section_header.dart';
+import 'package:dart_foundation/dart_foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -37,7 +37,7 @@ class MapsSection extends StatelessWidget {
               currentMap: currentMap,
               onTap: (m) async => await context.read<ServerInfoCubit>().changeMap(m),
             ),
-          if (maps.isNotEmpty && workshopMaps.isNotEmpty) SizedBox(height: context.sizes.unit * 3),
+          if (maps.isNotEmpty && workshopMaps.isNotEmpty) const VSpace(space: Sizes.unit * 3),
           if (workshopMaps.isNotEmpty)
             _MapGrid(
               title: 'Workshop Maps',
@@ -70,15 +70,15 @@ class _MapGrid extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SectionHeader(title: Text(title)),
-        SizedBox(height: context.sizes.unit * 2),
+        const VSpace(space: Sizes.unit * 2),
         GridView.builder(
           primary: false,
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            mainAxisSpacing: context.sizes.unit,
-            crossAxisSpacing: context.sizes.unit * 2,
+            mainAxisSpacing: Sizes.unit,
+            crossAxisSpacing: Sizes.unit * 2,
             childAspectRatio: 4,
           ),
           itemCount: maps.length,

@@ -1,5 +1,5 @@
-import 'package:cs2_rcon_front_end/core_ui/_build_context.dart';
-import 'package:cs2_rcon_front_end/features/rcon/presentation/rcon_cubit.dart';
+import 'package:arkie_state/features/rcon/rcon_cubit.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/saved_messages_section/widgets/rename_saved_message_dialog.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/widgets/section_header.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/server_info/widgets/sidebar_wrapper.dart';
@@ -18,7 +18,7 @@ class EditSavedMessages extends HookWidget {
     final dialogContext = Navigator.of(context, rootNavigator: true).context;
     return SidebarWrapper(
       child: SingleChildScrollView(
-        padding: EdgeInsets.all(context.sizes.edgeSpacing),
+        padding: const EdgeInsets.all(Sizes.edgePadding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -27,7 +27,7 @@ class EditSavedMessages extends HookWidget {
               actions: [IconButton(onPressed: onClose, icon: Icon(context.icons.close))],
             ),
 
-            SizedBox(height: context.sizes.unit * 2),
+            const VSpace(space: Sizes.unit * 2),
 
             for (final savedMessage in savedMessages)
               ListTile(

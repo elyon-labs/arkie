@@ -1,7 +1,8 @@
 import 'package:arkie_mobile/features/servers/presentation/add_server_sheet/add_server_sheet.dart';
 import 'package:arkie_mobile/features/servers/presentation/widgets/empty_server_list.dart';
 import 'package:arkie_mobile/features/servers/presentation/widgets/server_list.dart';
-import 'package:cs2_rcon_front_end/features/servers/presentation/servers_cubit.dart';
+import 'package:arkie_state/features/servers/servers_cubit.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -24,13 +25,13 @@ class _ServersView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 20,
-        title: const Column(
+        title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Arkie', style: TextStyle(fontWeight: FontWeight.w800)),
+            const Text('Arkie', style: TextStyle(fontWeight: FontWeight.w800)),
             Text(
               'YOUR SERVERS',
-              style: TextStyle(fontSize: 11, letterSpacing: 1.8, color: Colors.white54),
+              style: TextStyle(fontSize: 11, letterSpacing: 1.8, color: context.colors.muted),
             ),
           ],
         ),
@@ -45,7 +46,7 @@ class _ServersView extends StatelessWidget {
             icon: const Icon(Icons.info_outline_rounded),
             tooltip: 'About Arkie',
           ),
-          const SizedBox(width: 8),
+          const HSpace(),
         ],
       ),
       body: servers.isEmpty ? const EmptyServerList() : ServerList(servers: servers),
@@ -53,7 +54,7 @@ class _ServersView extends StatelessWidget {
         onPressed: () async {
           await showAddServerSheet(context);
         },
-        icon: const Icon(Icons.add_rounded),
+        icon: Icon(context.icons.add),
         label: const Text('Add server'),
       ),
     );

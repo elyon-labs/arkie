@@ -1,16 +1,16 @@
+import 'package:arkie_core/di/graph.dart';
+import 'package:arkie_core/environment.dart';
+import 'package:arkie_core/features/rcon/data/connection_cache.dart';
+import 'package:arkie_core/features/servers/data/api/servers_api.dart';
+import 'package:arkie_core/features/servers/data/repository/servers_repository.dart';
+import 'package:arkie_core/features/settings/data/repository/settings_repository.dart';
+import 'package:arkie_core/hive/hive_registrar.g.dart';
+import 'package:arkie_state/features/servers/servers_cubit.dart';
+import 'package:arkie_ui/arkie_ui.dart';
 import 'package:cs2_rcon_front_end/app/presentation/app_cubit.dart';
 import 'package:cs2_rcon_front_end/app/presentation/app_state.dart';
-import 'package:cs2_rcon_front_end/core_ui/app_theme.dart';
-import 'package:cs2_rcon_front_end/di/graph.dart';
-import 'package:cs2_rcon_front_end/environment.dart';
-import 'package:cs2_rcon_front_end/features/rcon/data/connection_cache.dart';
-import 'package:cs2_rcon_front_end/features/servers/data/api/servers_api.dart';
-import 'package:cs2_rcon_front_end/features/servers/data/repository/servers_repository.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/servers/servers.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/servers/widgets/server_shortcuts.dart';
-import 'package:cs2_rcon_front_end/features/servers/presentation/servers_cubit.dart';
-import 'package:cs2_rcon_front_end/features/settings/data/repository/settings_repository.dart';
-import 'package:cs2_rcon_front_end/hive/hive_registrar.g.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
@@ -54,8 +54,8 @@ class MainApp extends StatelessWidget {
               return MaterialApp(
                 themeMode: state.themeMode,
                 debugShowCheckedModeBanner: false,
-                theme: buildLightTheme(),
-                darkTheme: buildDarkTheme(),
+                theme: buildDesktopTheme(ArkieTheme.desktopLight),
+                darkTheme: buildDesktopTheme(ArkieTheme.desktopDark),
                 builder: (context, child) =>
                     ServerShortcuts(child: child ?? const SizedBox.shrink()),
                 home: const Servers(),
