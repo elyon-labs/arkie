@@ -5,7 +5,7 @@ nextTypeId: 7
 types:
   Server:
     typeId: 0
-    nextIndex: 6
+    nextIndex: 7
     fields:
       id:
         index: 0
@@ -17,6 +17,8 @@ types:
         index: 3
       port:
         index: 4
+      isDemo:
+        index: 6
   Message:
     typeId: 1
     nextIndex: 5

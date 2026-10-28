@@ -19,8 +19,4 @@ class ConnectionCache {
     final key = (socket.hostAddress.address, socket.hostPort);
     _cache.remove(key);
   }
-
-  Future<void> clearAllConnections() async {
-    _cache.clear();
-  }
 }

@@ -7,19 +7,16 @@ class FakeMessagesApi implements MessagesApi {
     List<Message>? initialMessages,
     this.onAddMessage,
     this.onFetchMessages,
-    this.onDeleteMessage,
     this.onClearMessages,
   }) : _messages = List<Message>.from(initialMessages ?? const <Message>[]);
 
   final List<Message> _messages;
   final ValueSetter<Message>? onAddMessage;
   final VoidCallback? onFetchMessages;
-  final ValueSetter<String>? onDeleteMessage;
   final VoidCallback? onClearMessages;
 
   int fetchMessagesCallCount = 0;
   int addMessageCallCount = 0;
-  int deleteMessageCallCount = 0;
   int clearMessagesCallCount = 0;
 
   @override
@@ -34,13 +31,6 @@ class FakeMessagesApi implements MessagesApi {
     clearMessagesCallCount++;
     onClearMessages?.call();
     _messages.removeWhere((message) => message.serverId == serverId);
-  }
-
-  @override
-  Future<void> deleteMessage(String messageId) async {
-    deleteMessageCallCount++;
-    onDeleteMessage?.call(messageId);
-    _messages.removeWhere((message) => message.id == messageId);
   }
 
   @override

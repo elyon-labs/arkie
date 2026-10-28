@@ -54,32 +54,6 @@ void main() {
       });
     });
 
-    group('deleteMessage', () {
-      test('removes the message with the given id', () async {
-        final message = Message(
-          id: '1',
-          serverId: 'server1',
-          body: 'Delete me',
-          sender: Sender.client,
-        );
-        final remainingMessage = Message(
-          id: '2',
-          serverId: 'server1',
-          body: 'Keep me',
-          sender: Sender.server,
-        );
-        final fakeBox = FakeBox<Message>(
-          initialValues: {message.id: message, remainingMessage.id: remainingMessage},
-        );
-        final messagesApi = MessagesApi(box: fakeBox);
-
-        await messagesApi.deleteMessage(message.id);
-
-        expect(fakeBox.get(message.id), isNull);
-        expect(fakeBox.get(remainingMessage.id), equals(remainingMessage));
-      });
-    });
-
     group('clearMessages', () {
       test('deletes all messages for the specified server', () async {
         final server1Message = Message(

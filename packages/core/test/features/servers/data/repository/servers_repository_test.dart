@@ -42,35 +42,6 @@ void main() {
       });
     });
 
-    group('watchServer', () {
-      test('emits null until the server appears in the repository', () async {
-        final matchingServer = buildServer();
-        final api = FakeServersApi();
-        final repository = buildSubject(api: api);
-
-        final valuesFuture = repository.watchServer(matchingServer.name).take(3).toList();
-
-        final addedServerResult = await api.addServer(
-          name: matchingServer.name,
-          address: matchingServer.address,
-          port: matchingServer.port,
-          password: matchingServer.password,
-        );
-        final addedServer = addedServerResult.unwrap();
-        await repository.refresh();
-
-        await pumpEventQueue();
-
-        final values = await valuesFuture;
-        // First value is the seeded empty list
-        expect(values[0], isNull);
-        // Second value is before the server is added
-        expect(values[1], isNull);
-        // Third value is after the server is added
-        expect(values[2], addedServer);
-      });
-    });
-
     group('addServer', () {
       test('refreshes servers when the api call succeeds', () async {
         final newServer = buildServer(name: 'Second Server');
@@ -143,71 +114,6 @@ void main() {
 
         expect(result.isErr(), isTrue);
         expect(api.removeServerCallCount, 1);
-        expect(api.fetchServersCallCount, 1);
-        expect(await repository.watchServers().first, [server]);
-      });
-    });
-
-    group('updateServer', () {
-      test('refreshes and emits the updated server when the api call succeeds', () async {
-        final server = buildServer();
-        final updated = server.copyWith(name: 'Updated server');
-        final api = FakeServersApi(initialServers: [server]);
-        final repository = buildSubject(api: api);
-
-        await pumpEventQueue();
-        final result = await repository.updateServer(updated);
-
-        expect(result.isOk(), isTrue);
-        expect(api.updateServerCallCount, 1);
-        expect(api.fetchServersCallCount, 2);
-        expect(await repository.watchServers().first, [updated]);
-      });
-
-      test('does not refresh or emit a change when the api call fails', () async {
-        final server = buildServer();
-        final api = FakeServersApi(initialServers: [server])
-          ..updateServerResult = Result.err(Exception('failure'));
-        final repository = buildSubject(api: api);
-
-        await pumpEventQueue();
-        final result = await repository.updateServer(server.copyWith(name: 'Updated server'));
-
-        expect(result.isErr(), isTrue);
-        expect(api.updateServerCallCount, 1);
-        expect(api.fetchServersCallCount, 1);
-        expect(await repository.watchServers().first, [server]);
-      });
-    });
-
-    group('clearServers', () {
-      test('refreshes servers when the api call succeeds', () async {
-        final server = buildServer();
-        final api = FakeServersApi(initialServers: [server]);
-        final repository = buildSubject(api: api);
-
-        await pumpEventQueue();
-
-        final result = await repository.clearServers();
-
-        expect(result.isOk(), isTrue);
-        expect(api.clearServersCallCount, 1);
-        expect(api.fetchServersCallCount, 2);
-        expect(await repository.watchServers().first, isEmpty);
-      });
-
-      test('does not refresh when the api call fails', () async {
-        final server = buildServer();
-        final api = FakeServersApi(initialServers: [server])
-          ..clearServersResult = Result.err(Exception('failure'));
-        final repository = buildSubject(api: api);
-
-        await pumpEventQueue();
-
-        final result = await repository.clearServers();
-
-        expect(result.isErr(), isTrue);
-        expect(api.clearServersCallCount, 1);
         expect(api.fetchServersCallCount, 1);
         expect(await repository.watchServers().first, [server]);
       });

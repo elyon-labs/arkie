@@ -2,6 +2,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 // ignore_for_file: type=lint
+// ignore_for_file: invalid_use_of_protected_member
 // ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
 // ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
@@ -34,6 +35,13 @@ class ServerMapper extends ClassMapperBase<Server> {
   static const Field<Server, String> _f$address = Field('address', _$address);
   static int _$port(Server v) => v.port;
   static const Field<Server, int> _f$port = Field('port', _$port);
+  static bool _$isDemo(Server v) => v.isDemo;
+  static const Field<Server, bool> _f$isDemo = Field(
+    'isDemo',
+    _$isDemo,
+    opt: true,
+    def: false,
+  );
 
   @override
   final MappableFields<Server> fields = const {
@@ -42,6 +50,7 @@ class ServerMapper extends ClassMapperBase<Server> {
     #password: _f$password,
     #address: _f$address,
     #port: _f$port,
+    #isDemo: _f$isDemo,
   };
 
   static Server _instantiate(DecodingData data) {
@@ -51,6 +60,7 @@ class ServerMapper extends ClassMapperBase<Server> {
       password: data.dec(_f$password),
       address: data.dec(_f$address),
       port: data.dec(_f$port),
+      isDemo: data.dec(_f$isDemo),
     );
   }
 
@@ -106,6 +116,7 @@ abstract class ServerCopyWith<$R, $In extends Server, $Out>
     String? password,
     String? address,
     int? port,
+    bool? isDemo,
   });
   ServerCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
@@ -123,6 +134,7 @@ class _ServerCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Server, $Out>
     String? password,
     String? address,
     int? port,
+    bool? isDemo,
   }) => $apply(
     FieldCopyWithData({
       if (id != null) #id: id,
@@ -130,6 +142,7 @@ class _ServerCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Server, $Out>
       if (password != null) #password: password,
       if (address != null) #address: address,
       if (port != null) #port: port,
+      if (isDemo != null) #isDemo: isDemo,
     }),
   );
   @override
@@ -139,6 +152,7 @@ class _ServerCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Server, $Out>
     password: data.get(#password, or: $value.password),
     address: data.get(#address, or: $value.address),
     port: data.get(#port, or: $value.port),
+    isDemo: data.get(#isDemo, or: $value.isDemo),
   );
 
   @override

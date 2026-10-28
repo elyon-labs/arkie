@@ -6,6 +6,7 @@ import 'package:collection/collection.dart';
 import 'package:cs2_rcon_front_end/features/rcon/presentation/rcon.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/add_server_dialog/add_server_dialog.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/servers/widgets/add_server_fab.dart';
+import 'package:cs2_rcon_front_end/features/servers/presentation/servers/widgets/demo_server_tile.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/servers/widgets/server_tab.dart';
 import 'package:cs2_rcon_front_end/features/servers/presentation/servers/widgets/settings_fab.dart';
 import 'package:flutter/material.dart';
@@ -125,6 +126,7 @@ class _OpenTabEmptyState extends HookWidget {
                   isAddingServer.value = false;
                 },
                 onCancel: () => isAddingServer.value = false,
+                offerDemoServer: true,
               )
             : _SelectServerForTab(servers: servers, onAddServer: () => isAddingServer.value = true),
       ),
@@ -159,7 +161,11 @@ class _SelectServerForTab extends StatelessWidget {
             for (final server in servers)
               ListTile(
                 title: Text(server.name),
-                subtitle: Text('${server.address}:${server.port}'),
+                subtitle: Text(
+                  server.isDemo
+                      ? '${server.address}:${server.port} · demo'
+                      : '${server.address}:${server.port}',
+                ),
                 onTap: () => context.read<ServersCubit>().selectServerForSelectedTab(server),
               ),
             const Divider(),
@@ -168,6 +174,9 @@ class _SelectServerForTab extends StatelessWidget {
             leading: Icon(context.icons.add),
             title: const Text('Add a server'),
             onTap: onAddServer,
+          ),
+          DemoServerTile(
+            onAdded: (server) => context.read<ServersCubit>().selectServerForSelectedTab(server),
           ),
         ],
       ),

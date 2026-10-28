@@ -3,6 +3,7 @@ import 'package:arkie_core/environment.dart';
 import 'package:arkie_core/features/rcon/data/connection_cache.dart';
 import 'package:arkie_core/features/rcon/data/models/message.dart';
 import 'package:arkie_core/features/rcon/data/models/saved_message.dart';
+import 'package:arkie_core/features/rcon/demo/demo_connections.dart';
 import 'package:arkie_core/features/servers/data/api/servers_api.dart';
 import 'package:arkie_core/features/servers/data/models/server.dart';
 import 'package:arkie_core/features/servers/data/repository/servers_repository.dart';
@@ -25,6 +26,7 @@ Future<void> main() async {
     serversRepository: () => ServersRepository(api: ServersApi.create()),
     settingsRepository: () => SettingsRepository(prefs: RxSharedPreferences.getInstance()),
     connectionCache: ConnectionCache.new,
+    demoConnections: DemoConnections.new,
     messagesBox: Hive.openBox<Message>('messages'),
     serversBox: Hive.openBox<Server>('servers'),
     savedMessagesBox: Hive.openBox<SavedMessage>('saved_messages'),

@@ -1,5 +1,6 @@
 import 'package:arkie_core/features/servers/data/api/servers_api.dart';
 import 'package:arkie_core/features/servers/data/models/server.dart';
+import 'package:collection/collection.dart';
 import 'package:oxidized/oxidized.dart';
 
 class FakeServersApi implements ServersApi {
@@ -10,14 +11,12 @@ class FakeServersApi implements ServersApi {
 
   int fetchServersCallCount = 0;
   int addServerCallCount = 0;
+  int addDemoServerCallCount = 0;
   int removeServerCallCount = 0;
-  int updateServerCallCount = 0;
-  int clearServersCallCount = 0;
 
   Result<Server, Exception>? addServerResult;
+  Result<Server, Exception>? addDemoServerResult;
   Result<void, Exception>? removeServerResult;
-  Result<void, Exception>? updateServerResult;
-  Result<void, Exception>? clearServersResult;
 
   @override
   Future<List<Server>> fetchServers() async {
@@ -43,6 +42,22 @@ class FakeServersApi implements ServersApi {
   }
 
   @override
+  Future<Result<Server, Exception>> addDemoServer() async {
+    addDemoServerCallCount++;
+    final result = addDemoServerResult;
+    if (result != null) {
+      return result;
+    }
+    final existing = _servers.where((candidate) => candidate.isDemo).firstOrNull;
+    if (existing != null) {
+      return Result.ok(existing);
+    }
+    final server = Server.demo();
+    _servers.add(server);
+    return Result.ok(server);
+  }
+
+  @override
   Future<Result<void, Exception>> removeServer(Server server) async {
     removeServerCallCount++;
     final result = removeServerResult;
@@ -50,32 +65,6 @@ class FakeServersApi implements ServersApi {
       return result;
     }
     _servers.removeWhere((candidate) => candidate == server);
-    return const Result.ok(null);
-  }
-
-  @override
-  Future<Result<void, Exception>> updateServer(Server server) async {
-    updateServerCallCount++;
-    final result = updateServerResult;
-    if (result != null) {
-      return result;
-    }
-    final index = _servers.indexWhere((candidate) => candidate.id == server.id);
-    if (index == -1) {
-      return Err(Exception('Server not found.'));
-    }
-    _servers[index] = server;
-    return const Ok(null);
-  }
-
-  @override
-  Future<Result<void, Exception>> clearServers() async {
-    clearServersCallCount++;
-    final result = clearServersResult;
-    if (result != null) {
-      return result;
-    }
-    _servers.clear();
     return const Result.ok(null);
   }
 }

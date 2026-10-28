@@ -67,11 +67,5 @@ void main() {
 
       expect(map.assetPath, 'assets/maps/workshop_awp_india.webp');
     });
-
-    test('finds maps by workshop id', () {
-      final map = WorkshopMap.findByWorkshopId('3079043089');
-
-      expect(map?.displayName, 'Abstract');
-    });
   });
 }

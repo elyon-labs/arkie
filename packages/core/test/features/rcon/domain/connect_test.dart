@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:arkie_core/features/rcon/data/connection_cache.dart';
+import 'package:arkie_core/features/rcon/demo/demo_connections.dart';
 import 'package:arkie_core/features/rcon/domain/connect.dart';
 import 'package:arkie_core/features/rcon/domain/drop_connection.dart';
 import 'package:arkie_core/features/rcon/domain/get_socket.dart';
@@ -119,6 +120,64 @@ void main() {
             isNull,
           );
         });
+      });
+    });
+
+    group('when the server is the demo server', () {
+      test('it answers in memory without touching the network', () async {
+        final connectionCache = ConnectionCache();
+        final subject = Connect(
+          getSocket: FakeGetSocket(onConnect: () async => fail('should not open a socket')),
+          removeSocket: DropConnection(connectionCache: connectionCache),
+          addSocket: SaveConnection(connectionCache: connectionCache),
+          demoConnections: DemoConnections(),
+        );
+
+        final result = await subject.call(
+          address: '203.0.113.10',
+          port: 27015,
+          password: 'demo',
+          isDemo: true,
+        );
+
+        final response = await result.unwrap().sendCommand('echo ping');
+        expect(response.unwrap().body, 'ping');
+      });
+
+      test('it does not put the demo connection in the socket cache', () async {
+        final connectionCache = ConnectionCache();
+        final subject = Connect(
+          getSocket: FakeGetSocket(onConnect: () async => fail('should not open a socket')),
+          removeSocket: DropConnection(connectionCache: connectionCache),
+          addSocket: SaveConnection(connectionCache: connectionCache),
+          demoConnections: DemoConnections(),
+        );
+
+        await subject.call(address: '203.0.113.10', port: 27015, password: 'demo', isDemo: true);
+
+        expect(await connectionCache.getConnection(('203.0.113.10', 27015)), isNull);
+      });
+
+      test('it hands back the same connection each time, so its state holds', () async {
+        final connectionCache = ConnectionCache();
+        final subject = Connect(
+          getSocket: FakeGetSocket(onConnect: () async => fail('should not open a socket')),
+          removeSocket: DropConnection(connectionCache: connectionCache),
+          addSocket: SaveConnection(connectionCache: connectionCache),
+          demoConnections: DemoConnections(),
+        );
+
+        Future<RCONConnection> connect() async {
+          final result = await subject.call(
+            address: '203.0.113.10',
+            port: 27015,
+            password: 'demo',
+            isDemo: true,
+          );
+          return result.unwrap();
+        }
+
+        expect(await connect(), same(await connect()));
       });
     });
   });

@@ -1,4 +1,5 @@
 import 'package:arkie_mobile/features/servers/presentation/add_server_sheet/add_server_sheet.dart';
+import 'package:arkie_mobile/features/servers/presentation/widgets/demo_server_offer.dart';
 import 'package:arkie_ui/arkie_ui.dart';
 import 'package:flutter/material.dart';
 
@@ -37,6 +38,10 @@ class EmptyServerList extends StatelessWidget {
                 onPressed: () async => await showAddServerSheet(context),
                 child: const Text('Add a server'),
               ),
+              const VSpace(space: ArkieMetrics.loose),
+              const Divider(),
+              const VSpace(space: ArkieMetrics.loose),
+              const DemoServerOffer(),
             ],
           ),
         ),

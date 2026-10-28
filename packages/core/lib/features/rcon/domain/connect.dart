@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:arkie_core/di/graph.dart';
 import 'package:arkie_core/features/rcon/data/models/get_socket_result.dart';
+import 'package:arkie_core/features/rcon/demo/demo_connections.dart';
 import 'package:arkie_core/features/rcon/domain/drop_connection.dart';
 import 'package:arkie_core/features/rcon/domain/get_socket.dart';
 import 'package:arkie_core/features/rcon/domain/save_connection.dart';
@@ -19,27 +21,41 @@ class Connect {
     required GetSocket getSocket,
     required DropConnection removeSocket,
     required SaveConnection addSocket,
+    DemoConnections? demoConnections,
   }) : _saveConnection = addSocket,
        _getSocket = getSocket,
-       _dropConnection = removeSocket;
+       _dropConnection = removeSocket,
+       _demoConnections = demoConnections ?? DemoConnections();
 
   factory Connect.create() {
     return Connect(
       getSocket: GetSocket.create(),
       removeSocket: DropConnection.create(),
       addSocket: SaveConnection.create(),
+      demoConnections: inject(),
     );
   }
 
   final GetSocket _getSocket;
   final DropConnection _dropConnection;
   final SaveConnection _saveConnection;
+  final DemoConnections _demoConnections;
 
+  /// Connects to the server at [address]:[port].
+  ///
+  /// When [isDemo] is set, the connection is answered by the in-app demo server
+  /// instead of the network. It is the only place that draws the distinction —
+  /// the [RCONConnection] handed back behaves the same either way.
   Future<Result<RCONConnection, Exception>> call({
     required String address,
     required int port,
     required String password,
+    bool isDemo = false,
   }) async {
+    if (isDemo) {
+      return Ok(_demoConnections(address: address, port: port));
+    }
+
     Future<Result<RCONConnection, Exception>> test({
       required RCONSocket socket,
       required RCONConnection connection,

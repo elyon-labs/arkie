@@ -1,5 +1,3 @@
-import 'package:collection/collection.dart';
-
 enum CS2MapType { defusal, hostageRescue, armsRace, other }
 
 sealed class CS2Map {
@@ -418,9 +416,5 @@ class WorkshopMap extends CS2Map {
       ),
       // HLA_WORKSHOP_MAPS_END
     ];
-  }
-
-  static WorkshopMap? findByWorkshopId(String workshopId) {
-    return directory.firstWhereOrNull((map) => map.workshopId == workshopId);
   }
 }

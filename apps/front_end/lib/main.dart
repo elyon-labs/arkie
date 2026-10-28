@@ -1,6 +1,7 @@
 import 'package:arkie_core/di/graph.dart';
 import 'package:arkie_core/environment.dart';
 import 'package:arkie_core/features/rcon/data/connection_cache.dart';
+import 'package:arkie_core/features/rcon/demo/demo_connections.dart';
 import 'package:arkie_core/features/servers/data/api/servers_api.dart';
 import 'package:arkie_core/features/servers/data/repository/servers_repository.dart';
 import 'package:arkie_core/features/settings/data/repository/settings_repository.dart';
@@ -27,6 +28,7 @@ void main() async {
     serversRepository: () => ServersRepository(api: ServersApi.create()),
     settingsRepository: () => SettingsRepository(prefs: RxSharedPreferences.getInstance()),
     connectionCache: ConnectionCache.new,
+    demoConnections: DemoConnections.new,
     messagesBox: Hive.openBox('messages'),
     serversBox: Hive.openBox('servers'),
     savedMessagesBox: Hive.openBox('saved_messages'),
