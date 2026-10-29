@@ -125,20 +125,31 @@ class RCONCubit extends Cubit<RCONState> {
   }
 
   Future<Result<RCONConnection, Exception>> _testAndEmit() async {
-    if (_checkCompleter != null) {
-      return _checkCompleter!.future;
+    final inFlightCheck = _checkCompleter;
+    if (inFlightCheck != null) {
+      return inFlightCheck.future;
     }
 
-    _checkCompleter = Completer();
+    final completer = _checkCompleter = Completer<Result<RCONConnection, Exception>>();
 
-    final result = _connect(
-      address: _server.address,
-      port: _server.port,
-      password: _server.password,
-      isDemo: _server.isDemo,
-    );
+    // A throw on the way to the server, rather than a reported failure, would
+    // otherwise leave the connection stuck on Loading and this completer in
+    // place, so every later check would wait on an answer that never comes.
+    Result<RCONConnection, Exception> result;
+    try {
+      result = await _connect(
+        address: _server.address,
+        port: _server.port,
+        password: _server.password,
+        isDemo: _server.isDemo,
+      );
+    } catch (error) {
+      result = Err(error is Exception ? error : Exception(error.toString()));
+    } finally {
+      _checkCompleter = null;
+    }
 
-    final newState = await result.match(
+    final newState = result.match(
       (c) {
         return state.copyWith(connection: Loaded(c));
       },
@@ -147,8 +158,7 @@ class RCONCubit extends Cubit<RCONState> {
       },
     );
 
-    _checkCompleter!.complete(result);
-    _checkCompleter = null;
+    completer.complete(result);
 
     safeEmit(newState.copyWith(lastConnectionCheckTime: DateTime.now()));
 
