@@ -180,5 +180,41 @@ void main() {
         expect(await connect(), same(await connect()));
       });
     });
+
+    group('when the address is a hostname', () {
+      test('it resolves the hostname and connects', () async {
+        final connectionCache = ConnectionCache();
+        final connection = FakeRCONConnection(onSendCommand: (_) async => Ok(buildPacket()));
+        final subject = Connect(
+          getSocket: FakeGetSocket(onConnect: () async => Ok(connection)),
+          removeSocket: DropConnection(connectionCache: connectionCache),
+          addSocket: SaveConnection(connectionCache: connectionCache),
+        );
+
+        final result = await subject.call(address: 'localhost', port: 27015, password: 'password');
+
+        expect(result.isOk(), isTrue);
+        expect(result.unwrap(), equals(connection));
+      });
+
+      test('it returns Err when the hostname does not resolve', () async {
+        final connectionCache = ConnectionCache();
+        final connection = FakeRCONConnection(onSendCommand: (_) async => Ok(buildPacket()));
+        final subject = Connect(
+          getSocket: FakeGetSocket(onConnect: () async => Ok(connection)),
+          removeSocket: DropConnection(connectionCache: connectionCache),
+          addSocket: SaveConnection(connectionCache: connectionCache),
+        );
+
+        final result = await subject.call(
+          address: 'arkie-does-not-exist.invalid',
+          port: 27015,
+          password: 'password',
+        );
+
+        expect(result.isErr(), isTrue);
+        expect(result.unwrapErr(), isA<SocketException>());
+      });
+    });
   });
 }

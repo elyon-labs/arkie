@@ -41,6 +41,10 @@ class Connect {
   final SaveConnection _saveConnection;
   final DemoConnections _demoConnections;
 
+  /// How long to wait for a hostname to resolve before giving up. A DNS lookup
+  /// that never answers would otherwise leave the caller waiting forever.
+  static const lookupTimeout = Duration(seconds: 5);
+
   /// Connects to the server at [address]:[port].
   ///
   /// When [isDemo] is set, the connection is answered by the in-app demo server
@@ -79,13 +83,39 @@ class Connect {
           .andThenAsync((connection) => test(socket: socket, connection: connection));
     }
 
-    final socket = await _getSocket(hostAddress: InternetAddress(address), hostPort: port);
+    final hostAddress = await _resolve(address);
 
-    switch (socket) {
-      case ConnectedSocket(:final socket, :final connection):
-        return test(socket: socket, connection: connection);
-      case DisconnectedSocket(:final socket):
-        return connect(socket: socket, password: password);
+    switch (hostAddress) {
+      case Err<InternetAddress, Exception>(:final error):
+        return Err(error);
+      case Ok<InternetAddress, Exception>(value: final host):
+        final socket = await _getSocket(hostAddress: host, hostPort: port);
+
+        switch (socket) {
+          case ConnectedSocket(:final socket, :final connection):
+            return test(socket: socket, connection: connection);
+          case DisconnectedSocket(:final socket):
+            return connect(socket: socket, password: password);
+        }
     }
+  }
+
+  /// Turns a stored address into one the socket can dial. A server may be saved
+  /// under a hostname, which [InternetAddress] itself rejects, so anything that
+  /// is not already a numeric address goes through DNS.
+  Future<Result<InternetAddress, Exception>> _resolve(String address) async {
+    final literal = InternetAddress.tryParse(address);
+    if (literal != null) return Ok(literal);
+
+    return Result.asyncOf(() async {
+      final resolved = await InternetAddress.lookup(address).timeout(
+        lookupTimeout,
+        onTimeout: () => throw SocketException('Timed out resolving host: $address'),
+      );
+      if (resolved.isEmpty) {
+        throw SocketException('Could not resolve host: $address');
+      }
+      return resolved.first;
+    });
   }
 }
