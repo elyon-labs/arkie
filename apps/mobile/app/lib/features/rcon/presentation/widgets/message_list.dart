@@ -11,6 +11,9 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 /// The console log: commands and replies in the order they happened, one
 /// column, no sides. A command and the reply it produced belong together, and
 /// putting them on opposite edges of the screen is what made that hard to read.
+///
+/// The list is built bottom-up so the newest line is on screen the moment the
+/// log opens, without waiting for a scroll to settle after layout.
 class MessageList extends HookWidget {
   const MessageList({super.key, required this.messages, required this.savedMessages});
 
@@ -21,17 +24,15 @@ class MessageList extends HookWidget {
   Widget build(BuildContext context) {
     final scrollController = useScrollController();
     useEffect(() {
-      if (!scrollController.hasClients) return null;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (scrollController.hasClients) {
-          unawaited(
-            scrollController.animateTo(
-              scrollController.position.maxScrollExtent,
-              duration: const Duration(milliseconds: 220),
-              curve: Curves.easeOut,
-            ),
-          );
-        }
+        if (!scrollController.hasClients) return;
+        unawaited(
+          scrollController.animateTo(
+            0,
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeOut,
+          ),
+        );
       });
       return null;
     }, [messages.length]);
@@ -41,10 +42,11 @@ class MessageList extends HookWidget {
     return SelectionArea(
       child: ListView.builder(
         controller: scrollController,
+        reverse: true,
         padding: const EdgeInsets.symmetric(vertical: ArkieMetrics.snug),
         itemCount: messages.length,
         itemBuilder: (context, index) {
-          final message = messages[index];
+          final message = messages[messages.length - 1 - index];
           final isInput = message.sender == Sender.client;
           final saved = _savedMatching(message);
 

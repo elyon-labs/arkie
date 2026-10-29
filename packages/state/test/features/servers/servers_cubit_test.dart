@@ -1,9 +1,13 @@
 // ignore_for_file: cascade_invocations
 
+import 'package:arkie_core/features/rcon/data/repository/messages_repository.dart';
 import 'package:arkie_core/features/servers/data/models/server.dart';
 import 'package:arkie_core/features/servers/data/repository/servers_repository.dart';
 import 'package:arkie_core/features/servers/domain/add_demo_server.dart';
+import 'package:arkie_core/features/servers/domain/remove_server.dart';
+import 'package:arkie_core/features/servers/domain/watch_selected_server.dart';
 import 'package:arkie_core/features/servers/domain/watch_servers.dart';
+import 'package:arkie_core/testing/fake_messages_api.dart';
 import 'package:arkie_core/testing/fake_servers_api.dart';
 import 'package:arkie_core/testing/fake_settings_repository.dart';
 import 'package:arkie_state/features/servers/servers_cubit.dart';
@@ -21,8 +25,14 @@ void main() {
       return Server.create(name: name, password: password, address: address, port: port);
     }
 
-    Future<ServersCubit> buildSubject({List<Server>? servers}) async {
-      final api = FakeServersApi(initialServers: servers ?? []);
+    Future<ServersCubit> buildSubject({
+      List<Server>? servers,
+      FakeServersApi? serversApi,
+      FakeMessagesApi? messagesApi,
+    }) async {
+      final api = serversApi ?? FakeServersApi(initialServers: servers ?? []);
+      final messages = messagesApi ?? FakeMessagesApi();
+      final settingsRepository = FakeSettingsRepository();
       final serversRepository = ServersRepository(api: api);
 
       await pumpEventQueue(); // Allow server fetch to complete before subscribing.
@@ -31,7 +41,16 @@ void main() {
         watchServers: WatchServers(repository: serversRepository),
         addDemoServer: AddDemoServer(
           serversRepository: serversRepository,
-          settingsRepository: FakeSettingsRepository(),
+          settingsRepository: settingsRepository,
+        ),
+        removeServerFor: (server) => RemoveServer(
+          serversRepository: serversRepository,
+          settingsRepository: settingsRepository,
+          messagesRepository: MessagesRepository(server: server, api: messages),
+          watchSelectedServer: WatchSelectedServer(
+            repository: serversRepository,
+            settingsRepository: settingsRepository,
+          ),
         ),
       );
 
@@ -86,6 +105,37 @@ void main() {
 
         expect(cubit.state.servers, hasLength(2));
         expect(cubit.state.servers, contains(server));
+        await cubit.close();
+      });
+    });
+
+    group('removeServer', () {
+      test('drops the server from the list', () async {
+        final server = buildServer();
+        final otherServer = buildServer(name: 'Other');
+        final serversApi = FakeServersApi(initialServers: [server, otherServer]);
+        final messagesApi = FakeMessagesApi();
+        final cubit = await buildSubject(serversApi: serversApi, messagesApi: messagesApi);
+
+        final result = await cubit.removeServer(server);
+        await pumpEventQueue();
+
+        expect(result.isOk(), isTrue);
+        expect(messagesApi.clearMessagesCallCount, 1);
+        expect(cubit.state.servers, [otherServer]);
+        await cubit.close();
+      });
+
+      test('closes the tabs that were open for the removed server', () async {
+        final server = buildServer();
+        final serversApi = FakeServersApi(initialServers: [server]);
+        final cubit = await buildSubject(serversApi: serversApi);
+        cubit.selectServerForSelectedTab(server);
+
+        await cubit.removeServer(server);
+        await pumpEventQueue();
+
+        expect(serverForSelectedTab(cubit), isNull);
         await cubit.close();
       });
     });

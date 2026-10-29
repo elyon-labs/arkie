@@ -1,27 +1,45 @@
 import 'dart:async';
 
+import 'package:arkie_core/features/rcon/data/api/messages_api.dart';
+import 'package:arkie_core/features/rcon/data/repository/messages_repository.dart';
 import 'package:arkie_core/features/servers/data/models/server.dart';
 import 'package:arkie_core/features/servers/domain/add_demo_server.dart';
+import 'package:arkie_core/features/servers/domain/remove_server.dart';
 import 'package:arkie_core/features/servers/domain/watch_servers.dart';
 import 'package:arkie_state/core/safe_emit.dart';
 import 'package:arkie_state/features/servers/servers_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:oxidized/oxidized.dart';
 import 'package:rxdart/utils.dart';
 
 class ServersCubit extends Cubit<ServersState> {
-  ServersCubit({required WatchServers watchServers, required AddDemoServer addDemoServer})
-    : _watchServers = watchServers,
-      _addDemoServer = addDemoServer,
-      super(ServersState.initial()) {
+  ServersCubit({
+    required WatchServers watchServers,
+    required AddDemoServer addDemoServer,
+    required RemoveServer Function(Server server) removeServerFor,
+  }) : _watchServers = watchServers,
+       _addDemoServer = addDemoServer,
+       _removeServerFor = removeServerFor,
+       super(ServersState.initial()) {
     unawaited(_init());
   }
 
   factory ServersCubit.create() {
-    return ServersCubit(watchServers: WatchServers.create(), addDemoServer: AddDemoServer.create());
+    return ServersCubit(
+      watchServers: WatchServers.create(),
+      addDemoServer: AddDemoServer.create(),
+      removeServerFor: (server) => RemoveServer.create(
+        messagesRepository: MessagesRepository(server: server, api: MessagesApi.create()),
+      ),
+    );
   }
 
   final WatchServers _watchServers;
   final AddDemoServer _addDemoServer;
+
+  /// A removal needs the message store of the server it is deleting, so the use
+  /// case is built per server rather than once for the cubit.
+  final RemoveServer Function(Server server) _removeServerFor;
 
   final subs = CompositeSubscription();
 
@@ -44,6 +62,10 @@ class ServersCubit extends Cubit<ServersState> {
   Future<Server?> addDemoServer() async {
     final result = await _addDemoServer();
     return result.ok().toNullable();
+  }
+
+  Future<Result<void, Exception>> removeServer(Server server) async {
+    return await _removeServerFor(server)(server);
   }
 
   void openTab() {

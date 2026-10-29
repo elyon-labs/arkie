@@ -1,5 +1,6 @@
 import 'package:arkie_core/features/servers/data/models/server.dart';
 import 'package:arkie_mobile/features/rcon/presentation/server_chat_page.dart';
+import 'package:arkie_mobile/features/servers/presentation/widgets/server_actions_sheet.dart';
 import 'package:arkie_mobile/features/servers/presentation/widgets/server_list_tile.dart';
 import 'package:arkie_ui/arkie_ui.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +41,7 @@ class ServerList extends StatelessWidget {
                   onTap: () => Navigator.of(
                     context,
                   ).push(MaterialPageRoute<void>(builder: (_) => ServerChatPage(server: server))),
+                  onLongPress: () async => await showServerActionsSheet(context, server),
                 ),
               ],
             ],
