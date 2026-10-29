@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:arkie_core/features/rcon/data/connection_cache.dart';
 import 'package:arkie_core/features/rcon/data/models/message.dart';
 import 'package:arkie_core/features/rcon/data/models/saved_message.dart';
@@ -213,6 +215,20 @@ void main() {
           isA<RCONState>().having((s) => s.connection, 'connection', isA<Error<RCONConnection>>()),
         ],
       );
+
+      test('does not start the connection monitor when closed while connecting', () async {
+        final gate = Completer<void>();
+        final cubit = buildSubject(
+          server: buildServer(),
+          connect: _GatedConnect(gate: gate),
+        );
+
+        await cubit.close();
+        gate.complete();
+        await pumpEventQueue();
+
+        expect(cubit.isClosed, isTrue);
+      });
     });
 
     group('sendCommand', () {
@@ -623,4 +639,23 @@ void main() {
       );
     });
   });
+}
+
+/// A [Connect] that does not answer until its gate is completed, so a test can
+/// close the cubit while the first connection attempt is still in flight.
+class _GatedConnect implements Connect {
+  _GatedConnect({required this.gate});
+
+  final Completer<void> gate;
+
+  @override
+  Future<Result<RCONConnection, Exception>> call({
+    required String address,
+    required int port,
+    required String password,
+    bool isDemo = false,
+  }) async {
+    await gate.future;
+    return Err(Exception('Connection failed'));
+  }
 }
