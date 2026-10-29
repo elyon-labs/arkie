@@ -100,13 +100,28 @@ class RCONCubit extends Cubit<RCONState> {
   }
 
   Future<void> _startConnectionMonitor() async {
-    if (_connectionMonitor != null) {
-      await _subs.remove(_connectionMonitor!);
+    if (_subs.isDisposed) return;
+
+    final previousMonitor = _connectionMonitor;
+    if (previousMonitor != null) {
+      await _subs.remove(previousMonitor);
     }
-    final sub = _connectionMonitor = Stream.periodic(_connectionCheckInterval).listen((_) async {
+
+    final monitor = Stream.periodic(_connectionCheckInterval).listen((_) async {
       await _checkConnection();
     });
-    _subs.add(sub);
+
+    // The first connection attempt is awaited before the monitor starts, so the
+    // cubit can be closed while it is still in flight, leaving nothing to
+    // attach the monitor to.
+    if (_subs.isDisposed) {
+      _connectionMonitor = null;
+      await monitor.cancel();
+      return;
+    }
+
+    _connectionMonitor = monitor;
+    _subs.add(monitor);
   }
 
   Future<Result<RCONConnection, Exception>> _testAndEmit() async {
@@ -169,7 +184,7 @@ class RCONCubit extends Cubit<RCONState> {
     final connection = await _testAndEmit();
 
     // Restart monitoring if connection succeeded
-    if (connection is Loaded<RCONConnection>) {
+    if (connection.isOk()) {
       unawaited(_startConnectionMonitor());
     }
   }
