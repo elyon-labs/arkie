@@ -2,15 +2,26 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "arkie-web",
   "compatibility_date": "2026-10-24",
-  // No `main`: this is a static assets upload, not a Worker with code behind it.
+  // Almost a static assets upload: the Worker exists only to send `www` to the
+  // canonical host, which the asset server cannot do on its own. Everything
+  // else it hands straight back to the assets through the binding.
+  "main": "./worker/index.ts",
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
     "html_handling": "auto-trailing-slash",
-    "not_found_handling": "404-page"
+    "not_found_handling": "404-page",
+    // Without this the asset server answers first and a www request is served
+    // rather than redirected.
+    "run_worker_first": true
   },
   "routes": [
     {
       "pattern": "arkie.elyon-labs.com",
+      "custom_domain": true
+    },
+    {
+      "pattern": "www.arkie.elyon-labs.com",
       "custom_domain": true
     }
   ],
