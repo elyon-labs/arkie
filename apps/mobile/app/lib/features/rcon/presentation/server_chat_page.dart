@@ -16,9 +16,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ServerChatPage extends StatelessWidget {
-  const ServerChatPage({super.key, required this.server});
+  const ServerChatPage({super.key, required this.server, this.initialTool});
 
   final Server server;
+
+  /// A tool pane to open over the console as soon as the server answers.
+  ///
+  /// The sheet needs the live connection the tools act on, so it cannot open
+  /// before the server has replied; waiting for that is the whole reason this
+  /// is a parameter rather than a call at the call site.
+  final ServerTool? initialTool;
 
   @override
   Widget build(BuildContext context) {
@@ -33,30 +40,57 @@ class ServerChatPage extends StatelessWidget {
       ],
       child: BlocProvider<RCONCubit>(
         create: (context) => RCONCubit.create(context: context, server: server),
-        child: _ServerChatView(server: server),
+        child: _ServerChatView(server: server, initialTool: initialTool),
       ),
     );
   }
 }
 
 class _ServerChatView extends StatelessWidget {
-  const _ServerChatView({required this.server});
+  const _ServerChatView({required this.server, this.initialTool});
 
   final Server server;
+  final ServerTool? initialTool;
 
   @override
   Widget build(BuildContext context) {
     final connection = context.select((RCONCubit cubit) => cubit.state.connection);
     final scaffold = _ServerChatScaffold(server: server);
+    final tool = initialTool;
 
     return switch (connection) {
       app_async.Loaded<RCONConnection>(:final value) => BlocProvider<ServerInfoCubit>(
         create: (_) => ServerInfoCubit.create(connection: value),
-        child: scaffold,
+        child: tool == null ? scaffold : _OpensTool(tool: tool, child: scaffold),
       ),
       _ => scaffold,
     };
   }
+}
+
+/// Opens [tool] over [child] once, on the first frame it is mounted for.
+class _OpensTool extends StatefulWidget {
+  const _OpensTool({required this.tool, required this.child});
+
+  final ServerTool tool;
+  final Widget child;
+
+  @override
+  State<_OpensTool> createState() => _OpensToolState();
+}
+
+class _OpensToolState extends State<_OpensTool> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      await showServerToolsSheet(context, initial: widget.tool);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
 
 class _ServerChatScaffold extends StatelessWidget {

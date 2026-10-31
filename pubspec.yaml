@@ -57,3 +57,19 @@ melos:
       name: Run codegen
       description: Run codegen for all projects
       run: melos exec --depends-on="build_runner" -- "dart run build_runner build --delete-conflicting-outputs -v"
+    store:screenshots:
+      name: Capture App Store screenshots
+      description: Captures the mobile app's App Store screenshots off a simulator
+      exec:
+        command: dart run tool/capture_screenshots.dart
+        concurrency: 1
+      packageFilters:
+        scope: arkie_mobile
+    store:render:
+      name: Render App Store art
+      description: Renders the mobile app's product page header and search results image
+      exec:
+        command: dart run tool/render_store_assets.dart
+        concurrency: 1
+      packageFilters:
+        scope: arkie_mobile

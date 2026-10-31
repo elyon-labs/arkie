@@ -82,6 +82,7 @@ All scripts are defined in the `melos` section of [`pubspec.yaml`](pubspec.yaml)
 | `melos run analyze:flutter:ci` / `melos run analyze:dart:ci` | Static analysis with warnings promoted to errors.                                       |
 | `melos run test:flutter:ci` / `melos run test:dart:ci`       | Run the Flutter/Dart test suites when a `test/` folder exists.                          |
 | `melos run codegen`                                          | Runs `build_runner` anywhere it is available (`dart_mappable` models and Hive adapters). |
+| `melos run store:screenshots` / `melos run store:render`     | Produce the mobile app's App Store screenshots and merchandising art. Run deliberately, never in CI. |
 
 ### The website
 
