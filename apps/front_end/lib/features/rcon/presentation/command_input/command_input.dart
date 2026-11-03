@@ -59,6 +59,15 @@ class _ViewState extends State<_View> {
     _removeHighlightOverlay();
   }
 
+  /// Replaces what has been typed with [suggestion] and closes the overlay.
+  void _complete(CommandHelp suggestion) {
+    final completion = suggestion.name;
+    _controller
+      ..text = completion
+      ..selection = TextSelection.collapsed(offset: completion.length);
+    _removeHighlightOverlay();
+  }
+
   /// Called when the autocomplete overlay should be shown.
   ///
   /// This is when there are autocomplete suggestions available.
@@ -86,7 +95,9 @@ class _ViewState extends State<_View> {
           bottom: screenSize.height - offset.dy,
           width: min(size.width, screenSize.width / 2),
           child: ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: maxHeightAboveTextField - 20),
+            constraints: BoxConstraints(
+              maxHeight: max(0, maxHeightAboveTextField - ArkieMetrics.loose),
+            ),
             child: TerminalPanel(
               label: 'find',
               padding: EdgeInsets.zero,
@@ -121,27 +132,14 @@ class _ViewState extends State<_View> {
                     });
 
                     return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: List.generate(_suggestions.value.length, (index) {
                         final suggestion = _suggestions.value.elementAt(index);
-                        final isSelected = _highlightedIndex.value == index;
-                        return ListTile(
+                        return _Suggestion(
                           key: _itemKeys[index],
-                          title: Text(suggestion.name),
-                          selected: isSelected,
-                          subtitle: suggestion.description.isEmpty
-                              ? null
-                              : Text(
-                                  suggestion.description,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                          onTap: () {
-                            final completion = suggestion.name;
-                            _controller
-                              ..text = completion
-                              ..selection = TextSelection.collapsed(offset: completion.length);
-                            _removeHighlightOverlay();
-                          },
+                          suggestion: suggestion,
+                          isHighlighted: highlightedIndex == index,
+                          onTap: () => _complete(suggestion),
                         );
                       }),
                     );
@@ -256,14 +254,7 @@ class _ViewState extends State<_View> {
               if (highlightedIndex != null &&
                   highlightedIndex >= 0 &&
                   highlightedIndex < _suggestions.value.length) {
-                final suggestion = _suggestions.value[highlightedIndex];
-                final completion = suggestion.name;
-                _controller
-                  ..text = completion
-                  ..selection = TextSelection.collapsed(offset: completion.length);
-
-                _removeHighlightOverlay();
-
+                _complete(_suggestions.value[highlightedIndex]);
                 return KeyEventResult.handled;
               }
             }
@@ -275,13 +266,7 @@ class _ViewState extends State<_View> {
               if (highlightedIndex != null &&
                   highlightedIndex >= 0 &&
                   highlightedIndex < _suggestions.value.length) {
-                final suggestion = _suggestions.value[highlightedIndex];
-                final completion = suggestion.name;
-                _controller
-                  ..text = completion
-                  ..selection = TextSelection.collapsed(offset: completion.length);
-
-                _removeHighlightOverlay();
+                _complete(_suggestions.value[highlightedIndex]);
                 return KeyEventResult.handled;
               }
 
@@ -321,6 +306,58 @@ class _ViewState extends State<_View> {
         ),
         const ConnectionIndicator(),
       ],
+    );
+  }
+}
+
+/// A row in the autocomplete overlay.
+///
+/// Drawn without Material, because an overlay entry sits above the app's
+/// [Material] and anything that asks for one there fails to build.
+class _Suggestion extends StatelessWidget {
+  const _Suggestion({
+    super.key,
+    required this.suggestion,
+    required this.isHighlighted,
+    required this.onTap,
+  });
+
+  final CommandHelp suggestion;
+  final bool isHighlighted;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: onTap,
+        child: ColoredBox(
+          color: isHighlighted ? context.arkieColors.accentSurface : context.colors.card,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: ArkieMetrics.snug,
+              vertical: ArkieMetrics.tight,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  suggestion.name,
+                  style: context.text.body.copyWith(color: context.colors.accent),
+                ),
+                if (suggestion.description.isNotEmpty)
+                  Text(
+                    suggestion.description,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.text.caption.copyWith(color: context.arkieColors.textFaint),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
