@@ -51,9 +51,7 @@ void main() {
           theme: buildDesktopTheme(),
           home: BlocProvider<RCONCubit>.value(
             value: cubit,
-            child: const Scaffold(
-              body: Column(children: [Spacer(), CommandInput()]),
-            ),
+            child: const Scaffold(body: Column(children: [Spacer(), CommandInput()])),
           ),
         ),
       );
