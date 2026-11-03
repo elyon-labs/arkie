@@ -132,6 +132,7 @@ class _ViewState extends State<_View> {
                     });
 
                     return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: List.generate(_suggestions.value.length, (index) {
                         final suggestion = _suggestions.value.elementAt(index);
                         return _Suggestion(
