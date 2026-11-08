@@ -1,4 +1,4 @@
-import 'package:cs2_rcon_front_end/features/settings/domain/get_app_version_info.dart';
+import 'package:arkie_core/features/settings/domain/get_app_version_info.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:oxidized/oxidized.dart';
 

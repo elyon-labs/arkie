@@ -1,5 +1,6 @@
+import 'package:arkie_core/features/settings/domain/get_app_version_info.dart';
+import 'package:arkie_core/links.dart';
 import 'package:arkie_ui/arkie_ui.dart';
-import 'package:cs2_rcon_front_end/features/settings/domain/get_app_version_info.dart';
 import 'package:cs2_rcon_front_end/features/settings/presentation/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -39,7 +40,7 @@ class _GithubReleasesIcon extends StatelessWidget {
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: () async {
-          await launchUrl(Uri.parse('https://github.com/elyon-labs/arkie/releases'));
+          await launchUrl(Uri.parse(ArkieLinks.releases));
         },
         child: Tooltip(
           message: 'See Releases on GitHub',

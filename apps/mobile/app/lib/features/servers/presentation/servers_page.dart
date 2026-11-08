@@ -1,6 +1,6 @@
-import 'package:arkie_mobile/features/servers/presentation/add_server_sheet/add_server_sheet.dart';
 import 'package:arkie_mobile/features/servers/presentation/widgets/empty_server_list.dart';
 import 'package:arkie_mobile/features/servers/presentation/widgets/server_list.dart';
+import 'package:arkie_mobile/features/settings/presentation/settings_page.dart';
 import 'package:arkie_state/features/servers/servers_cubit.dart';
 import 'package:arkie_ui/arkie_ui.dart';
 import 'package:flutter/material.dart';
@@ -27,9 +27,11 @@ class _ServersView extends StatelessWidget {
         title: const _Wordmark(),
         actions: [
           IconButton(
-            onPressed: () async => await showAddServerSheet(context),
-            icon: Icon(context.icons.add),
-            tooltip: 'Add a server',
+            onPressed: () => Navigator.of(
+              context,
+            ).push(MaterialPageRoute<void>(builder: (_) => const SettingsPage())),
+            icon: Icon(context.icons.settings),
+            tooltip: 'Settings',
           ),
           const HSpace(space: ArkieMetrics.tight),
         ],
