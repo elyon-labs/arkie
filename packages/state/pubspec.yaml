@@ -32,3 +32,4 @@ dev_dependencies:
   dart_mappable_builder: ^4.2.3
   flutter_test:
     sdk: flutter
+  package_info_plus: ^9.0.0

@@ -8,6 +8,7 @@ export 'testing/fake_get_socket.dart';
 export 'testing/fake_messages_api.dart';
 export 'testing/fake_rcon_connection.dart';
 export 'testing/fake_rcon_socket.dart';
+export 'testing/fake_releases_api.dart';
 export 'testing/fake_rx_shared_preferences.dart';
 export 'testing/fake_saved_messages_api.dart';
 export 'testing/fake_servers_api.dart';

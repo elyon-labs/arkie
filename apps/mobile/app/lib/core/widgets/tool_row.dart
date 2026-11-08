@@ -1,11 +1,12 @@
 import 'package:arkie_ui/arkie_ui.dart';
 import 'package:flutter/material.dart';
 
-/// One row in a server-tools tab: a name, what it is underneath, and whatever
-/// acts on it at the end.
+/// One row in a list: a name, what it is underneath, and whatever acts on it at
+/// the end.
 ///
-/// The tabs hold three different kinds of thing, and giving them one row shape
-/// is what lets the sheet read as a single list that changes contents.
+/// The lists built from these hold quite different kinds of thing — commands,
+/// maps, players, links — and giving them all one row shape is what lets each
+/// one read as a single list rather than a stack of unrelated controls.
 class ToolRow extends StatelessWidget {
   const ToolRow({
     super.key,
