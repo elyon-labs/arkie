@@ -34,7 +34,6 @@ dependencies:
   rx_shared_preferences: ^4.0.0
   rxdart: ^0.28.0
   url_launcher: ^6.3.2
-  version: ^3.0.2
 
 
 dev_dependencies:

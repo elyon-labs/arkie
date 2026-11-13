@@ -1,7 +1,7 @@
 import 'package:arkie_core/features/settings/domain/get_app_version_info.dart';
 import 'package:arkie_core/links.dart';
+import 'package:arkie_state/features/settings/app_version_cubit.dart';
 import 'package:arkie_ui/arkie_ui.dart';
-import 'package:cs2_rcon_front_end/features/settings/presentation/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,7 +13,7 @@ class AppVersionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appVersion = context.select((SettingsCubit cubit) => cubit.state.appVersion);
+    final appVersion = context.select((AppVersionCubit cubit) => cubit.state.appVersion);
 
     return switch (appVersion) {
       Ok<VersionInfo, Exception>(:final value) => Padding(
