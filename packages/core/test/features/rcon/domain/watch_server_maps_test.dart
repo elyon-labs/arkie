@@ -52,6 +52,8 @@ const _validMapsResponse = '''
 	de_dust2
 	de_dust2_vanity
 	de_cache
+	de_cbble
+	de_cbble_vanity
 	de_golden
 	de_inferno
 	de_inferno_vanity
