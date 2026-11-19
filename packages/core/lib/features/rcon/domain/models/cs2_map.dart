@@ -42,6 +42,7 @@ class KnownMap extends CS2Map {
       KnownMap(name: 'de_ancient_night', assetName: 'de_ancient_night'),
       KnownMap(name: 'de_anubis', assetName: 'de_anubis'),
       KnownMap(name: 'de_cache', assetName: 'de_cache'),
+      KnownMap(name: 'de_cbble', assetName: 'de_cbble'),
       KnownMap(name: 'de_dust2', assetName: 'de_dust2'),
       KnownMap(name: 'de_golden', assetName: 'de_golden'),
       KnownMap(name: 'de_inferno', assetName: 'de_inferno'),
